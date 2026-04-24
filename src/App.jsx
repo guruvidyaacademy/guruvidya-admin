@@ -2,11 +2,12 @@
 import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 
-const api = axios.create({ baseURL: "https://guruvidya-backend.onrender.com/api" });
+const API_BASE = "https://guruvidya-backend.onrender.com/api";
+const api = axios.create({ baseURL: API_BASE });
 
 const USERS = [
-  { email: "admin@guruvidya.in", password: "Guru@12345", role: "Super Admin", access: ["leads","admissions","appointments","support","faculty","alerts"] },
-  { email: "counselor@guruvidya.in", password: "Counselor@123", role: "Counselor", access: ["leads","admissions","appointments"] },
+  { email: "admin@guruvidya.in", password: "Guru@12345", role: "Super Admin", access: ["leads","admissions","appointments","support","faculty","alerts","counselors"] },
+  { email: "counselor@guruvidya.in", password: "Counselor@123", role: "Counselor", access: ["leads","admissions","appointments","counselors"] },
   { email: "reception@guruvidya.in", password: "Reception@123", role: "Reception", access: ["appointments","support","leads"] }
 ];
 
@@ -16,15 +17,16 @@ const allTabs = [
   { key: "appointments", label: "Appointments" },
   { key: "support", label: "Support" },
   { key: "faculty", label: "Faculty" },
-  { key: "alerts", label: "Alerts" }
+  { key: "alerts", label: "Alerts" },
+  { key: "counselors", label: "Counselors" }
 ];
 
 const statusOptions = {
-  leads: ["new", "contacted", "follow_up", "converted", "closed"],
-  admissions: ["new", "documents_pending", "fee_pending", "converted", "closed"],
-  appointments: ["requested", "confirmed", "on_the_way", "arrived", "completed", "cancelled"],
-  support: ["new", "in_progress", "tech_review", "resolved", "closed"],
-  faculty: ["new", "demo_pending", "interview_scheduled", "selected", "rejected", "hold"]
+  leads: ["new","contacted","interested","not_interested","follow_up","converted","closed"],
+  admissions: ["new","contacted","documents_pending","fee_pending","converted","closed"],
+  appointments: ["requested","confirmed","on_the_way","arrived","completed","cancelled"],
+  support: ["new","in_progress","tech_review","resolved","closed"],
+  faculty: ["new","demo_pending","interview_scheduled","selected","rejected","hold"]
 };
 
 const owners = ["Unassigned","Reception","Counselor 1","Counselor 2","Accounts","Admin","Technical","HR"];
@@ -33,25 +35,27 @@ function Login({ onLogin }) {
   const [email, setEmail] = useState("admin@guruvidya.in");
   const [password, setPassword] = useState("Guru@12345");
   const [error, setError] = useState("");
+
   const submit = (e) => {
     e.preventDefault();
-    const user = USERS.find((u) => u.email === email.trim() && u.password === password);
+    const user = USERS.find(u => u.email === email.trim() && u.password === password);
     if (!user) return setError("Wrong email or password");
     localStorage.setItem("guruvidya_user", JSON.stringify(user));
     onLogin(user);
   };
+
   return (
     <div className="loginPage">
       <form className="loginCard" onSubmit={submit}>
         <div className="logoText">Guruvidya CRM</div>
         <div className="notice">Secure admin login</div>
         <label className="small">Email</label>
-        <input className="input" value={email} onChange={(e) => setEmail(e.target.value)} />
+        <input className="input" value={email} onChange={(e)=>setEmail(e.target.value)} />
         <label className="small">Password</label>
-        <input className="input" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-        {error && <div style={{ color: "#b91c1c", marginBottom: 12 }}>{error}</div>}
-        <button className="btn" style={{ width: "100%" }}>Login</button>
-        <div className="small" style={{ marginTop: 14 }}>Super Admin: admin@guruvidya.in / Guru@12345</div>
+        <input className="input" type="password" value={password} onChange={(e)=>setPassword(e.target.value)} />
+        {error && <div style={{ color:"#b91c1c", marginBottom:12 }}>{error}</div>}
+        <button className="btn" style={{ width:"100%" }}>Login</button>
+        <div className="small" style={{ marginTop:14 }}>Super Admin: admin@guruvidya.in / Guru@12345</div>
       </form>
     </div>
   );
@@ -65,11 +69,57 @@ function StatusBadge({ status }) {
   return <span className={`badge ${String(status || "new")}`}>{status || "new"}</span>;
 }
 
+function CounselorDashboard({ data }) {
+  const allRows = ["leads","admissions","appointments","support","faculty"].flatMap(type =>
+    (data[type] || []).map(r => ({ ...r, type }))
+  );
+  const stats = owners.map(owner => {
+    const rows = allRows.filter(r => (r.owner || "Unassigned") === owner);
+    const converted = rows.filter(r => ["converted","completed","resolved","selected"].includes(r.status)).length;
+    const follow = rows.filter(r => ["follow_up","contacted","interested","confirmed","in_progress"].includes(r.status)).length;
+    return { owner, total: rows.length, converted, follow };
+  });
+
+  return (
+    <div>
+      <div className="ownerGrid">
+        {stats.map(s => (
+          <div className="card ownerCard" key={s.owner}>
+            <div className="row"><b>{s.owner}</b><span className="tag">{s.total}</span></div>
+            <div className="small" style={{ marginTop:8 }}>Converted/Completed: {s.converted}</div>
+            <div className="small">Follow-up/Active: {s.follow}</div>
+          </div>
+        ))}
+      </div>
+      <div className="card" style={{ overflowX:"auto" }}>
+        <h3 style={{ marginTop:0 }}>Owner-wise Records</h3>
+        <table className="table">
+          <thead><tr><th>Type</th><th>Name</th><th>Mobile</th><th>Course/Issue</th><th>Status</th><th>Owner</th><th>Created</th></tr></thead>
+          <tbody>
+            {allRows.map((r, i) => (
+              <tr key={i}>
+                <td>{r.type}</td>
+                <td>{r.name || "-"}</td>
+                <td>{r.mobile || "-"}</td>
+                <td>{r.course || r.issue || "-"}</td>
+                <td><StatusBadge status={r.status} /></td>
+                <td>{r.owner || "Unassigned"}</td>
+                <td>{r.created_at || "-"}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
 function ActionPanel({ tab, row, onSaved }) {
   const [status, setStatus] = useState("");
   const [owner, setOwner] = useState("");
   const [note, setNote] = useState("");
-  const [sendNotification, setSendNotification] = useState(false);
+  const [sendNotification, setSendNotification] = useState(true);
+  const [sendWhatsapp, setSendWhatsapp] = useState(false);
   const [msg, setMsg] = useState("");
   const [saving, setSaving] = useState(false);
 
@@ -77,17 +127,25 @@ function ActionPanel({ tab, row, onSaved }) {
     setStatus(row?.status || "new");
     setOwner(row?.owner || "Unassigned");
     setNote(row?.note || row?.admin_note || "");
-    setSendNotification(false);
+    setSendNotification(true);
+    setSendWhatsapp(false);
     setMsg("");
   }, [row, tab]);
 
   if (!row) return <div className="card">Select a row to update status, owner, notes, or send notification.</div>;
 
-  const save = async () => {
+  const save = async (close = false) => {
     setSaving(true);
     setMsg("");
     try {
-      const res = await api.post(`/admin/${tab}/${row.id}/action`, { status, owner, note, sendNotification });
+      const finalStatus = close ? "closed" : status;
+      const res = await api.post(`/admin/${tab}/${row.id}/action`, {
+        status: finalStatus,
+        owner,
+        note: close ? (note || "Closed / Archived") : note,
+        sendNotification,
+        sendWhatsapp
+      });
       setMsg(res.data.message || "Updated successfully");
       onSaved?.();
     } catch {
@@ -97,55 +155,49 @@ function ActionPanel({ tab, row, onSaved }) {
     }
   };
 
-  const closeRecord = async () => {
-    setSaving(true);
-    setMsg("");
-    try {
-      const res = await api.post(`/admin/${tab}/${row.id}/action`, {
-        status: "closed",
-        owner,
-        note: note || "Closed / Archived",
-        sendNotification: false,
-      });
-      setMsg(res.data.message || "Closed successfully");
-      onSaved?.();
-    } catch {
-      setMsg("Close failed. Backend action endpoint update needed.");
-    } finally {
-      setSaving(false);
-    }
-  };
-
   return (
     <div className="card">
-      <div className="row"><h3 style={{ margin: 0 }}>Action Panel</h3><span className="tag">ID: {row.id}</span></div>
-      <div className="actions" style={{ marginTop: 12 }}>
+      <div className="row"><h3 style={{ margin:0 }}>Action Panel</h3><span className="tag">ID: {row.id}</span></div>
+      <div className="actions" style={{ marginTop:12 }}>
         <div><b>{row.name || row.email || "Record"}</b></div>
         <div className="small">{row.mobile || ""} {row.course ? `· ${row.course}` : ""}</div>
+
         <div>
           <label className="small">Status</label>
-          <select value={status} onChange={(e) => setStatus(e.target.value)}>
-            {(statusOptions[tab] || [row.status || "new"]).map((s) => <option key={s} value={s}>{s}</option>)}
+          <select value={status} onChange={(e)=>setStatus(e.target.value)}>
+            {(statusOptions[tab] || [row.status || "new"]).map(s => <option key={s} value={s}>{s}</option>)}
           </select>
         </div>
+
         <div>
           <label className="small">Assign Owner</label>
-          <select value={owner} onChange={(e) => setOwner(e.target.value)}>
-            {owners.map((c) => <option key={c} value={c}>{c}</option>)}
+          <select value={owner} onChange={(e)=>setOwner(e.target.value)}>
+            {owners.map(c => <option key={c} value={c}>{c}</option>)}
           </select>
         </div>
+
         <div>
           <label className="small">Follow-up Note</label>
-          <textarea rows="6" value={note} onChange={(e) => setNote(e.target.value)} placeholder="Counseling note / next follow-up / payment discussion" />
+          <textarea rows="6" value={note} onChange={(e)=>setNote(e.target.value)} placeholder="Counseling note / next follow-up / payment discussion" />
         </div>
-        <label className="small" style={{ display: "flex", gap: 8, alignItems: "center" }}>
-          <input type="checkbox" checked={sendNotification} onChange={(e) => setSendNotification(e.target.checked)} style={{ width: "auto" }} />
-          Send notification / alert
+
+        <label className="small" style={{ display:"flex", gap:8, alignItems:"center" }}>
+          <input type="checkbox" checked={sendNotification} onChange={(e)=>setSendNotification(e.target.checked)} style={{ width:"auto" }} />
+          Auto create alert
         </label>
-        <div style={{ display: "flex", gap: 10 }}>
-          <button className="btn btn3" onClick={save} disabled={saving}>{saving ? "Saving..." : "Save Action"}</button>
-          <button className="btn btnDanger" onClick={closeRecord} disabled={saving}>Close</button>
+
+        <label className="small" style={{ display:"flex", gap:8, alignItems:"center" }}>
+          <input type="checkbox" checked={sendWhatsapp} onChange={(e)=>setSendWhatsapp(e.target.checked)} style={{ width:"auto" }} />
+          WhatsApp trigger placeholder
+        </label>
+
+        {sendWhatsapp && <div className="whatsappBox">WhatsApp trigger backend me placeholder hai. BotSailor token add karne ke baad real send hoga.</div>}
+
+        <div style={{ display:"flex", gap:10, flexWrap:"wrap" }}>
+          <button className="btn btn3" onClick={()=>save(false)} disabled={saving}>{saving ? "Saving..." : "Save Action"}</button>
+          <button className="btn btnDanger" onClick={()=>save(true)} disabled={saving}>Close</button>
         </div>
+
         {msg && <div className="notice">{msg}</div>}
       </div>
     </div>
@@ -154,23 +206,25 @@ function ActionPanel({ tab, row, onSaved }) {
 
 function DataTable({ tab, rows, selectedId, onSelect }) {
   if (!rows.length) return <div className="card">No data found</div>;
+
   const headersMap = {
-    leads: ["id", "name", "mobile", "course", "status", "owner", "note", "created_at"],
-    admissions: ["id", "name", "mobile", "email", "course", "status", "owner", "admin_note", "created_at"],
-    appointments: ["id", "name", "mobile", "course", "datetime", "status", "owner", "note", "created_at"],
-    support: ["id", "name", "mobile", "issue", "description", "status", "owner", "note", "created_at"],
-    faculty: ["id", "name", "mobile", "course", "mode", "status", "owner", "admin_note", "created_at"],
-    alerts: ["id", "type", "title", "payload", "created_at"],
+    leads: ["id","name","mobile","course","status","owner","note","created_at"],
+    admissions: ["id","name","mobile","email","course","status","owner","admin_note","created_at"],
+    appointments: ["id","name","mobile","course","datetime","status","owner","note","created_at"],
+    support: ["id","name","mobile","issue","description","status","owner","note","created_at"],
+    faculty: ["id","name","mobile","course","mode","status","owner","admin_note","created_at"],
+    alerts: ["id","type","title","payload","created_at"]
   };
   const headers = headersMap[tab] || Object.keys(rows[0]);
+
   return (
-    <div className="card" style={{ overflowX: "auto" }}>
+    <div className="card" style={{ overflowX:"auto" }}>
       <table className="table">
-        <thead><tr>{headers.map((h) => <th key={h}>{h}</th>)}</tr></thead>
+        <thead><tr>{headers.map(h => <th key={h}>{h}</th>)}</tr></thead>
         <tbody>
-          {rows.map((row) => (
-            <tr key={row.id} onClick={() => onSelect(row)} style={{ background: selectedId === row.id ? "#eef2ff" : "transparent", cursor: "pointer" }}>
-              {headers.map((h) => (
+          {rows.map(row => (
+            <tr key={row.id} onClick={()=>onSelect(row)} style={{ background:selectedId === row.id ? "#eef2ff" : "transparent", cursor:"pointer" }}>
+              {headers.map(h => (
                 <td key={h}>{h === "status" ? <StatusBadge status={row[h]} /> : h === "payload" ? JSON.stringify(row[h]) : String(row[h] ?? "")}</td>
               ))}
             </tr>
@@ -191,7 +245,8 @@ export default function App() {
   const [error, setError] = useState("");
   const [query, setQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
-  const tabs = user ? allTabs.filter((t) => user.access.includes(t.key)) : [];
+
+  const tabs = user ? allTabs.filter(t => user.access.includes(t.key)) : [];
 
   const logout = () => {
     localStorage.removeItem("guruvidya_user");
@@ -207,7 +262,7 @@ export default function App() {
         api.get("/admin/appointments"),
         api.get("/admin/support"),
         api.get("/admin/faculty"),
-        api.get("/admin/alerts"),
+        api.get("/admin/alerts")
       ]);
       setData({
         leads: leads.data.data || [],
@@ -215,7 +270,7 @@ export default function App() {
         appointments: appointments.data.data || [],
         support: support.data.data || [],
         faculty: faculty.data.data || [],
-        alerts: alerts.data.data || [],
+        alerts: alerts.data.data || []
       });
     } catch {
       setError("Backend data load failed. Wait if Render is waking up, then refresh.");
@@ -232,11 +287,12 @@ export default function App() {
   }, [activeTab, user]);
 
   const filteredRows = useMemo(() => {
+    if (activeTab === "counselors") return [];
     let rows = data[activeTab] || [];
-    if (filterStatus !== "all") rows = rows.filter((r) => String(r.status || "new") === filterStatus);
+    if (filterStatus !== "all") rows = rows.filter(r => String(r.status || "new") === filterStatus);
     if (!query.trim()) return rows;
     const q = query.toLowerCase();
-    return rows.filter((row) => JSON.stringify(row).toLowerCase().includes(q));
+    return rows.filter(row => JSON.stringify(row).toLowerCase().includes(q));
   }, [data, activeTab, query, filterStatus]);
 
   if (!user) return <Login onLogin={setUser} />;
@@ -246,31 +302,46 @@ export default function App() {
       <div className="top">
         <div className="row">
           <div>
-            <h2 style={{ margin: 0 }}>Guruvidya Full CRM Admin</h2>
+            <h2 style={{ margin:0 }}>Guruvidya Full CRM Admin</h2>
             <div className="notice">Logged in: {user.email} · Role: {user.role}</div>
           </div>
-          <div style={{ display: "flex", gap: 10 }}>
+          <div style={{ display:"flex", gap:10 }}>
             <button className="btn btn4" onClick={loadAll}>Refresh All</button>
             <button className="btn btn2" onClick={logout}>Logout</button>
           </div>
         </div>
       </div>
+
       <div className="wrap">
-        <div className="kpis">{tabs.map((t) => <Kpi key={t.key} title={t.label} value={(data[t.key] || []).length} />)}</div>
-        {error && <div className="card" style={{ color: "#991b1b", marginBottom: 16 }}>{error}</div>}
-        <div className="tabs">{tabs.map((t) => <button key={t.key} onClick={() => setActiveTab(t.key)} className={activeTab === t.key ? "btn" : "btn btn2"}>{t.label}</button>)}</div>
-        <div className="searchBar">
-          <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={`Search ${activeTab} by any field`} />
-          <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}>
-            <option value="all">All Status</option>
-            {(statusOptions[activeTab] || []).map((s) => <option key={s} value={s}>{s}</option>)}
-          </select>
-          <div className="card small" style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>Rows: {filteredRows.length}</div>
+        <div className="kpis">
+          {allTabs.filter(t => t.key !== "counselors").map(t => <Kpi key={t.key} title={t.label} value={(data[t.key] || []).length} />)}
         </div>
-        <div className="grid2">
-          <DataTable tab={activeTab} rows={filteredRows} selectedId={selected?.id} onSelect={setSelected} />
-          {activeTab === "alerts" ? <div className="card">Alerts are read only.</div> : <ActionPanel tab={activeTab} row={selected} onSaved={loadAll} />}
+
+        {error && <div className="card" style={{ color:"#991b1b", marginBottom:16 }}>{error}</div>}
+
+        <div className="tabs">
+          {tabs.map(t => <button key={t.key} onClick={()=>setActiveTab(t.key)} className={activeTab === t.key ? "btn" : "btn btn2"}>{t.label}</button>)}
         </div>
+
+        {activeTab === "counselors" ? (
+          <CounselorDashboard data={data} />
+        ) : (
+          <>
+            <div className="searchBar">
+              <input value={query} onChange={(e)=>setQuery(e.target.value)} placeholder={`Search ${activeTab} by any field`} />
+              <select value={filterStatus} onChange={(e)=>setFilterStatus(e.target.value)}>
+                <option value="all">All Status</option>
+                {(statusOptions[activeTab] || []).map(s => <option key={s} value={s}>{s}</option>)}
+              </select>
+              <div className="card small" style={{ display:"flex", alignItems:"center", justifyContent:"center" }}>Rows: {filteredRows.length}</div>
+            </div>
+
+            <div className="grid2">
+              <DataTable tab={activeTab} rows={filteredRows} selectedId={selected?.id} onSelect={setSelected} />
+              {activeTab === "alerts" ? <div className="card">Alerts are read only.</div> : <ActionPanel tab={activeTab} row={selected} onSaved={loadAll} />}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
