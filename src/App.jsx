@@ -23,19 +23,20 @@ const USERS = [
       "counselors",
       "automation",
       "integration",
-    ],
+      "pipeline",
+    ]
   },
   {
     email: "counselor@guruvidya.in",
     password: "Counselor@123",
     role: "Counselor",
-    access: ["leads", "admissions", "appointments", "reminders", "counselors"],
+    access: ["leads", "admissions", "appointments", "reminders", "counselors", "pipeline"],
   },
   {
     email: "reception@guruvidya.in",
     password: "Reception@123",
     role: "Reception",
-    access: ["appointments", "support", "leads", "reminders"],
+    access: ["appointments", "support", "leads", "reminders", "pipeline"],
   },
 ];
 
@@ -51,6 +52,7 @@ const allTabs = [
   ["counselors", "Counselors"],
   ["automation", "Automation"],
   ["integration", "Integration Panel"],
+  ["pipeline", "Pipeline"],
 ].map(([key, label]) => ({ key, label }));
 
 const statusOptions = {
@@ -688,7 +690,7 @@ export default function App() {
   }, [activeTab]);
 
   const filteredRows = useMemo(() => {
-    if (["counselors", "automation", "integration"].includes(activeTab)) return [];
+    if (["counselors", "automation", "integration", "pipeline"].includes(activeTab)) return [];
 
     let rows = data[activeTab] || [];
     if (filterStatus !== "all") rows = rows.filter((r) => String(r.status || "new") === filterStatus);
@@ -731,7 +733,7 @@ export default function App() {
       <div className="wrap">
         <div className="kpis">
           {allTabs
-            .filter((t) => !["counselors", "automation", "integration"].includes(t.key))
+            .filter((t) => !["counselors", "automation", "integration", "pipeline"].includes(t.key))
             .map((t) => (
               <Kpi key={t.key} title={t.label} value={(data[t.key] || []).length} />
             ))}
@@ -757,6 +759,8 @@ export default function App() {
           <Automation config={config} onSave={saveConfig} />
         ) : activeTab === "integration" ? (
           <IntegrationPanel />
+        ) : activeTab === "pipeline" ? (
+          <Pipeline />
         ) : (
           <>
             <div className="searchBar">
