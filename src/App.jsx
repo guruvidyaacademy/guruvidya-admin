@@ -31,7 +31,7 @@ const USERS = [
     password: "Counselor@123",
     role: "Counselor",
     owner: "Counselor 1",
-    access: ["leads", "admissions", "appointments", "reminders", "counselors", "pipeline"],
+    access: ["leads", "admissions", "appointments", "reminders", "pipeline"],
   },
   {
     email: "reception@guruvidya.in",
@@ -735,14 +735,23 @@ if (user?.role === "Counselor") {
         </div>
       </div>
 
-      <div className="wrap">
-        <div className="kpis">
-          {allTabs
-            .filter((t) => !["counselors", "automation", "integration", "pipeline"].includes(t.key))
-            .map((t) => (
-              <Kpi key={t.key} title={t.label} value={(data[t.key] || []).length} />
-            ))}
-        </div>
+      <div className="kpis">
+  {allTabs
+    .filter((t) => !["counselors", "automation", "integration", "pipeline"].includes(t.key))
+    .map((t) => {
+      let rows = data[t.key] || [];
+
+      if (user?.role === "Counselor") {
+        rows = rows.filter(
+          (r) =>
+            String(r.owner || "").trim() ===
+            String(user.owner || "").trim()
+        );
+      }
+
+      return <Kpi key={t.key} title={t.label} value={rows.length} />;
+    })}
+</div>
 
         {error && (
           <div className="card" style={{ color: "#991b1b", marginBottom: 16 }}>
