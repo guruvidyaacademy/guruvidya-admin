@@ -1,15 +1,41 @@
 import { useEffect, useState } from "react";
 
-export default function Pipeline() {
+export default function Pipeline({ ActionPanel, onSaved }) {
   const [data, setData] = useState({});
   const [selectedStage, setSelectedStage] = useState(null);
   const [selectedLeads, setSelectedLeads] = useState([]);
+  const [editingLead, setEditingLead] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  const loadPipeline = () => {
-    fetch("/api/admin/pipeline")
-      .then((res) => res.json())
-      .then((res) => setData(res.data || {}))
-      .catch((err) => console.error("Pipeline load error:", err));
+  const loadPipeline = async () => {
+    setLoading(true);
+
+    try {
+      const res = await fetch("/api/admin/pipeline");
+      const json = await res.json();
+
+      setData(json.data || {});
+
+      // Agar stage already open hai to uski list bhi refresh karo
+      if (selectedStage) {
+        const stageMap = {
+          "New Leads": "new_leads",
+          "Hot Leads": "hot_leads",
+          "Very Hot 🔥": "very_hot_leads",
+          "Re-Enquiry": "re_enquiry",
+          "Follow-up Today": "followup_today",
+          "No Response": "no_response",
+          "Converted": "converted",
+        };
+
+        const key = stageMap[selectedStage];
+        setSelectedLeads(json.data?.[key] || []);
+      }
+    } catch (err) {
+      console.error("Pipeline load error:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -19,6 +45,13 @@ export default function Pipeline() {
   const openStage = (title, list) => {
     setSelectedStage(title);
     setSelectedLeads(list || []);
+    setEditingLead(null);
+  };
+
+  const handleSaved = async () => {
+    await loadPipeline();
+    await onSaved?.();
+    setEditingLead(null);
   };
 
   const Card = ({ title, list }) => (
@@ -44,13 +77,28 @@ export default function Pipeline() {
     if (!value) return "-";
 
     const d = new Date(value);
-    if (Number.isNaN(d.getTime())) return value;
+
+    if (Number.isNaN(d.getTime())) {
+      return String(value);
+    }
 
     return d.toLocaleString("en-IN");
   };
 
   return (
     <div>
+      {loading && (
+        <div
+          style={{
+            marginBottom: 10,
+            fontSize: 13,
+            color: "#666",
+          }}
+        >
+          Refreshing pipeline...
+        </div>
+      )}
+
       <div
         style={{
           display: "grid",
@@ -93,6 +141,7 @@ export default function Pipeline() {
               onClick={() => {
                 setSelectedStage(null);
                 setSelectedLeads([]);
+                setEditingLead(null);
               }}
               style={{
                 padding: "8px 14px",
@@ -112,7 +161,7 @@ export default function Pipeline() {
                 style={{
                   width: "100%",
                   borderCollapse: "collapse",
-                  minWidth: 1100,
+                  minWidth: 1200,
                 }}
               >
                 <thead>
@@ -128,6 +177,7 @@ export default function Pipeline() {
                     <th style={th}>Last Enquiry</th>
                     <th style={th}>Next Follow-up</th>
                     <th style={th}>Created</th>
+                    <th style={th}>Action</th>
                   </tr>
                 </thead>
 
@@ -141,7 +191,9 @@ export default function Pipeline() {
                       <td style={td}>{lead.priority || "-"}</td>
                       <td style={td}>{lead.status || "-"}</td>
                       <td style={td}>{lead.owner || "-"}</td>
-                      <td style={td}>{lead.enquiry_count ?? 0}</td>
+                      <td style={td}>
+                        {lead.enquiry_count ?? 0}
+                      </td>
                       <td style={td}>
                         {formatDate(lead.last_enquiry_at)}
                       </td>
@@ -151,12 +203,52 @@ export default function Pipeline() {
                       <td style={td}>
                         {formatDate(lead.created_at)}
                       </td>
+
+                      <td style={td}>
+                        <button
+                          onClick={() => setEditingLead(lead)}
+                          style={{
+                            padding: "7px 12px",
+                            cursor: "pointer",
+                            borderRadius: 6,
+                            whiteSpace: "nowrap",
+                          }}
+                        >
+                          View / Edit
+                        </button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
           )}
+        </div>
+      )}
+
+      {editingLead && ActionPanel && (
+        <div
+          style={{
+            marginTop: 20,
+          }}
+        >
+          <ActionPanel
+            tab="leads"
+            row={editingLead}
+            onSaved={handleSaved}
+          />
+
+          <button
+            onClick={() => setEditingLead(null)}
+            style={{
+              marginTop: 10,
+              padding: "8px 14px",
+              cursor: "pointer",
+              borderRadius: 6,
+            }}
+          >
+            Close Edit Panel
+          </button>
         </div>
       )}
     </div>
