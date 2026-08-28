@@ -57,7 +57,17 @@ const allTabs = [
 ].map(([key, label]) => ({ key, label }));
 
 const statusOptions = {
-  leads: ["new", "contacted", "interested", "not_interested", "follow_up", "converted", "closed"],
+ leads: [
+  "new",
+  "contacted",
+  "interested",
+  "not_interested",
+  "follow_up",
+  "no_response",
+  "re-enquiry",
+  "converted",
+  "closed",
+],
   admissions: ["new", "contacted", "documents_pending", "fee_pending", "converted", "closed"],
   appointments: ["requested", "confirmed", "on_the_way", "arrived", "completed", "cancelled"],
   support: ["new", "in_progress", "tech_review", "resolved", "closed"],
@@ -65,7 +75,7 @@ const statusOptions = {
 };
 
 const owners = ["Unassigned", "Reception", "Counselor 1", "Counselor 2", "Accounts", "Admin", "Technical", "HR"];
-const priorities = ["hot", "warm", "cold"];
+const priorities = ["very hot", "hot", "warm", "cold"];
 
 function Login({ onLogin }) {
   const [email, setEmail] = useState("admin@guruvidya.in");
@@ -775,7 +785,7 @@ if (user?.role === "Counselor") {
         ) : activeTab === "integration" ? (
           <IntegrationPanel />
         ) : activeTab === "pipeline" ? (
-          <Pipeline />
+          <Pipeline ActionPanel={ActionPanel} onSaved={loadAll} />
         ) : (
           <>
             <div className="searchBar">
