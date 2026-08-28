@@ -30,6 +30,7 @@ const USERS = [
     email: "counselor@guruvidya.in",
     password: "Counselor@123",
     role: "Counselor",
+    owner: "Counselor 1",
     access: ["leads", "admissions", "appointments", "reminders", "counselors", "pipeline"],
   },
   {
@@ -693,13 +694,17 @@ export default function App() {
     if (["counselors", "automation", "integration", "pipeline"].includes(activeTab)) return [];
 
     let rows = data[activeTab] || [];
+    // Counselor ko sirf uske assigned records dikhaye
+if (user?.role === "Counselor") {
+  rows = rows.filter((r) => String(r.owner || "").trim() === String(user.owner || "").trim());
+}
     if (filterStatus !== "all") rows = rows.filter((r) => String(r.status || "new") === filterStatus);
 
     if (!query.trim()) return rows;
 
     const q = query.toLowerCase();
     return rows.filter((row) => JSON.stringify(row).toLowerCase().includes(q));
-  }, [data, activeTab, query, filterStatus]);
+  }, [data, activeTab, query, filterStatus, user]);
 
   const saveConfig = async (c) => {
     await api.post("/admin/config", c);
