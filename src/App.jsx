@@ -732,9 +732,10 @@ if (user?.role === "Counselor") {
               Logout
             </button>
           </div>
-        </div>
-      </div>
+             </div>
+    </div>
 
+    <div className="wrap">
       <div className="kpis">
   {allTabs
     .filter((t) => !["counselors", "automation", "integration", "pipeline"].includes(t.key))
