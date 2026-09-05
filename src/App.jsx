@@ -419,9 +419,10 @@ function Automation({ config, onSave }) {
 
 function IntegrationPanel() {
   const [form, setForm] = useState({
-    botsailorApiToken: "",
+    botsailorToken: "",
     botsailorInstanceId: "",
     whatsappEnabled: false,
+    testMobile: "",
 
     razorpayKeyId: "",
     razorpayKeySecret: "",
@@ -447,7 +448,7 @@ function IntegrationPanel() {
 
   const loadIntegration = async () => {
     try {
-      const res = await api.get("/integrations");
+      const res = await api.get("/admin/integrations");
       if (res.data?.data) {
         setForm((prev) => ({ ...prev, ...res.data.data }));
       }
@@ -465,7 +466,7 @@ function IntegrationPanel() {
     setMsg("");
 
     try {
-      const res = await api.post("/integrations", form);
+      const res = await api.post("/admin/integrations", form);
       setMsg(res.data?.message || "Integration settings saved successfully");
     } catch (e) {
       setMsg("Save failed. Backend integration route check karo.");
@@ -479,7 +480,14 @@ function IntegrationPanel() {
     setMsg("");
 
     try {
-      const res = await api.post("/integrations/test-whatsapp", form);
+      const res = await api.post(
+  "/admin/integrations/botsailor/test",
+  {
+    mobile: form.testMobile,
+    name: "Guruvidya Test",
+    course: "Test"
+  }
+);
       setMsg(res.data?.message || "WhatsApp API test completed");
     } catch (e) {
       setMsg("WhatsApp test failed. Token / Instance ID / backend route check karo.");
@@ -502,8 +510,8 @@ function IntegrationPanel() {
         <label>
           BotSailor API Token
           <input
-            value={form.botsailorApiToken}
-            onChange={(e) => update("botsailorApiToken", e.target.value)}
+            value={form.botsailorToken}
+onChange={(e) => update("botsailorToken", e.target.value)}
             placeholder="Paste BotSailor API Token"
           />
         </label>
@@ -527,7 +535,15 @@ function IntegrationPanel() {
             <option value="true">Enabled</option>
           </select>
         </label>
-
+<label>
+  Test WhatsApp Mobile
+  <input
+    value={form.testMobile}
+    onChange={(e) => update("testMobile", e.target.value)}
+    placeholder="919599401607"
+  />
+</label>
+        
         <label>
           Razorpay Key ID
           <input
