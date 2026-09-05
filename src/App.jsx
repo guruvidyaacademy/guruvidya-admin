@@ -65,6 +65,7 @@ const statusOptions = {
   "follow_up",
   "no_response",
   "re-enquiry",
+  "very_hot",
   "converted",
   "closed",
 ],
@@ -664,6 +665,7 @@ export default function App() {
   const [error, setError] = useState("");
   const [query, setQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
+  const [filterPriority, setFilterPriority] = useState("all");
 
   const tabs = user ? allTabs.filter((t) => user.access.includes(t.key)) : [];
 
@@ -694,11 +696,12 @@ export default function App() {
     if (user) loadAll();
   }, [user]);
 
-  useEffect(() => {
-    setSelected(null);
-    setQuery("");
-    setFilterStatus("all");
-  }, [activeTab]);
+ useEffect(() => {
+  setSelected(null);
+  setQuery("");
+  setFilterStatus("all");
+  setFilterPriority("all");
+}, [activeTab]);
 
   const filteredRows = useMemo(() => {
     if (["counselors", "automation", "integration", "pipeline"].includes(activeTab)) return [];
@@ -709,12 +712,19 @@ if (user?.role === "Counselor") {
   rows = rows.filter((r) => String(r.owner || "").trim() === String(user.owner || "").trim());
 }
     if (filterStatus !== "all") rows = rows.filter((r) => String(r.status || "new") === filterStatus);
+    if (filterPriority !== "all") {
+  rows = rows.filter(
+    (r) =>
+      String(r.priority || "cold").trim().toLowerCase() ===
+      filterPriority
+  );
+}
 
     if (!query.trim()) return rows;
 
     const q = query.toLowerCase();
     return rows.filter((row) => JSON.stringify(row).toLowerCase().includes(q));
-  }, [data, activeTab, query, filterStatus, user]);
+  }, [data, activeTab, query, filterStatus, filterPriority, user]);
 
   const saveConfig = async (c) => {
     await api.post("/admin/config", c);
@@ -797,7 +807,17 @@ if (user?.role === "Counselor") {
                   <option key={s}>{s}</option>
                 ))}
               </select>
-
+<select
+  value={filterPriority}
+  onChange={(e) => setFilterPriority(e.target.value)}
+>
+  <option value="all">All Priority</option>
+  <option value="very hot">Very Hot 🔥</option>
+  <option value="hot">Hot</option>
+  <option value="warm">Warm</option>
+  <option value="cold">Cold</option>
+</select>
+              
               <div className="card small" style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
                 Rows: {filteredRows.length}
               </div>
