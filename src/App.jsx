@@ -516,7 +516,15 @@ onChange={(e) => update("botsailorToken", e.target.value)}
             placeholder="Paste BotSailor API Token"
           />
         </label>
-
+<label>
+  BotSailor API URL
+  <input
+    value={form.botsailorApiUrl}
+    onChange={(e) => update("botsailorApiUrl", e.target.value)}
+    placeholder="https://botsailor.com/api/v1/whatsapp/send"
+  />
+</label>
+        
         <label>
           Instance ID / Phone Number ID
           <input
