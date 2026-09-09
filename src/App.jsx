@@ -420,9 +420,10 @@ function Automation({ config, onSave }) {
 function IntegrationPanel() {
   const [form, setForm] = useState({
     botsailorToken: "",
-    botsailorInstanceId: "",
-    whatsappEnabled: false,
-    testMobile: "",
+botsailorInstanceId: "",
+botsailorApiUrl: "https://botsailor.com/api/v1/whatsapp/send",
+whatsappEnabled: false,
+testMobile: "",
 
     razorpayKeyId: "",
     razorpayKeySecret: "",
