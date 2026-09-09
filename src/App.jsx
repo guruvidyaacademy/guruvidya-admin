@@ -489,7 +489,17 @@ testMobile: "",
     course: "Test"
   }
 );
-      setMsg(res.data?.message || "WhatsApp API test completed");
+      const detail =
+  res.data?.data?.response?.message ||
+  res.data?.data?.error ||
+  res.data?.data?.message ||
+  "";
+
+setMsg(
+  `${res.data?.message || "WhatsApp API test completed"}${
+    detail ? ` - ${detail}` : ""
+  }`
+);
     } catch (e) {
       setMsg("WhatsApp test failed. Token / Instance ID / backend route check karo.");
     } finally {
