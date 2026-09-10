@@ -423,6 +423,10 @@ function Automation({ config, onSave }) {
   const [flows, setFlows] = useState([]);
   const [msg, setMsg] = useState("");
   const [loading, setLoading] = useState(false);
+  const [testMobile, setTestMobile] = useState("");
+  const [testName, setTestName] = useState("Test Student");
+  const [testCourse, setTestCourse] = useState("ACCA Complete Course");
+  const [testStage, setTestStage] = useState("3h");
 
   useEffect(() => setLocal(config || {}), [config]);
 
@@ -461,6 +465,30 @@ function Automation({ config, onSave }) {
       setMsg(`Automation check complete. Checked: ${d.checked || 0}, Sent: ${d.sent || 0}, Failed: ${d.failed || 0}, Skipped: ${d.skipped || 0}`);
     } catch (e) {
       setMsg("Automation test run failed.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const sendTestOnly = async () => {
+    const mobile = String(testMobile || "").replace(/\D/g, "");
+    if (mobile.length < 10) {
+      setMsg("Please enter a valid test mobile number.");
+      return;
+    }
+
+    setLoading(true);
+    setMsg("");
+    try {
+      const res = await api.post("/admin/automation/test-mobile", {
+        mobile,
+        name: testName,
+        course: testCourse,
+        stage: testStage,
+      });
+      setMsg(`${res.data?.message || "Test sent"} — Only test mobile ${mobile} was targeted.`);
+    } catch (e) {
+      setMsg(e.response?.data?.message || "Test-only WhatsApp send failed.");
     } finally {
       setLoading(false);
     }
@@ -590,6 +618,39 @@ function Automation({ config, onSave }) {
         <div className="notice" style={{ marginTop: 8 }}>
           Ye special message quiet hours (12 AM–9 AM) me bhi ja sakta hai, sirf jab current 24h window close hone wali ho.
         </div>
+      </div>
+
+      <div style={{ ...boxStyle, border: "2px solid #2563eb" }}>
+        <h4 style={{ marginTop: 0 }}>Safe Test Only — Single Mobile</h4>
+        <div className="notice" style={{ marginBottom: 10 }}>
+          Is test se sirf niche diya hua mobile target hoga. Real leads scan/update nahi honge.
+        </div>
+        <div className="configGrid">
+          <label>
+            Test Mobile (with country code)
+            <input value={testMobile} onChange={(e) => setTestMobile(e.target.value)} placeholder="919599401607" />
+          </label>
+          <label>
+            Test Stage
+            <select value={testStage} onChange={(e) => setTestStage(e.target.value)}>
+              <option value="3h">3 Hour Follow-up</option>
+              <option value="6h">6 Hour Follow-up</option>
+              <option value="9h">9 Hour Follow-up</option>
+              <option value="window">24h Window Closing Message</option>
+            </select>
+          </label>
+          <label>
+            Test Name
+            <input value={testName} onChange={(e) => setTestName(e.target.value)} />
+          </label>
+          <label>
+            Test Course
+            <input value={testCourse} onChange={(e) => setTestCourse(e.target.value)} />
+          </label>
+        </div>
+        <button className="btn btn2" onClick={sendTestOnly} disabled={loading || !testMobile}>
+          Send Test Only
+        </button>
       </div>
 
       <div style={{ display: "flex", gap: 10, marginTop: 14, flexWrap: "wrap" }}>
