@@ -577,7 +577,7 @@ function Automation({ config, onSave }) {
         </label>
 
         <label>
-          Call for Admission — Action Mode
+          Follow-up CTA — Direct Action Mode
           <select
             value={local.callForAdmissionActionMode || "template"}
             onChange={(e) =>
@@ -587,7 +587,7 @@ function Automation({ config, onSave }) {
               })
             }
           >
-            <option value="off">OFF — No action after click</option>
+            <option value="off">OFF — Send normal CRM follow-up only</option>
             <option value="flow">Use Existing BotSailor Flow</option>
             <option value="template">Use Existing BotSailor Template</option>
           </select>
@@ -645,8 +645,8 @@ function Automation({ config, onSave }) {
         )}
 
         <div className="notice">
-          OFF: button click ke baad kuch send nahi hoga. Flow: selected BotSailor flow chalega.
-          Template: selected imported approved template direct send hoga.
+          OFF: normal CRM follow-up message jayega. Flow: selected BotSailor flow direct trigger hoga.
+          Template: selected approved BotSailor template direct send hoga. Generic “Call for Admission” button nahi jayega.
         </div>
       </div>
 
@@ -658,7 +658,7 @@ function Automation({ config, onSave }) {
             Send after hours
             <input type="number" min="1" value={local.followup3Hours ?? 3} onChange={(e) => setLocal({ ...local, followup3Hours: Number(e.target.value) })} />
           </label>
-          <label>Call for Admission button {toggle("followup3UseCallButton")}</label>
+          <label>Use Direct CTA Action {toggle("followup3UseCallButton")}</label>
         </div>
         <textarea rows="7" value={local.followup3Message || ""} onChange={(e) => setLocal({ ...local, followup3Message: e.target.value })} />
         <div className="small">Variables: {"{{name}}"}, {"{{course}}"}, {"{{mobile}}"}, {"{{owner}}"}</div>
@@ -672,7 +672,7 @@ function Automation({ config, onSave }) {
             Send after hours
             <input type="number" min="1" value={local.followup6Hours ?? 6} onChange={(e) => setLocal({ ...local, followup6Hours: Number(e.target.value) })} />
           </label>
-          <label>Call for Admission button {toggle("followup6UseCallButton")}</label>
+          <label>Use Direct CTA Action {toggle("followup6UseCallButton")}</label>
         </div>
         <textarea rows="7" value={local.followup6Message || ""} onChange={(e) => setLocal({ ...local, followup6Message: e.target.value })} />
       </div>
@@ -685,7 +685,7 @@ function Automation({ config, onSave }) {
             Send after hours
             <input type="number" min="1" value={local.followup9Hours ?? 9} onChange={(e) => setLocal({ ...local, followup9Hours: Number(e.target.value) })} />
           </label>
-          <label>Call for Admission button {toggle("followup9UseCallButton")}</label>
+          <label>Use Direct CTA Action {toggle("followup9UseCallButton")}</label>
         </div>
         <textarea rows="7" value={local.followup9Message || ""} onChange={(e) => setLocal({ ...local, followup9Message: e.target.value })} />
       </div>
