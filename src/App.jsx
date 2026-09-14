@@ -421,6 +421,7 @@ function CounselorDashboard({ stats }) {
 function Automation({ config, onSave }) {
   const [local, setLocal] = useState(config || {});
   const [flows, setFlows] = useState([]);
+  const [ctaTemplates, setCtaTemplates] = useState([]);
   const [msg, setMsg] = useState("");
   const [loading, setLoading] = useState(false);
   const [testMobile, setTestMobile] = useState("");
@@ -430,17 +431,41 @@ function Automation({ config, onSave }) {
 
   useEffect(() => setLocal(config || {}), [config]);
 
-  const loadFlows = async () => {
+  const loadCtaOptions = async () => {
     try {
-      const res = await api.get("/admin/botsailor/flows");
-      setFlows(res.data?.data || []);
+      const res = await api.get("/admin/call-for-admission-options");
+      const d = res.data?.data || {};
+
+      setFlows(d.flows || []);
+      setCtaTemplates(d.templates || []);
+
+      setLocal((prev) => ({
+        ...prev,
+        callForAdmissionActionMode:
+          prev.callForAdmissionActionMode || d.mode || "template",
+        callForAdmissionFlowUniqueId:
+          prev.callForAdmissionFlowUniqueId || d.selectedFlowUniqueId || "",
+        callForAdmissionTemplateId:
+          prev.callForAdmissionTemplateId || d.selectedTemplateId || "",
+      }));
     } catch {
-      setFlows([]);
+      // Fallback to the existing import-list endpoints.
+      try {
+        const [f, t] = await Promise.all([
+          api.get("/admin/botsailor/flows"),
+          api.get("/admin/botsailor/templates"),
+        ]);
+        setFlows(f.data?.data || []);
+        setCtaTemplates(t.data?.data || []);
+      } catch {
+        setFlows([]);
+        setCtaTemplates([]);
+      }
     }
   };
 
   useEffect(() => {
-    loadFlows();
+    loadCtaOptions();
   }, []);
 
   const save = async () => {
@@ -552,17 +577,77 @@ function Automation({ config, onSave }) {
         </label>
 
         <label>
-          Existing BotSailor “Call for Admission” Flow
+          Call for Admission — Action Mode
           <select
-            value={local.callForAdmissionFlowUniqueId || ""}
-            onChange={(e) => setLocal({ ...local, callForAdmissionFlowUniqueId: e.target.value })}
+            value={local.callForAdmissionActionMode || "template"}
+            onChange={(e) =>
+              setLocal({
+                ...local,
+                callForAdmissionActionMode: e.target.value,
+              })
+            }
           >
-            <option value="">Select BotSailor flow</option>
-            {flows.map((f) => (
-              <option key={f.unique_id} value={f.unique_id}>{f.name}</option>
-            ))}
+            <option value="off">OFF — No action after click</option>
+            <option value="flow">Use Existing BotSailor Flow</option>
+            <option value="template">Use Existing BotSailor Template</option>
           </select>
         </label>
+
+        {(local.callForAdmissionActionMode || "template") === "flow" && (
+          <label>
+            Existing BotSailor Flow
+            <select
+              value={local.callForAdmissionFlowUniqueId || ""}
+              onChange={(e) =>
+                setLocal({
+                  ...local,
+                  callForAdmissionFlowUniqueId: e.target.value,
+                })
+              }
+            >
+              <option value="">Select BotSailor flow</option>
+              {flows.map((f) => (
+                <option
+                  key={f.unique_id || f.id}
+                  value={f.unique_id || ""}
+                >
+                  {f.name || f.unique_id}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
+
+        {(local.callForAdmissionActionMode || "template") === "template" && (
+          <label>
+            Existing BotSailor Template
+            <select
+              value={local.callForAdmissionTemplateId || ""}
+              onChange={(e) =>
+                setLocal({
+                  ...local,
+                  callForAdmissionTemplateId: e.target.value,
+                })
+              }
+            >
+              <option value="">Select imported template</option>
+              {ctaTemplates.map((t) => (
+                <option
+                  key={t.id || t.botsailor_id}
+                  value={t.id || t.botsailor_id || ""}
+                >
+                  {t.template_name || "Template"}
+                  {t.status ? ` (${t.status})` : ""}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
+
+        <div className="notice">
+          OFF: button click ke baad kuch send nahi hoga. Flow: selected BotSailor flow chalega.
+          Template: selected imported approved template direct send hoga.
+        </div>
       </div>
 
       <div style={boxStyle}>
@@ -656,7 +741,7 @@ function Automation({ config, onSave }) {
       <div style={{ display: "flex", gap: 10, marginTop: 14, flexWrap: "wrap" }}>
         <button className="btn btn3" onClick={save} disabled={loading}>Save Automation Settings</button>
         <button className="btn btn4" onClick={runNow} disabled={loading}>Run Automation Check Now</button>
-        <button className="btn btn2" onClick={loadFlows} disabled={loading}>Refresh Imported Flows</button>
+        <button className="btn btn2" onClick={loadCtaOptions} disabled={loading}>Refresh CTA Flows / Templates</button>
       </div>
 
       {msg && <div className="notice" style={{ marginTop: 12 }}>{msg}</div>}
