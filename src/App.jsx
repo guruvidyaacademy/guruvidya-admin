@@ -447,6 +447,8 @@ function Automation({ config, onSave }) {
           prev.callForAdmissionFlowUniqueId || d.selectedFlowUniqueId || "",
         callForAdmissionTemplateId:
           prev.callForAdmissionTemplateId || d.selectedTemplateId || "",
+        callForAdmissionTemplateCustomTitle:
+          prev.callForAdmissionTemplateCustomTitle || d.templateCustomTitle || "Call for Admission",
       }));
     } catch {
       // Fallback to the existing import-list endpoints.
@@ -644,9 +646,26 @@ function Automation({ config, onSave }) {
           </label>
         )}
 
+        {(local.callForAdmissionActionMode || "template") === "template" && (
+          <label>
+            Template Custom Title
+            <input
+              value={local.callForAdmissionTemplateCustomTitle || ""}
+              onChange={(e) =>
+                setLocal({
+                  ...local,
+                  callForAdmissionTemplateCustomTitle: e.target.value,
+                })
+              }
+              placeholder="Example: Call for Admission"
+            />
+            <span className="small">Ye title aap kabhi bhi change kar sakte hain. Selected template ka original name/CTA change nahi hoga.</span>
+          </label>
+        )}
+
         <div className="notice">
-          OFF: normal CRM follow-up message jayega. Flow: selected BotSailor flow direct trigger hoga.
-          Template: selected approved BotSailor template direct send hoga. Generic “Call for Admission” button nahi jayega.
+          OFF: sirf normal CRM follow-up message jayega. Flow: CRM follow-up ke niche selected flow ka existing title dikhega, phir flow trigger hoga.
+          Template: CRM follow-up ke niche editable custom title dikhega, phir selected approved template send hoga.
         </div>
       </div>
 
