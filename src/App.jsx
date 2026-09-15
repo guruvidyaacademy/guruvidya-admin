@@ -507,13 +507,20 @@ function Automation({ config, onSave }) {
     setLoading(true);
     setMsg("");
     try {
+      // IMPORTANT: Safe Test must use the settings currently visible on screen.
+      // Save the complete Automation config first, then trigger the selected stage.
+      await onSave(local);
+
       const res = await api.post("/admin/automation/test-mobile", {
         mobile,
         name: testName,
         course: testCourse,
         stage: testStage,
       });
-      setMsg(`${res.data?.message || "Test sent"} — Only test mobile ${mobile} was targeted.`);
+
+      setMsg(
+        `${res.data?.message || "Test sent"} — Current Automation settings were saved first. Only test mobile ${mobile} was targeted.`
+      );
     } catch (e) {
       setMsg(e.response?.data?.message || "Test-only WhatsApp send failed.");
     } finally {
@@ -579,7 +586,7 @@ function Automation({ config, onSave }) {
         </label>
 
         <label>
-          3 Hour CTA — Direct Action Mode
+          Follow-up CTA — Direct Action Mode
           <select
             value={local.callForAdmissionActionMode || "template"}
             onChange={(e) =>
@@ -664,8 +671,8 @@ function Automation({ config, onSave }) {
         )}
 
         <div className="notice">
-          Ye 3 Hour ka master CTA setup hai. OFF: sirf normal CRM follow-up message jayega. Flow: selected flow action use hoga.
-          Template: editable custom title ke saath selected approved template action use hoga. 6h/9h default me isi 3h CTA ko inherit karenge.
+          OFF: sirf normal CRM follow-up message jayega. Flow: CRM follow-up ke niche selected flow ka existing title dikhega, phir flow trigger hoga.
+          Template: CRM follow-up ke niche editable custom title dikhega, phir selected approved template send hoga.
         </div>
       </div>
 
@@ -692,59 +699,7 @@ function Automation({ config, onSave }) {
             <input type="number" min="1" value={local.followup6Hours ?? 6} onChange={(e) => setLocal({ ...local, followup6Hours: Number(e.target.value) })} />
           </label>
           <label>Use Direct CTA Action {toggle("followup6UseCallButton")}</label>
-          <label>
-            Use Same CTA as 3 Hour
-            <select
-              value={String(local.followup6UseSameCtaAs3 ?? true)}
-              onChange={(e) => setLocal({ ...local, followup6UseSameCtaAs3: e.target.value === "true" })}
-            >
-              <option value="true">ON — Same as 3 Hour</option>
-              <option value="false">OFF — Use Custom 6 Hour CTA</option>
-            </select>
-          </label>
         </div>
-
-        {(local.followup6UseSameCtaAs3 ?? true) ? (
-          <div className="notice" style={{ marginTop: 8 }}>6 Hour CTA abhi 3 Hour ka same Flow / Template / title use karega.</div>
-        ) : (
-          <div className="configGrid" style={{ marginTop: 10 }}>
-            <label>
-              6 Hour CTA Action Mode
-              <select value={local.followup6CtaActionMode || "template"} onChange={(e) => setLocal({ ...local, followup6CtaActionMode: e.target.value })}>
-                <option value="off">OFF — Normal follow-up only</option>
-                <option value="flow">Use Existing BotSailor Flow</option>
-                <option value="template">Use Existing BotSailor Template</option>
-              </select>
-            </label>
-
-            {(local.followup6CtaActionMode || "template") === "flow" && (
-              <label>
-                6 Hour BotSailor Flow
-                <select value={local.followup6CtaFlowUniqueId || ""} onChange={(e) => setLocal({ ...local, followup6CtaFlowUniqueId: e.target.value })}>
-                  <option value="">Select BotSailor flow</option>
-                  {flows.map((f) => <option key={f.unique_id || f.id} value={f.unique_id || ""}>{f.name || f.unique_id}</option>)}
-                </select>
-              </label>
-            )}
-
-            {(local.followup6CtaActionMode || "template") === "template" && (
-              <>
-                <label>
-                  6 Hour BotSailor Template
-                  <select value={local.followup6CtaTemplateId || ""} onChange={(e) => setLocal({ ...local, followup6CtaTemplateId: e.target.value })}>
-                    <option value="">Select imported template</option>
-                    {ctaTemplates.map((t) => <option key={t.id || t.botsailor_id} value={t.id || t.botsailor_id || ""}>{t.template_name || "Template"}{t.status ? ` (${t.status})` : ""}</option>)}
-                  </select>
-                </label>
-                <label>
-                  6 Hour Template Custom Title
-                  <input value={local.followup6CtaTemplateCustomTitle || ""} onChange={(e) => setLocal({ ...local, followup6CtaTemplateCustomTitle: e.target.value })} placeholder="Example: Talk to Admission Team" />
-                </label>
-              </>
-            )}
-          </div>
-        )}
-
         <textarea rows="7" value={local.followup6Message || ""} onChange={(e) => setLocal({ ...local, followup6Message: e.target.value })} />
       </div>
 
@@ -757,59 +712,7 @@ function Automation({ config, onSave }) {
             <input type="number" min="1" value={local.followup9Hours ?? 9} onChange={(e) => setLocal({ ...local, followup9Hours: Number(e.target.value) })} />
           </label>
           <label>Use Direct CTA Action {toggle("followup9UseCallButton")}</label>
-          <label>
-            Use Same CTA as 3 Hour
-            <select
-              value={String(local.followup9UseSameCtaAs3 ?? true)}
-              onChange={(e) => setLocal({ ...local, followup9UseSameCtaAs3: e.target.value === "true" })}
-            >
-              <option value="true">ON — Same as 3 Hour</option>
-              <option value="false">OFF — Use Custom 9 Hour CTA</option>
-            </select>
-          </label>
         </div>
-
-        {(local.followup9UseSameCtaAs3 ?? true) ? (
-          <div className="notice" style={{ marginTop: 8 }}>9 Hour CTA abhi 3 Hour ka same Flow / Template / title use karega.</div>
-        ) : (
-          <div className="configGrid" style={{ marginTop: 10 }}>
-            <label>
-              9 Hour CTA Action Mode
-              <select value={local.followup9CtaActionMode || "template"} onChange={(e) => setLocal({ ...local, followup9CtaActionMode: e.target.value })}>
-                <option value="off">OFF — Normal follow-up only</option>
-                <option value="flow">Use Existing BotSailor Flow</option>
-                <option value="template">Use Existing BotSailor Template</option>
-              </select>
-            </label>
-
-            {(local.followup9CtaActionMode || "template") === "flow" && (
-              <label>
-                9 Hour BotSailor Flow
-                <select value={local.followup9CtaFlowUniqueId || ""} onChange={(e) => setLocal({ ...local, followup9CtaFlowUniqueId: e.target.value })}>
-                  <option value="">Select BotSailor flow</option>
-                  {flows.map((f) => <option key={f.unique_id || f.id} value={f.unique_id || ""}>{f.name || f.unique_id}</option>)}
-                </select>
-              </label>
-            )}
-
-            {(local.followup9CtaActionMode || "template") === "template" && (
-              <>
-                <label>
-                  9 Hour BotSailor Template
-                  <select value={local.followup9CtaTemplateId || ""} onChange={(e) => setLocal({ ...local, followup9CtaTemplateId: e.target.value })}>
-                    <option value="">Select imported template</option>
-                    {ctaTemplates.map((t) => <option key={t.id || t.botsailor_id} value={t.id || t.botsailor_id || ""}>{t.template_name || "Template"}{t.status ? ` (${t.status})` : ""}</option>)}
-                  </select>
-                </label>
-                <label>
-                  9 Hour Template Custom Title
-                  <input value={local.followup9CtaTemplateCustomTitle || ""} onChange={(e) => setLocal({ ...local, followup9CtaTemplateCustomTitle: e.target.value })} placeholder="Example: Complete Your Admission" />
-                </label>
-              </>
-            )}
-          </div>
-        )}
-
         <textarea rows="7" value={local.followup9Message || ""} onChange={(e) => setLocal({ ...local, followup9Message: e.target.value })} />
       </div>
 
@@ -831,7 +734,7 @@ function Automation({ config, onSave }) {
       <div style={{ ...boxStyle, border: "2px solid #2563eb" }}>
         <h4 style={{ marginTop: 0 }}>Safe Test Only — Single Mobile</h4>
         <div className="notice" style={{ marginBottom: 10 }}>
-          Is test se sirf niche diya hua mobile target hoga. Real leads scan/update nahi honge.
+          Send Test Only current screen ki Automation settings ko pehle save karega, phir selected stage test karega. Sirf niche diya hua mobile target hoga; real leads scan/update nahi honge.
         </div>
         <div className="configGrid">
           <label>
