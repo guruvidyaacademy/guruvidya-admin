@@ -657,16 +657,17 @@ function Automation({ config, onSave }) {
           <label>
             Template Custom Title
             <input
-              value={local.callForAdmissionTemplateCustomTitle || ""}
+              value={(local.callForAdmissionTemplateCustomTitle || "").slice(0, 20)}
+              maxLength={20}
               onChange={(e) =>
                 setLocal({
                   ...local,
-                  callForAdmissionTemplateCustomTitle: e.target.value,
+                  callForAdmissionTemplateCustomTitle: e.target.value.slice(0, 20),
                 })
               }
               placeholder="Example: Call for Admission"
             />
-            <span className="small">Ye title aap kabhi bhi change kar sakte hain. Selected template ka original name/CTA change nahi hoga.</span>
+            <span className="small">{(local.callForAdmissionTemplateCustomTitle || "").slice(0, 20).length}/20 characters — WhatsApp reply button limit.</span>
           </label>
         )}
 
@@ -747,7 +748,8 @@ function Automation({ config, onSave }) {
                 </label>
                 <label>
                   6 Hour Template Custom Title
-                  <input value={local.followup6CtaTemplateCustomTitle || ""} onChange={(e) => setLocal({ ...local, followup6CtaTemplateCustomTitle: e.target.value })} placeholder="Example: Talk to Admission Team" />
+                  <input value={(local.followup6CtaTemplateCustomTitle || "").slice(0, 20)} maxLength={20} onChange={(e) => setLocal({ ...local, followup6CtaTemplateCustomTitle: e.target.value.slice(0, 20) })} placeholder="Example: New Batch Info" />
+                  <span className="small">{(local.followup6CtaTemplateCustomTitle || "").slice(0, 20).length}/20 characters — WhatsApp reply button limit.</span>
                 </label>
               </>
             )}
@@ -817,7 +819,8 @@ function Automation({ config, onSave }) {
                 </label>
                 <label>
                   9 Hour Template Custom Title
-                  <input value={local.followup9CtaTemplateCustomTitle || ""} onChange={(e) => setLocal({ ...local, followup9CtaTemplateCustomTitle: e.target.value })} placeholder="Example: Complete Your Admission" />
+                  <input value={(local.followup9CtaTemplateCustomTitle || "").slice(0, 20)} maxLength={20} onChange={(e) => setLocal({ ...local, followup9CtaTemplateCustomTitle: e.target.value.slice(0, 20) })} placeholder="Example: Admission Update" />
+                  <span className="small">{(local.followup9CtaTemplateCustomTitle || "").slice(0, 20).length}/20 characters — WhatsApp reply button limit.</span>
                 </label>
               </>
             )}
