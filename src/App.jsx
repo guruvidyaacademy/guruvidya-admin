@@ -922,35 +922,44 @@ function IntegrationPanel() {
   const [flowDataStatus, setFlowDataStatus] = useState({ total: 0, imported: 0, pending: 0, flows: [] });
   const [selectedFlowFiles, setSelectedFlowFiles] = useState([]);
   const [flowImportResults, setFlowImportResults] = useState([]);
+  const [integrationLoaded, setIntegrationLoaded] = useState(false);
+  const [integrationError, setIntegrationError] = useState("");
+  const [importLoadError, setImportLoadError] = useState("");
 
   const update = (key, value) => setForm((prev) => ({ ...prev, [key]: value }));
 
   const loadIntegration = async () => {
+    setIntegrationLoaded(false);
     try {
       const res = await api.get("/admin/integrations");
-      if (res.data?.data) setForm((prev) => ({ ...prev, ...res.data.data }));
+      if (!res.data?.data) throw new Error("Missing integration settings");
+      setForm((prev) => ({ ...prev, ...res.data.data }));
+      setIntegrationLoaded(true);
+      setIntegrationError("");
     } catch {
-      // ignore
+      setIntegrationError("Settings load failed. Save is disabled to protect saved settings. Retry loading.");
     }
   };
 
   const loadImported = async () => {
     try {
-      const [t, f, s] = await Promise.all([
+      const [t, f, s] = await Promise.allSettled([
         api.get("/admin/botsailor/templates"),
         api.get("/admin/botsailor/flows"),
         api.get("/admin/botsailor-flow-data/status"),
       ]);
-      setTemplates(t.data?.data || []);
-      setFlows(f.data?.data || []);
-      setFlowDataStatus({
-        total: s.data?.total || 0,
-        imported: s.data?.imported || 0,
-        pending: s.data?.pending || 0,
-        flows: s.data?.flows || [],
+      if (t.status === "fulfilled") setTemplates(t.value.data?.data || []);
+      if (f.status === "fulfilled") setFlows(f.value.data?.data || []);
+      if (s.status === "fulfilled") setFlowDataStatus({
+        total: s.value.data?.total || 0,
+        imported: s.value.data?.imported || 0,
+        pending: s.value.data?.pending || 0,
+        flows: s.value.data?.flows || [],
       });
+      const failed = [t, f, s].map((result, index) => result.status === "rejected" ? ["Templates", "Flows", "Flow data status"][index] : null).filter(Boolean);
+      setImportLoadError(failed.length ? `${failed.join(", ")} could not load. Displayed counts may be incomplete. Retry loading.` : "");
     } catch {
-      // ignore
+      setImportLoadError("Import lists could not load. Retry loading.");
     }
   };
 
@@ -960,6 +969,7 @@ function IntegrationPanel() {
   }, []);
 
   const save = async () => {
+    if (!integrationLoaded) return;
     setLoading(true);
     setMsg("");
     try {
@@ -1159,7 +1169,12 @@ function IntegrationPanel() {
       </div>
 
       <div style={{ display: "flex", gap: 10, marginTop: 16, flexWrap: "wrap" }}>
-        <button className="btn btn3" onClick={save} disabled={loading}>Save Integration Settings</button>
+        <button className="btn btn3" onClick={save} disabled={loading || !integrationLoaded}>Save Integration Settings</button>
+        {(integrationError || importLoadError) && <div role="alert">
+          {integrationError && <p>{integrationError}</p>}
+          {importLoadError && <p>{importLoadError}</p>}
+          <button className="btn" type="button" onClick={() => { loadIntegration(); loadImported(); }}>Retry loading</button>
+        </div>}
         <button className="btn btn4" onClick={testWhatsApp} disabled={loading}>Test WhatsApp API</button>
         <button className="btn" onClick={importTemplates} disabled={loading}>Import BotSailor Templates</button>
         <button className="btn btn2" onClick={importFlows} disabled={loading}>Import BotSailor Flows</button>
