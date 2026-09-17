@@ -919,6 +919,9 @@ function IntegrationPanel() {
   const [loading, setLoading] = useState(false);
   const [templates, setTemplates] = useState([]);
   const [flows, setFlows] = useState([]);
+  const [flowDataStatus, setFlowDataStatus] = useState({ total: 0, imported: 0, pending: 0, flows: [] });
+  const [selectedFlowFiles, setSelectedFlowFiles] = useState([]);
+  const [flowImportResults, setFlowImportResults] = useState([]);
 
   const update = (key, value) => setForm((prev) => ({ ...prev, [key]: value }));
 
@@ -933,12 +936,19 @@ function IntegrationPanel() {
 
   const loadImported = async () => {
     try {
-      const [t, f] = await Promise.all([
+      const [t, f, s] = await Promise.all([
         api.get("/admin/botsailor/templates"),
         api.get("/admin/botsailor/flows"),
+        api.get("/admin/botsailor-flow-data/status"),
       ]);
       setTemplates(t.data?.data || []);
       setFlows(f.data?.data || []);
+      setFlowDataStatus({
+        total: s.data?.total || 0,
+        imported: s.data?.imported || 0,
+        pending: s.data?.pending || 0,
+        flows: s.data?.flows || [],
+      });
     } catch {
       // ignore
     }
@@ -1003,6 +1013,39 @@ function IntegrationPanel() {
       await loadImported();
     } catch (e) {
       setMsg(e.response?.data?.message || "Bot flow import failed.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const importFlowDataFiles = async () => {
+    if (!selectedFlowFiles.length) {
+      setMsg("Pehle BotSailor ke Export Flow Data TXT/JSON files select karein.");
+      return;
+    }
+
+    setLoading(true);
+    setMsg("");
+    setFlowImportResults([]);
+    try {
+      const flowsToImport = await Promise.all(
+        selectedFlowFiles.map(async (file) => ({
+          fileName: file.name,
+          flowData: await file.text(),
+        }))
+      );
+      const res = await api.post("/admin/botsailor-flow-data/import-bulk", {
+        flows: flowsToImport,
+      });
+      setFlowImportResults(res.data?.results || []);
+      setMsg(res.data?.message || "Flow Data import completed");
+      setSelectedFlowFiles([]);
+      await loadImported();
+    } catch (e) {
+      const data = e.response?.data;
+      setFlowImportResults(data?.results || []);
+      setMsg(data?.message || "Flow Data import failed.");
+      await loadImported();
     } finally {
       setLoading(false);
     }
@@ -1137,6 +1180,67 @@ function IntegrationPanel() {
         <b>Imported Bot Flows: {flows.length}</b>
         <div className="small" style={{ marginTop: 6 }}>
           {flows.length ? flows.slice(0, 10).map((f) => f.name).join(" · ") : "No bot flow imported yet."}
+        </div>
+      </div>
+
+      <div style={boxStyle}>
+        <div className="row" style={{ alignItems: "flex-start", gap: 12 }}>
+          <div>
+            <b>BotSailor Full Flow Data (TXT/JSON)</b>
+            <div className="small" style={{ marginTop: 6 }}>
+              Export Flow Data files ek saath select karein. Same flow dobara upload karne par edited version overwrite ho jayega.
+            </div>
+          </div>
+          <span className="tag">
+            Imported {flowDataStatus.imported}/{flowDataStatus.total} · Pending {flowDataStatus.pending}
+          </span>
+        </div>
+
+        <input
+          type="file"
+          multiple
+          accept=".txt,.json,text/plain,application/json"
+          onChange={(e) => setSelectedFlowFiles(Array.from(e.target.files || []))}
+          style={{ marginTop: 14 }}
+        />
+
+        <div className="small" style={{ marginTop: 8 }}>
+          {selectedFlowFiles.length
+            ? `${selectedFlowFiles.length} file(s) selected: ${selectedFlowFiles.map((file) => file.name).join(" · ")}`
+            : "No Flow Data file selected."}
+        </div>
+
+        <button
+          className="btn btn3"
+          onClick={importFlowDataFiles}
+          disabled={loading || !selectedFlowFiles.length}
+          style={{ marginTop: 12 }}
+        >
+          Import Selected Flow Data Files
+        </button>
+
+        {flowImportResults.length > 0 && (
+          <div style={{ marginTop: 12 }}>
+            {flowImportResults.map((item, index) => (
+              <div key={`${item.fileName}-${index}`} className="small" style={{ marginTop: 5 }}>
+                {item.success ? "✅" : "❌"} {item.fileName}
+                {item.title ? ` → ${item.title}` : ""}
+                {item.nodeCount ? ` (${item.nodeCount} nodes)` : ""}
+                {!item.success && item.message ? ` — ${item.message}` : ""}
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div style={{ marginTop: 14, maxHeight: 260, overflowY: "auto" }}>
+          {(flowDataStatus.flows || []).map((flow) => (
+            <div key={flow.unique_id || flow.id} className="small" style={{ marginTop: 5 }}>
+              {flow.flow_data_imported ? "✅" : "⚠️"} {flow.name}
+              {flow.flow_data_imported
+                ? ` — Data imported (${flow.flow_node_count || 0} nodes)${flow.flow_data_source_file ? ` · ${flow.flow_data_source_file}` : ""}`
+                : " — TXT/JSON pending"}
+            </div>
+          ))}
         </div>
       </div>
 
