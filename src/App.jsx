@@ -507,19 +507,16 @@ function Automation({ config, onSave }) {
     setLoading(true);
     setMsg("");
     try {
-      // IMPORTANT: Safe Test must use the settings currently visible on screen.
-      // Save the complete Automation config first, then trigger the selected stage.
-      await onSave(local);
-
       const res = await api.post("/admin/automation/test-mobile", {
         mobile,
         name: testName,
         course: testCourse,
         stage: testStage,
+        settings: local,
       });
 
       setMsg(
-        `${res.data?.message || "Test sent"} — Current Automation settings were saved first. Only test mobile ${mobile} was targeted.`
+        `${res.data?.message || "Test sent"} — Only test mobile ${mobile} was targeted. Live Automation settings were not changed.`
       );
     } catch (e) {
       setMsg(e.response?.data?.message || "Test-only WhatsApp send failed.");
@@ -837,11 +834,42 @@ function Automation({ config, onSave }) {
         <h4 style={{ marginTop: 0 }}>24-hour Window Closing Message</h4>
         <div className="configGrid">
           <label>Enabled {toggle("windowClosingEnabled")}</label>
+          <label>Use Direct CTA Action {toggle("windowClosingUseCallButton")}</label>
+          <label>Use Same CTA as 3 Hour {toggle("windowClosingUseSameCtaAs3")}</label>
           <label>
             Send before window closes (hours)
             <input type="number" min="1" max="12" value={local.windowClosingHoursBefore ?? 3} onChange={(e) => setLocal({ ...local, windowClosingHoursBefore: Number(e.target.value) })} />
           </label>
         </div>
+        {local.windowClosingUseSameCtaAs3 ? <div className="notice">3 Hour ka selected Flow / Template / title use hoga.</div> : (
+          <div className="configGrid">
+            <label>Window Closing CTA Action Mode
+              <select value={local.windowClosingCtaActionMode || "off"} onChange={(e) => setLocal({ ...local, windowClosingCtaActionMode: e.target.value })}>
+                <option value="off">OFF — Normal message only</option>
+                <option value="flow">Use Existing BotSailor Flow</option>
+                <option value="template">Use Existing BotSailor Template</option>
+              </select>
+            </label>
+            {local.windowClosingCtaActionMode === "flow" && <label>Window Closing BotSailor Flow
+              <select value={local.windowClosingCtaFlowUniqueId || ""} onChange={(e) => setLocal({ ...local, windowClosingCtaFlowUniqueId: e.target.value })}>
+                <option value="">Select BotSailor flow</option>
+                {flows.map((f) => <option key={f.unique_id || f.id} value={f.unique_id || ""}>{f.name || f.unique_id}</option>)}
+              </select>
+            </label>}
+            {local.windowClosingCtaActionMode === "template" && <>
+              <label>Window Closing BotSailor Template
+                <select value={local.windowClosingCtaTemplateId || ""} onChange={(e) => setLocal({ ...local, windowClosingCtaTemplateId: e.target.value })}>
+                  <option value="">Select imported template</option>
+                  {ctaTemplates.map((t) => <option key={t.id || t.botsailor_id} value={t.id || t.botsailor_id || ""}>{t.template_name || "Template"}{t.status ? ` (${t.status})` : ""}</option>)}
+                </select>
+              </label>
+              <label>Window Closing Template Custom Title
+                <input maxLength={20} value={(local.windowClosingCtaTemplateCustomTitle || "").slice(0, 20)} onChange={(e) => setLocal({ ...local, windowClosingCtaTemplateCustomTitle: e.target.value.slice(0, 20) })} />
+                <span className="small">Maximum 20 characters</span>
+              </label>
+            </>}
+          </div>
+        )}
         <textarea rows="8" value={local.windowClosingMessage || ""} onChange={(e) => setLocal({ ...local, windowClosingMessage: e.target.value })} />
         <div className="notice" style={{ marginTop: 8 }}>
           Ye special message quiet hours (12 AM–9 AM) me bhi ja sakta hai, sirf jab current 24h window close hone wali ho.
@@ -851,7 +879,7 @@ function Automation({ config, onSave }) {
       <div style={{ ...boxStyle, border: "2px solid #2563eb" }}>
         <h4 style={{ marginTop: 0 }}>Safe Test Only — Single Mobile</h4>
         <div className="notice" style={{ marginBottom: 10 }}>
-          Send Test Only current screen ki Automation settings ko pehle save karega, phir selected stage test karega. Sirf niche diya hua mobile target hoga; real leads scan/update nahi honge.
+          Send Test Only current screen ki settings se sirf niche diye mobile par test bhejega. Live settings save nahi hongi. Background automation ON hai to woh independently chalti rahegi; use rokne ke liye Auto Follow-up OFF karke Save karein.
         </div>
         <div className="configGrid">
           <label>
