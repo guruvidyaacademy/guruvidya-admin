@@ -133,11 +133,35 @@ const PriorityBadge = ({ priority }) => (
   <span className={`badge priority ${String(priority || "cold")}`}>{priority || "cold"}</span>
 );
 
+function WhatsappWindowBadge({ row }) {
+  const [now, setNow] = useState(Date.now());
+  useEffect(() => {
+    const timer = setInterval(() => setNow(Date.now()), 30000);
+    return () => clearInterval(timer);
+  }, []);
+  const last = new Date(row.last_customer_message_at || "").getTime();
+  const known = Number.isFinite(last) && last <= now;
+  const remaining = known ? last + 24 * 60 * 60 * 1000 - now : 0;
+  const open = known && remaining > 0;
+  const minutes = Math.max(0, Math.ceil(remaining / 60000));
+  return (
+    <div style={{ minWidth: 185 }}>
+      <span style={{ display: "inline-block", padding: "4px 9px", borderRadius: 12,
+        background: open ? "#dcfce7" : "#f3f4f6", color: open ? "#166534" : "#4b5563", fontWeight: 700 }}>
+        {open ? "Open" : known ? "Closed" : "Unknown"}
+      </span>
+      {open && <div className="small">{Math.floor(minutes / 60)}h {minutes % 60}m remaining</div>}
+      <div className="small">{known ? `Last message: ${new Date(last).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })} IST` : "No customer message time recorded"}</div>
+      {open && <div className="small">Check BotSailor inbox</div>}
+    </div>
+  );
+}
+
 function DataTable({ tab, rows, selectedId, onSelect }) {
   if (!rows.length) return <div className="card">No data found</div>;
 
   const map = {
-    leads: ["id", "name", "mobile", "course", "priority", "status", "owner", "source", "note", "created_at"],
+    leads: ["id", "name", "mobile", "whatsapp_window", "course", "priority", "status", "owner", "source", "note", "created_at"],
     admissions: ["id", "name", "mobile", "email", "course", "priority", "status", "owner", "admin_note", "created_at"],
     appointments: ["id", "name", "mobile", "course", "datetime", "priority", "status", "owner", "note", "created_at"],
     support: ["id", "name", "mobile", "issue", "description", "priority", "status", "owner", "note", "created_at"],
@@ -153,7 +177,7 @@ function DataTable({ tab, rows, selectedId, onSelect }) {
     <div className="card" style={{ overflowX: "auto" }}>
       <table className="table">
         <thead>
-          <tr>{headers.map((h) => <th key={h}>{h}</th>)}</tr>
+          <tr>{headers.map((h) => <th key={h}>{h === "whatsapp_window" ? "WhatsApp Window" : h}</th>)}</tr>
         </thead>
         <tbody>
           {rows.map((row) => (
@@ -167,7 +191,9 @@ function DataTable({ tab, rows, selectedId, onSelect }) {
             >
               {headers.map((h) => (
                 <td key={h}>
-                  {h === "status" ? (
+                  {h === "whatsapp_window" ? (
+                    <WhatsappWindowBadge row={row} />
+                  ) : h === "status" ? (
                     <StatusBadge status={row[h]} />
                   ) : h === "priority" ? (
                     <PriorityBadge priority={row[h]} />
@@ -410,7 +436,7 @@ function ActionPanel({ tab, row, onSaved }) {
               <>
                 {tab === "leads" && !windowOpen && (
                   <div className="notice" style={{ marginTop: 8 }}>
-                    24-hour window closed hai. Normal message send nahi hoga; approved template choose karo.
+                    The 24-hour WhatsApp window is closed. Normal messages cannot be sent. Please select an approved template.
                   </div>
                 )}
                 {whatsappMode !== "flow" && <label>
