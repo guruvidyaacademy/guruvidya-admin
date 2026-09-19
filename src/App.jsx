@@ -1,5 +1,5 @@
 import Pipeline from "./pages/Pipeline";
-import { useEffect, useMemo, useState, useRef } from "react";
+import { useEffect, useMemo, useState, useRef, Fragment } from "react";
 import axios from "axios";
 
 const api = axios.create({
@@ -133,7 +133,13 @@ const PriorityBadge = ({ priority }) => (
   <span className={`badge priority ${String(priority || "cold")}`}>{priority || "cold"}</span>
 );
 
-function WhatsappWindowBadge({ row }) {
+function formatLeadDate(value) {
+  const date = new Date(value || "");
+  if (!Number.isFinite(date.getTime())) return "Not available";
+  return date.toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata", day: "numeric", month: "long", year: "numeric" }) + ", " + date.toLocaleTimeString("en-IN", { timeZone: "Asia/Kolkata", hour: "numeric", minute: "2-digit", second: "2-digit", hour12: true }) + " IST";
+}
+
+function WhatsappWindowBadge({ row, panel = false }) {
   const [now, setNow] = useState(Date.now());
   useEffect(() => {
     const timer = setInterval(() => setNow(Date.now()), 30000);
@@ -147,14 +153,69 @@ function WhatsappWindowBadge({ row }) {
   return (
     <div style={{ minWidth: 185 }}>
       <span style={{ display: "inline-block", padding: "4px 9px", borderRadius: 12,
-        background: open ? "#dcfce7" : "#f3f4f6", color: open ? "#166534" : "#4b5563", fontWeight: 700 }}>
-        {open ? "Open" : known ? "Closed" : "Unknown"}
+        background: open ? "#dcfce7" : known ? "#fee2e2" : "#f3f4f6", color: open ? "#166534" : known ? "#b91c1c" : "#4b5563", fontWeight: 700 }}>
+        {open ? "OPEN" : known ? "CLOSED" : "UNKNOWN"}
       </span>
       {open && <div className="small">{Math.floor(minutes / 60)}h {minutes % 60}m remaining</div>}
-      <div className="small">{known ? `Last message: ${new Date(last).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })} IST` : "No customer message time recorded"}</div>
+      <div className="small">{known ? `${panel ? "Last customer message" : "Last message"}: ${formatLeadDate(last)}` : "No customer message time recorded"}</div>
       {open && <div className="small">Check BotSailor inbox</div>}
     </div>
   );
+}
+
+function LeadList({ rows, selectedId, onSelect, onSaved }) {
+  return <div className="lead-workspace">
+    <style>{`
+      .lead-workspace { background:#fff; border:1px solid #e2e8f0; border-radius:16px; box-shadow:0 6px 24px #0f172a08; overflow:hidden; color:#1e293b; }
+      .lead-workspace .lead-heading { padding:18px 20px; border-bottom:1px solid #e2e8f0; display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+      .lead-workspace .lead-grid { display:grid; grid-template-columns:minmax(150px,1.2fr) minmax(110px,1fr) minmax(120px,1fr) minmax(100px,.8fr) minmax(220px,1.5fr) 44px; gap:16px; align-items:center; }
+      .lead-workspace .lead-labels { padding:12px 20px; background:#f8fafc; font-size:12px; font-weight:700; color:#64748b; }
+      .lead-workspace .lead-summary { padding:18px 20px; border-top:1px solid #edf2f7; cursor:pointer; }
+      .lead-workspace .lead-summary:hover { background:#f8fafc; }
+      .lead-workspace .lead-summary.is-open { background:#eff6ff; box-shadow:inset 3px 0 #2563eb; }
+      .lead-workspace .lead-cell { min-width:0; overflow-wrap:anywhere; }
+      .lead-workspace .small { color:#64748b; font-size:12px; line-height:1.6; }
+      .lead-workspace .lead-toggle { width:36px; height:36px; border:1px solid #cbd5e1; border-radius:10px; background:white; color:#1d4ed8; cursor:pointer; font-size:20px; }
+      .lead-workspace .lead-expanded { padding:20px; background:#f8fafc; border-top:1px solid #dbeafe; }
+      .lead-workspace .lead-details { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; padding:18px; background:#fff; border:1px solid #e2e8f0; border-radius:12px; margin-bottom:16px; overflow-wrap:anywhere; }
+      .lead-workspace .lead-details p { margin:4px 0 0; white-space:pre-wrap; }
+      .lead-workspace .lead-expanded > .card { margin:0; border:1px solid #e2e8f0; border-radius:12px; box-shadow:none; padding:20px; }
+      .lead-workspace .actions { display:flex; flex-direction:column; gap:12px; }
+      .lead-workspace .actions > label { display:block; max-width:100%; font-weight:500; }
+      .lead-workspace select,.lead-workspace textarea,.lead-workspace input:not([type=checkbox]) { box-sizing:border-box; width:100%; border:1px solid #cbd5e1; border-radius:9px; padding:10px 12px; background:#fff; }
+      .lead-workspace textarea { min-height:100px; }
+      .lead-workspace .btn { border-radius:9px; }
+      @media(max-width:1000px) { .lead-workspace .lead-grid { grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:14px; } .lead-workspace .lead-labels { display:none; } .lead-workspace .lead-details { grid-template-columns:1fr; } .lead-workspace .lead-expanded { padding:12px; } }
+    `}</style>
+    <div className="lead-heading"><b>Leads <span className="small">({rows.length})</span></b><span className="small">Expand a lead to view details and take action · Refresh All for new messages</span></div>
+    <div className="lead-grid lead-labels"><span>Student / Mobile</span><span>Course</span><span>Priority / Status</span><span>Counselor</span><span>WhatsApp Window</span><span /></div>
+    {!rows.length && <div style={{ padding: 24 }}>No leads found</div>}
+    {rows.map(row => {
+      const expanded = selectedId === row.id;
+      return <Fragment key={row.id}>
+        <div className={`lead-grid lead-summary ${expanded ? "is-open" : ""}`} onClick={() => onSelect(expanded ? null : row)}>
+          <div className="lead-cell"><strong>{row.name || "Unnamed lead"}</strong><div className="small">{row.mobile}</div><div className="small">Lead #{row.id}</div></div>
+          <div className="lead-cell">{row.course || "—"}</div>
+          <div className="lead-cell"><PriorityBadge priority={row.priority} /><div style={{ marginTop: 6 }}><StatusBadge status={row.status} /></div></div>
+          <div className="lead-cell">{row.owner || "Unassigned"}</div>
+          <div className="lead-cell"><WhatsappWindowBadge row={row} /></div>
+          <button type="button" className="lead-toggle" aria-expanded={expanded} aria-controls={`lead-panel-${row.id}`} aria-label={`${expanded ? "Collapse" : "Expand"} ${row.name || "lead"}`} onClick={event => { event.stopPropagation(); onSelect(expanded ? null : row); }}>{expanded ? "⌃" : "⌄"}</button>
+        </div>
+        {expanded && <section id={`lead-panel-${row.id}`} className="lead-expanded" aria-label={`Details for ${row.name || "lead"}`}>
+          <h3 style={{ marginTop: 0 }}>Lead Details</h3>
+          <div className="lead-details">
+            <div><span className="small">Original enquiry</span><p>{formatLeadDate(row.created_at)}</p></div>
+            <div><span className="small">Latest enquiry</span><p>{formatLeadDate(row.last_enquiry_at)}</p></div>
+            <div><span className="small">Enquiry count</span><p>{row.enquiry_count ?? 1}</p></div>
+            <div><span className="small">Source</span><p>{row.source || "—"}</p></div>
+            <div><span className="small">Follow-up note</span><p>{row.note || "—"}</p></div>
+            <div><span className="small">Admin note</span><p>{row.admin_note || "—"}</p></div>
+          </div>
+          <ActionPanel tab="leads" row={row} onSaved={onSaved} />
+        </section>}
+      </Fragment>;
+    })}
+  </div>;
 }
 
 function DataTable({ tab, rows, selectedId, onSelect }) {
@@ -247,6 +308,12 @@ function ActionPanel({ tab, row, onSaved }) {
   const requestKey = useRef(null);
   const activeRecipient = useRef("");
   activeRecipient.current = `${tab}:${row?.id || ""}`;
+
+  const [, updateWindowClock] = useState(0);
+  useEffect(() => {
+    const timer = setInterval(() => updateWindowClock(value => value + 1), 30000);
+    return () => clearInterval(timer);
+  }, []);
 
   const windowOpen = tab === "leads" ? isWhatsappWindowOpen(row) : true;
 
@@ -372,8 +439,8 @@ function ActionPanel({ tab, row, onSaved }) {
 
         {tab === "leads" && (
           <div className="notice" style={{ marginTop: 8 }}>
-            WhatsApp 24h window: <b>{windowOpen ? "OPEN" : "CLOSED / NOT KNOWN"}</b>
-            {row.last_customer_message_at ? ` · Last customer message: ${String(row.last_customer_message_at)}` : ""}
+            <div style={{ marginBottom: 6 }}>WhatsApp 24h window</div>
+            <WhatsappWindowBadge row={row} panel />
           </div>
         )}
 
@@ -398,6 +465,7 @@ function ActionPanel({ tab, row, onSaved }) {
           </select>
         </label>
 
+        <h4 style={{ margin: "12px 0 0" }}>Follow-up</h4>
         <label>
           Follow-up Note
           <textarea rows="5" value={note} onChange={(e) => setNote(e.target.value)} />
@@ -422,6 +490,7 @@ function ActionPanel({ tab, row, onSaved }) {
 
         {sendWhatsapp && (
           <div className="whatsappBox">
+            <h4 style={{ marginTop: 0 }}>Send WhatsApp</h4>
             <label>
               WhatsApp Send Type
               <select value={whatsappMode} onChange={(e) => setWhatsappMode(e.target.value)}>
@@ -1570,7 +1639,9 @@ export default function App() {
               </div>
             </div>
 
-            <div className="grid2">
+            {activeTab === "leads" ? (
+              <LeadList rows={filteredRows} selectedId={selected?.id} onSelect={setSelected} onSaved={loadAll} />
+            ) : <div className="grid2">
               <DataTable tab={activeTab} rows={filteredRows} selectedId={selected?.id} onSelect={setSelected} />
 
               {["alerts", "reminders", "whatsapp_logs"].includes(activeTab) ? (
@@ -1578,7 +1649,7 @@ export default function App() {
               ) : (
                 <ActionPanel tab={activeTab} row={selected} onSaved={loadAll} />
               )}
-            </div>
+            </div>}
           </>
         )}
       </div>
