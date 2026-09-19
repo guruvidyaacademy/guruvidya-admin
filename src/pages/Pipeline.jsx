@@ -10,7 +10,7 @@ const stages = [
   ["converted", "Converted", "#15803d"],
 ];
 
-export default function Pipeline({ RecordList, onSaved }) {
+export default function Pipeline({ RecordList, onSaved, snapshot }) {
   const [data, setData] = useState({});
   const [selectedStage, setSelectedStage] = useState(null);
   const [editingId, setEditingId] = useState(null);
@@ -38,6 +38,9 @@ export default function Pipeline({ RecordList, onSaved }) {
   };
 
   useEffect(() => { loadPipeline(); return () => { requestVersion.current += 1; }; }, []);
+  useEffect(() => {
+    if (snapshot) { requestVersion.current += 1; setData(snapshot.data || {}); setLoading(false); setError(""); }
+  }, [snapshot]);
   const selectedLeads = data[selectedStage] || [];
   const title = stages.find(([key]) => key === selectedStage)?.[1];
   const filtered = useMemo(() => {
