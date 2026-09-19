@@ -1430,6 +1430,7 @@ export default function App() {
       const nd = {};
       keys.forEach((k, i) => (nd[k] = res[i].data.data || []));
       setData(nd);
+      setSelected((current) => current ? (nd[activeTab] || []).find((item) => Number(item.id) === Number(current.id)) || null : null);
       setStats((await api.get("/admin/counselor-stats")).data.data || []);
       setConfig((await api.get("/admin/config")).data.data || {});
     } catch {
