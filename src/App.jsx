@@ -142,21 +142,24 @@ function formatLeadDate(value) {
 function WhatsappWindowBadge({ row, panel = false }) {
   const [now, setNow] = useState(Date.now());
   useEffect(() => {
-    const timer = setInterval(() => setNow(Date.now()), 30000);
+    const timer = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(timer);
   }, []);
   const last = new Date(row.last_customer_message_at || "").getTime();
   const known = Number.isFinite(last) && last <= now;
   const remaining = known ? last + 24 * 60 * 60 * 1000 - now : 0;
   const open = known && remaining > 0;
-  const minutes = Math.max(0, Math.ceil(remaining / 60000));
+  const seconds = Math.max(0, Math.ceil(remaining / 1000));
+  const countdown = [Math.floor(seconds / 3600), Math.floor(seconds / 60) % 60, seconds % 60].map(value => String(value).padStart(2, "0")).join(":");
   return (
     <div style={{ minWidth: 185 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, color: "#166534", fontSize: 14, fontWeight: 700, whiteSpace: "nowrap" }}>
       <span style={{ display: "inline-block", padding: "4px 9px", borderRadius: 12,
         background: open ? "#dcfce7" : known ? "#fee2e2" : "#f3f4f6", color: open ? "#166534" : known ? "#b91c1c" : "#4b5563", fontWeight: 700 }}>
         {open ? "OPEN" : known ? "CLOSED" : "UNKNOWN"}
       </span>
-      {open && <div className="small">{Math.floor(minutes / 60)}h {minutes % 60}m remaining</div>}
+      {open && <><span>Inside 24H</span><span style={{ fontVariantNumeric: "tabular-nums" }}>{countdown}</span></>}
+      </div>
       <div className="small">{known ? `${panel ? "Last customer message" : "Last message"}: ${formatLeadDate(last)}` : "No customer message time recorded"}</div>
       {open && <div className="small">Check BotSailor inbox</div>}
     </div>
@@ -168,7 +171,7 @@ function LeadList({ rows, selectedId, onSelect, onSaved }) {
     <style>{`
       .lead-workspace { background:#fff; border:1px solid #e2e8f0; border-radius:16px; box-shadow:0 6px 24px #0f172a08; overflow:hidden; color:#1e293b; }
       .lead-workspace .lead-heading { padding:18px 20px; border-bottom:1px solid #e2e8f0; display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; }
-      .lead-workspace .lead-grid { display:grid; grid-template-columns:minmax(150px,1.2fr) minmax(110px,1fr) minmax(120px,1fr) minmax(100px,.8fr) minmax(220px,1.5fr) 44px; gap:16px; align-items:center; }
+      .lead-workspace .lead-grid { display:grid; grid-template-columns:minmax(110px,1fr) minmax(125px,1fr) minmax(100px,.9fr) minmax(110px,.9fr) minmax(90px,.7fr) minmax(255px,1.6fr) 40px; gap:16px; align-items:center; }
       .lead-workspace .lead-labels { padding:12px 20px; background:#f8fafc; font-size:12px; font-weight:700; color:#64748b; }
       .lead-workspace .lead-summary { padding:18px 20px; border-top:1px solid #edf2f7; cursor:pointer; }
       .lead-workspace .lead-summary:hover { background:#f8fafc; }
@@ -188,13 +191,14 @@ function LeadList({ rows, selectedId, onSelect, onSaved }) {
       @media(max-width:1000px) { .lead-workspace .lead-grid { grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:14px; } .lead-workspace .lead-labels { display:none; } .lead-workspace .lead-details { grid-template-columns:1fr; } .lead-workspace .lead-expanded { padding:12px; } }
     `}</style>
     <div className="lead-heading"><b>Leads <span className="small">({rows.length})</span></b><span className="small">Expand a lead to view details and take action · Refresh All for new messages</span></div>
-    <div className="lead-grid lead-labels"><span>Student / Mobile</span><span>Course</span><span>Priority / Status</span><span>Counselor</span><span>WhatsApp Window</span><span /></div>
+    <div className="lead-grid lead-labels"><span>Student Name</span><span>Mobile Number</span><span>Course</span><span>Priority / Status</span><span>Counselor</span><span>WhatsApp Window</span><span /></div>
     {!rows.length && <div style={{ padding: 24 }}>No leads found</div>}
     {rows.map(row => {
       const expanded = selectedId === row.id;
       return <Fragment key={row.id}>
         <div className={`lead-grid lead-summary ${expanded ? "is-open" : ""}`} onClick={() => onSelect(expanded ? null : row)}>
-          <div className="lead-cell"><strong>{row.name || "Unnamed lead"}</strong><div className="small">{row.mobile}</div><div className="small">Lead #{row.id}</div></div>
+          <div className="lead-cell"><strong>{row.name || "Unnamed lead"}</strong><div className="small">Lead #{row.id}</div></div>
+          <div className="lead-cell" style={{ fontVariantNumeric: "tabular-nums" }}>{row.mobile || "—"}</div>
           <div className="lead-cell">{row.course || "—"}</div>
           <div className="lead-cell"><PriorityBadge priority={row.priority} /><div style={{ marginTop: 6 }}><StatusBadge status={row.status} /></div></div>
           <div className="lead-cell">{row.owner || "Unassigned"}</div>
@@ -1558,8 +1562,10 @@ export default function App() {
     }
 
     if (!query.trim()) return rows;
-    const q = query.toLowerCase();
-    return rows.filter((row) => JSON.stringify(row).toLowerCase().includes(q));
+    const q = query.trim().toLowerCase();
+    const phoneQuery = /^[+\d\s()-]+$/.test(q) ? q.replace(/\D/g, "") : "";
+    return rows.filter((row) => JSON.stringify(row).toLowerCase().includes(q) ||
+      (phoneQuery && String(row.mobile || "").replace(/\D/g, "").includes(phoneQuery)));
   }, [data, activeTab, query, filterStatus, filterPriority, user]);
 
   const saveConfig = async (c) => {
@@ -1619,7 +1625,7 @@ export default function App() {
         ) : (
           <>
             <div className="searchBar">
-              <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={`Search ${activeTab} by any field`} />
+              <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={activeTab === "leads" ? "Search leads by name, mobile number or course" : `Search ${activeTab} by any field`} />
 
               <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}>
                 <option value="all">All Status</option>
