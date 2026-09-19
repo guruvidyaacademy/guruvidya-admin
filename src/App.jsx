@@ -1,5 +1,5 @@
 import Pipeline from "./pages/Pipeline";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import axios from "axios";
 
 const api = axios.create({
@@ -211,6 +211,17 @@ function ActionPanel({ tab, row, onSaved }) {
   const [msg, setMsg] = useState("");
   const [saving, setSaving] = useState(false);
 
+  const [flows, setFlows] = useState([]);
+  const [whatsappFlowId, setWhatsappFlowId] = useState("");
+  const [sending, setSending] = useState(false);
+  const [sendMsg, setSendMsg] = useState("");
+  const [sendAttempted, setSendAttempted] = useState(false);
+  const sendLock = useRef(false);
+  const saveLock = useRef(false);
+  const requestKey = useRef(null);
+  const activeRecipient = useRef("");
+  activeRecipient.current = `${tab}:${row?.id || ""}`;
+
   const windowOpen = tab === "leads" ? isWhatsappWindowOpen(row) : true;
 
   useEffect(() => {
@@ -229,6 +240,10 @@ function ActionPanel({ tab, row, onSaved }) {
     );
     setWhatsappTemplateId("");
     setTemplateVariables("{}");
+    setWhatsappFlowId("");
+    setSendMsg("");
+    setSendAttempted(false);
+    requestKey.current = null;
     setMsg("");
   }, [row, tab]);
 
@@ -236,6 +251,9 @@ function ActionPanel({ tab, row, onSaved }) {
     api.get("/admin/botsailor/templates")
       .then((res) => setTemplates(res.data?.data || []))
       .catch(() => setTemplates([]));
+    api.get("/admin/botsailor/flows")
+      .then((res) => setFlows(res.data?.data || []))
+      .catch(() => setFlows([]));
   }, []);
 
   if (!row) {
@@ -243,6 +261,8 @@ function ActionPanel({ tab, row, onSaved }) {
   }
 
   const save = async (close = false) => {
+    if (saveLock.current || sendLock.current) return;
+    saveLock.current = true;
     setSaving(true);
     setMsg("");
 
@@ -253,7 +273,7 @@ function ActionPanel({ tab, row, onSaved }) {
         priority,
         note: close ? note || "Closed / Archived" : note,
         sendNotification,
-        sendWhatsapp,
+        sendWhatsapp: false,
         createReminder,
         reminderDays,
         whatsappMode,
@@ -267,7 +287,49 @@ function ActionPanel({ tab, row, onSaved }) {
     } catch (e) {
       setMsg(e.response?.data?.message || "Save failed.");
     } finally {
+      saveLock.current = false;
       setSaving(false);
+    }
+  };
+
+  const selectedFlow = flows.find((f) => String(f.unique_id) === whatsappFlowId);
+  const selectedTemplate = templates.find((t) => String(t.id) === whatsappTemplateId);
+  const flowMode = ["flow", "message_flow"].includes(whatsappMode);
+  const templateApproved = selectedTemplate && String(selectedTemplate.status).trim().toLowerCase() === "approved";
+  const sendBlocked = sending || saving || sendAttempted ||
+    (whatsappMode !== "template" && tab === "leads" && !windowOpen) ||
+    (flowMode && !selectedFlow) ||
+    (whatsappMode === "template" && !templateApproved) ||
+    (["message", "message_flow"].includes(whatsappMode) && !whatsappMessage.trim());
+
+  const sendNow = async () => {
+    if (sendLock.current || saveLock.current || sendBlocked) return;
+    let variables = {};
+    if (whatsappMode === "template") {
+      try { variables = JSON.parse(templateVariables); }
+      catch { setSendMsg("Template variables must be valid JSON."); return; }
+      if (!variables || Array.isArray(variables) || typeof variables !== "object") {
+        setSendMsg("Template variables must be a JSON object."); return;
+      }
+    }
+    if (!window.confirm(`Send ${whatsappMode} to ${row.name || "Student"} (${row.mobile}) now? Lead details will not be saved.`)) return;
+    const recipient = activeRecipient.current;
+    sendLock.current = true;
+    setSending(true);
+    setSendMsg("");
+    try {
+      requestKey.current ||= globalThis.crypto.randomUUID();
+      const res = await api.post(`/admin/${tab}/${row.id}/whatsapp`, {
+        requestId: requestKey.current, whatsappMode, whatsappMessage,
+        whatsappTemplateId, templateVariables: variables, whatsappFlowId,
+      });
+      if (activeRecipient.current === recipient) setSendMsg(res.data?.message || "Check WhatsApp logs for the result.");
+    } catch (e) {
+      if (activeRecipient.current === recipient) setSendMsg(e.response?.data?.message || "Send outcome unknown. Check WhatsApp logs before retrying.");
+    } finally {
+      setSending(false);
+      if (activeRecipient.current === recipient) setSendAttempted(true);
+      sendLock.current = false;
     }
   };
 
@@ -339,20 +401,30 @@ function ActionPanel({ tab, row, onSaved }) {
               <select value={whatsappMode} onChange={(e) => setWhatsappMode(e.target.value)}>
                 <option value="message">Normal Message (24h window)</option>
                 <option value="template">Approved BotSailor Template</option>
+                <option value="flow">Send Flow Directly (24h window)</option>
+                <option value="message_flow">Message + Flow Button (24h window)</option>
               </select>
             </label>
 
-            {whatsappMode === "message" ? (
+            {whatsappMode !== "template" ? (
               <>
                 {tab === "leads" && !windowOpen && (
                   <div className="notice" style={{ marginTop: 8 }}>
                     24-hour window closed hai. Normal message send nahi hoga; approved template choose karo.
                   </div>
                 )}
-                <label>
+                {whatsappMode !== "flow" && <label>
                   WhatsApp Message
                   <textarea rows="7" value={whatsappMessage} onChange={(e) => setWhatsappMessage(e.target.value)} />
-                </label>
+                </label>}
+                {flowMode && <label>
+                  BotSailor Flow
+                  <select value={whatsappFlowId} onChange={(e) => setWhatsappFlowId(e.target.value)}>
+                    <option value="">Select imported flow</option>
+                    {flows.map((f) => <option key={f.unique_id || f.id} value={f.unique_id}>{f.name || f.unique_id}</option>)}
+                  </select>
+                </label>}
+                {tab !== "leads" && <div className="small">Server will verify the 24-hour window using the latest matching lead. Unknown/closed windows are blocked.</div>}
               </>
             ) : (
               <>
@@ -361,7 +433,7 @@ function ActionPanel({ tab, row, onSaved }) {
                   <select value={whatsappTemplateId} onChange={(e) => setWhatsappTemplateId(e.target.value)}>
                     <option value="">Select imported template</option>
                     {templates.map((t) => (
-                      <option key={t.id} value={t.id}>
+                      <option key={t.id} value={t.id} disabled={String(t.status).trim().toLowerCase() !== "approved"}>
                         {t.template_name} {t.status ? `(${t.status})` : ""}
                       </option>
                     ))}
@@ -382,15 +454,36 @@ function ActionPanel({ tab, row, onSaved }) {
                 </div>
               </>
             )}
+            <div className="notice" style={{ marginTop: 10, whiteSpace: "pre-wrap" }}>
+              <b>Send preview · {row.name || "Student"} · {row.mobile}</b>
+              {whatsappMode === "template" ? <div>
+                Template: {selectedTemplate?.template_name || "Select template"}
+                <div>{selectedTemplate?.body_content || "Template body preview unavailable"}</div>
+                <div>Variables: {templateVariables}</div>
+              </div> : <div>
+                {whatsappMode !== "flow" && <div>{whatsappMessage.replaceAll("{{name}}", row.name || "Student").replaceAll("{{course}}", row.course || "").replaceAll("{{mobile}}", row.mobile || "").replaceAll("{{owner}}", row.owner || "")}</div>}
+                {flowMode && <div>{whatsappMode === "flow" ? "Start flow immediately: " : "Button (starts flow on click): "}{whatsappMode === "flow" ? selectedFlow?.name : String(selectedFlow?.name || "").slice(0, 20)}</div>}
+              </div>}
+            </div>
+            <button className="btn btn3" disabled={sendBlocked} onClick={sendNow}>
+              {sending ? "Sending…" : "Send WhatsApp Now"}
+            </button>
+            {sendMsg && <div className="notice">{sendMsg}</div>}
+            {sendAttempted && <button className="btn" disabled={sending} onClick={() => {
+              if (window.confirm("Check WhatsApp logs first. A new send may duplicate the previous message. Start a new send?")) {
+                requestKey.current = null; setSendAttempted(false); setSendMsg("");
+              }
+            }}>Prepare another send</button>}
+            <div className="small">Sending does not save lead changes or change automation settings.</div>
           </div>
         )}
 
         <div style={{ display: "flex", gap: 10 }}>
-          <button className="btn btn3" onClick={() => save(false)} disabled={saving}>
+          <button className="btn btn3" onClick={() => save(false)} disabled={saving || sending}>
             Save Action
           </button>
-          <button className="btn btnDanger" onClick={() => save(true)} disabled={saving}>
-            Close
+          <button className="btn btnDanger" onClick={() => save(true)} disabled={saving || sending}>
+            Mark Closed
           </button>
         </div>
 
