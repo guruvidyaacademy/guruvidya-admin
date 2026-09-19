@@ -239,6 +239,80 @@ function LeadList({ rows, selectedId, onSelect, onSaved, tab = "leads", title })
   </div>;
 }
 
+function activityPayload(row) {
+  if (row.payload && typeof row.payload === "object") return row.payload;
+  try { const value = JSON.parse(row.payload || "{}"); return value && typeof value === "object" ? value : {}; } catch { return {}; }
+}
+function activityStatus(row) { return row.status || activityPayload(row).status || ""; }
+function ActivityList({ tab, rows, selectedId, onSelect, onRelated }) {
+  const [copyNotice, setCopyNotice] = useState("");
+  useEffect(() => setCopyNotice(""), [tab, selectedId]);
+  const copy = async (value) => { try { await navigator.clipboard.writeText(String(value)); setCopyNotice("Copied to clipboard."); } catch { setCopyNotice("Could not copy. Please select and copy the text manually."); } };
+  const labels = { alerts: "Alerts", reminders: "Reminders", whatsapp_logs: "WhatsApp Logs" };
+  return <div className="activity-workspace">
+    <style>{`
+      .activity-workspace { border:1px solid #e2e8f0; border-radius:16px; background:white; overflow:hidden; color:#1e293b; box-shadow:0 6px 24px #0f172a08; }
+      .activity-workspace .activity-heading { padding:18px 20px; background:#f8fafc; border-bottom:1px solid #e2e8f0; }
+      .activity-workspace .activity-row { display:grid; grid-template-columns:minmax(0,1.4fr) minmax(0,1fr) minmax(0,.8fr) minmax(0,1.2fr) 40px; gap:16px; padding:18px 20px; align-items:center; border-bottom:1px solid #edf2f7; cursor:pointer; }
+      .activity-workspace .activity-row:hover { background:#f8fafc; }
+      .activity-workspace .activity-row.expanded { background:#eff6ff; box-shadow:inset 3px 0 #2563eb; }
+      .activity-workspace .activity-cell { min-width:0; overflow-wrap:anywhere; }
+      .activity-workspace .activity-label { font-size:11px; font-weight:600; color:#64748b; margin-bottom:5px; }
+      .activity-workspace .activity-small { font-size:12px; color:#64748b; line-height:1.6; }
+      .activity-workspace .activity-panel { background:#f8fafc; padding:20px; }
+      .activity-workspace .activity-details { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; padding:18px; background:white; border:1px solid #e2e8f0; border-radius:12px; }
+      .activity-workspace .activity-text { white-space:pre-wrap; overflow-wrap:anywhere; margin:0; font:inherit; line-height:1.6; }
+      .activity-workspace .activity-content { background:white; border:1px solid #e2e8f0; border-radius:12px; padding:16px; margin-top:14px; }
+      .activity-workspace button { border:1px solid #cbd5e1; background:white; padding:9px 13px; border-radius:9px; cursor:pointer; color:#334155; }
+      .activity-workspace button.activity-primary { background:#2563eb; border-color:#2563eb; color:white; }
+      .activity-workspace .activity-actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:16px; }
+      @media(max-width:850px) { .activity-workspace .activity-row { grid-template-columns:minmax(0,1fr) minmax(0,1fr); position:relative; padding-right:58px; } .activity-workspace .activity-arrow { position:absolute; right:12px; top:16px; } .activity-workspace .activity-details { grid-template-columns:1fr; } }
+      @media(max-width:480px) { .activity-workspace .activity-row { grid-template-columns:minmax(0,1fr); } }
+    `}</style>
+    <div className="activity-heading"><strong>{labels[tab]} ({rows.length})</strong><div className="activity-small">Expand a record to view full details</div></div>
+    {!rows.length && <div style={{ padding:24 }}>No matching records found.</div>}
+    {rows.map(row => {
+      const payload = activityPayload(row);
+      const mobile = row.mobile || payload.mobile || "";
+      const message = row.message || payload.message || "";
+      const status = activityStatus(row);
+      const expanded = selectedId === row.id;
+      const overdue = tab === "reminders" && String(status).toLowerCase() === "pending" && row.due_date && new Date(row.due_date).getTime() < Date.now();
+      const heading = tab === "alerts" ? row.title || "Alert" : tab === "reminders" ? row.name || "Reminder" : row.template || "WhatsApp message";
+      const detail = tab === "alerts" ? displayLabel(row.type) : displayLabel(row.table_name);
+      const table = row.table_name || payload.table_name || (/^(leads|admissions|appointments|support|faculty)_action$/.test(row.type || "") ? row.type.replace(/_action$/, "") : null);
+      const recordId = row.record_id || payload.record_id || (/_action$/.test(row.type || "") ? payload.id : null);
+      return <Fragment key={row.id}>
+        <div className={`activity-row ${expanded ? "expanded" : ""}`} onClick={() => onSelect(expanded ? null : row)}>
+          <div className="activity-cell"><div className="activity-label">{tab === "alerts" ? "Alert" : tab === "reminders" ? "Name / Reminder" : "Message / Template"}</div><strong>{heading}</strong><div className="activity-small">#{row.id} · {detail}</div></div>
+          <div className="activity-cell"><div className="activity-label">Mobile Number</div>{mobile || "—"}{tab === "reminders" && <div className="activity-small">{row.owner || "Unassigned"}</div>}</div>
+          <div className="activity-cell"><div className="activity-label">Status</div>{status ? <span style={badgeStyle(...(/^(sent|success|delivered|read|completed|done)$/i.test(status) ? ["#dcfce7", "#166534"] : /fail|error/i.test(status) ? ["#fee2e2", "#991b1b"] : /pending|queued/i.test(status) ? ["#fef3c7", "#92400e"] : ["#e2e8f0", "#334155"]))}>{displayLabel(status)}</span> : "—"}{overdue && <div style={{ color:"#b91c1c", fontWeight:700, marginTop:6 }}>Overdue</div>}</div>
+          <div className="activity-cell"><div className="activity-label">{tab === "reminders" ? "Due Date" : "Created"}</div><div className="activity-small">{formatLeadDate(tab === "reminders" ? row.due_date : row.created_at)}</div></div>
+          <button type="button" className="activity-arrow" aria-expanded={expanded} aria-controls={`activity-${tab}-${row.id}`} aria-label={`${expanded ? "Collapse" : "Expand"} record ${row.id}`} onClick={e => { e.stopPropagation(); onSelect(expanded ? null : row); }}>{expanded ? "⌃" : "⌄"}</button>
+        </div>
+        {expanded && <section className="activity-panel" id={`activity-${tab}-${row.id}`}>
+          <h3 style={{ marginTop:0 }}>Record Details</h3>
+          <div className="activity-details">
+            <div><div className="activity-label">Created</div>{formatLeadDate(row.created_at)}</div>
+            <div><div className="activity-label">Related Record</div>{table && recordId ? `${displayLabel(table)} #${recordId}` : "Not available"}</div>
+            <div><div className="activity-label">Assigned Owner</div>{row.owner || payload.owner || "—"}</div>
+          </div>
+          {row.reason && <div className="activity-content"><div className="activity-label">Follow-up Reason</div><p className="activity-text">{displayLabel(row.reason)}</p></div>}
+          {message && <div className="activity-content"><div className="activity-label">Full Message</div><p className="activity-text">{message}</p></div>}
+          {(row.error || payload.error) && <div className="activity-content" style={{ color:"#991b1b" }}><div className="activity-label">Error Details</div><p className="activity-text">{typeof (row.error || payload.error) === "object" ? JSON.stringify(row.error || payload.error, null, 2) : String(row.error || payload.error)}</p></div>}
+          {tab === "alerts" && <div className="activity-content"><div className="activity-label">Alert Details</div>{Object.entries(payload).filter(([key,value]) => !["message","error"].includes(key) && value != null && typeof value !== "object").map(([key,value]) => <p key={key} className="activity-text"><strong>{displayLabel(key)}:</strong> {String(value)}</p>)}<details style={{ marginTop:12 }}><summary>Technical Payload</summary><pre className="activity-text">{typeof row.payload === "string" && !Object.keys(payload).length ? row.payload : JSON.stringify(payload,null,2)}</pre></details></div>}
+          <div className="activity-actions">
+            {table && recordId && <button className="activity-primary" type="button" onClick={() => onRelated(table, recordId)}>View Related Record</button>}
+            {mobile && <button type="button" onClick={() => copy(mobile)}>Copy Number</button>}
+            {message && <button type="button" onClick={() => copy(message)}>Copy Message</button>}
+          </div>
+          <div role="status" className="activity-small">{copyNotice}</div>
+        </section>}
+      </Fragment>;
+    })}
+  </div>;
+}
+
 function DataTable({ tab, rows, selectedId, onSelect }) {
   if (!rows.length) return <div className="card">No data found</div>;
 
@@ -1531,6 +1605,16 @@ export default function App() {
   const [filterStatus, setFilterStatus] = useState("all");
   const [filterPriority, setFilterPriority] = useState("all");
 
+  const [refreshing, setRefreshing] = useState(false);
+  const [lastRefreshed, setLastRefreshed] = useState(null);
+  const [pipelineSnapshot, setPipelineSnapshot] = useState(null);
+  const refreshPromise = useRef(null);
+  const activeTabRef = useRef(activeTab);
+  activeTabRef.current = activeTab;
+  const pendingRelated = useRef(null);
+  const [filterType, setFilterType] = useState("all");
+  const activityTab = ["alerts", "reminders", "whatsapp_logs"].includes(activeTab);
+
   const tabs = user ? allTabs.filter((t) => user.access.includes(t.key)) : [];
 
   const logout = () => {
@@ -1538,20 +1622,42 @@ export default function App() {
     setUser(null);
   };
 
-  const loadAll = async () => {
+  const loadAll = () => {
+    if (refreshPromise.current) return refreshPromise.current;
+    setRefreshing(true);
     setError("");
-    try {
+    const work = (async () => {
       const keys = ["leads", "admissions", "appointments", "support", "faculty", "alerts", "reminders", "whatsapp_logs"];
-      const res = await Promise.all(keys.map((k) => api.get(`/admin/${k}`)));
-      const nd = {};
-      keys.forEach((k, i) => (nd[k] = res[i].data.data || []));
-      setData(nd);
-      setSelected((current) => current ? (nd[activeTab] || []).find((item) => Number(item.id) === Number(current.id)) || null : null);
-      setStats((await api.get("/admin/counselor-stats")).data.data || []);
-      setConfig((await api.get("/admin/config")).data.data || {});
-    } catch {
-      setError("Backend data load failed.");
-    }
+      const endpoints = [...keys.map(key => `/admin/${key}`), "/admin/counselor-stats", "/admin/config", "/admin/pipeline"];
+      const results = await Promise.allSettled(endpoints.map(url => api.get(url, { params: { _refresh: Date.now() }, timeout: 90000 })));
+      const updates = {};
+      const failed = [];
+      results.forEach((result, index) => {
+        if (result.status !== "fulfilled" || result.value.data?.success === false || result.value.data?.data == null) { failed.push(endpoints[index].replace("/admin/", "")); return; }
+        const value = result.value.data.data;
+        if (index < keys.length) {
+          if (Array.isArray(value)) updates[keys[index]] = value;
+          else failed.push(keys[index]);
+        } else if (index === keys.length) setStats(value);
+        else if (index === keys.length + 1) setConfig(value);
+        else setPipelineSnapshot({ data:value, refreshedAt:Date.now() });
+      });
+      setData(previous => ({ ...previous, ...updates }));
+      setSelected(current => current && updates[activeTabRef.current] ? updates[activeTabRef.current].find(item => Number(item.id) === Number(current.id)) || null : current);
+      if (failed.length) setError(`Could not refresh: ${failed.map(displayLabel).join(", ")}. Other sections updated; previous data kept for failed sections. Please retry.`);
+      else setLastRefreshed(Date.now());
+    })().catch(() => setError("Refresh failed. Previous data has been kept. Please retry."))
+      .finally(() => { setRefreshing(false); refreshPromise.current = null; });
+    refreshPromise.current = work;
+    return work;
+  };
+
+  const openRelated = (table, id) => {
+    if (!["leads", "admissions", "appointments", "support", "faculty"].includes(table) || !user.access.includes(table)) { setError("This related record is not available for your role."); return; }
+    const record = (data[table] || []).find(item => Number(item.id) === Number(id) && (user.role !== "Counselor" || item.owner === user.owner));
+    if (!record) { setError("Related record not found in loaded data. Refresh All and try again."); return; }
+    pendingRelated.current = { table, record };
+    setActiveTab(table);
   };
 
   useEffect(() => {
@@ -1559,7 +1665,9 @@ export default function App() {
   }, [user]);
 
   useEffect(() => {
-    setSelected(null);
+    setSelected(pendingRelated.current?.table === activeTab ? pendingRelated.current.record : null);
+    pendingRelated.current = null;
+    setFilterType("all");
     setQuery("");
     setFilterStatus("all");
     setFilterPriority("all");
@@ -1573,8 +1681,9 @@ export default function App() {
       rows = rows.filter((r) => String(r.owner || "").trim() === String(user.owner || "").trim());
     }
 
-    if (filterStatus !== "all") rows = rows.filter((r) => String(r.status || "new") === filterStatus);
-    if (filterPriority !== "all") {
+    if (filterStatus !== "all") rows = rows.filter((r) => String(activityTab ? activityStatus(r) : r.status || "new") === filterStatus);
+    if (activityTab && filterType !== "all") rows = rows.filter(r => String(activeTab === "alerts" ? r.type || "" : r.table_name || "") === filterType);
+    if (!activityTab && filterPriority !== "all") {
       rows = rows.filter((r) => String(r.priority || "cold").trim().toLowerCase() === filterPriority);
     }
 
@@ -1583,7 +1692,7 @@ export default function App() {
     const phoneQuery = /^[+\d\s()-]+$/.test(q) ? q.replace(/\D/g, "") : "";
     return rows.filter((row) => JSON.stringify(row).toLowerCase().includes(q) ||
       (phoneQuery && String(row.mobile || "").replace(/\D/g, "").includes(phoneQuery)));
-  }, [data, activeTab, query, filterStatus, filterPriority, user]);
+  }, [data, activeTab, query, filterStatus, filterPriority, filterType, activityTab, user]);
 
   const saveConfig = async (c) => {
     await api.post("/admin/config", c);
@@ -1602,7 +1711,7 @@ export default function App() {
           </div>
 
           <div style={{ display: "flex", gap: 10 }}>
-            <button className="btn btn4" onClick={loadAll}>Refresh All</button>
+            <div style={{ textAlign:"right" }}><button className="btn btn4" onClick={loadAll} disabled={refreshing} aria-busy={refreshing}>{refreshing ? "Refreshing…" : "Refresh All"}</button><div role="status" className="small">{refreshing ? "Fetching latest data…" : lastRefreshed ? `Last refreshed: ${formatLeadDate(lastRefreshed)}` : ""}</div></div>
             <button className="btn btn2" onClick={logout}>Logout</button>
           </div>
         </div>
@@ -1638,7 +1747,7 @@ export default function App() {
         ) : activeTab === "integration" ? (
           <IntegrationPanel />
         ) : activeTab === "pipeline" ? (
-          <Pipeline RecordList={LeadList} onSaved={loadAll} />
+          <Pipeline RecordList={LeadList} onSaved={loadAll} snapshot={pipelineSnapshot} />
         ) : (
           <>
             <div className="searchBar">
@@ -1646,16 +1755,16 @@ export default function App() {
 
               <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}>
                 <option value="all">All Status</option>
-                {(statusOptions[activeTab] || []).map((s) => <option key={s} value={s}>{displayLabel(s)}</option>)}
+                {(activityTab ? [...new Set((data[activeTab] || []).map(activityStatus).filter(Boolean))] : statusOptions[activeTab] || []).map((s) => <option key={s} value={s}>{displayLabel(s)}</option>)}
               </select>
 
-              <select value={filterPriority} onChange={(e) => setFilterPriority(e.target.value)}>
+              {activityTab ? <select aria-label="Filter record type" value={filterType} onChange={e => setFilterType(e.target.value)}><option value="all">All Types</option>{[...new Set((data[activeTab] || []).map(r => activeTab === "alerts" ? r.type : r.table_name).filter(Boolean))].map(value => <option key={value} value={value}>{displayLabel(value)}</option>)}</select> : <select value={filterPriority} onChange={(e) => setFilterPriority(e.target.value)}>
                 <option value="all">All Priority</option>
                 <option value="very hot">Very Hot 🔥</option>
                 <option value="hot">Hot</option>
                 <option value="warm">Warm</option>
                 <option value="cold">Cold</option>
-              </select>
+              </select>}
 
               <div className="card small" style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
                 Rows: {filteredRows.length}
@@ -1664,15 +1773,7 @@ export default function App() {
 
             {["leads", "admissions", "appointments", "support", "faculty"].includes(activeTab) ? (
               <LeadList tab={activeTab} rows={filteredRows} selectedId={selected?.id} onSelect={setSelected} onSaved={loadAll} />
-            ) : <div className="grid2">
-              <DataTable tab={activeTab} rows={filteredRows} selectedId={selected?.id} onSelect={setSelected} />
-
-              {["alerts", "reminders", "whatsapp_logs"].includes(activeTab) ? (
-                <div className="card">{activeTab} are read only.</div>
-              ) : (
-                <ActionPanel tab={activeTab} row={selected} onSaved={loadAll} />
-              )}
-            </div>}
+            ) : <ActivityList tab={activeTab} rows={filteredRows} selectedId={selected?.id} onSelect={setSelected} onRelated={openRelated} />}
           </>
         )}
       </div>
