@@ -127,15 +127,26 @@ const Kpi = ({ title, value }) => (
   </div>
 );
 
-const StatusBadge = ({ status }) => <span className={`badge ${String(status || "new")}`}>{status || "new"}</span>;
-
-const PriorityBadge = ({ priority }) => (
-  <span className={`badge priority ${String(priority || "cold")}`}>{priority || "cold"}</span>
-);
+const displayLabel = (value) => String(value || "").replace(/[_-]+/g, " ").replace(/\b\w/g, char => char.toUpperCase());
+const badgeStyle = (background, color) => ({ display: "inline-block", padding: "5px 10px", borderRadius: 20, background, color, fontSize: 12, fontWeight: 700, lineHeight: 1.4 });
+const StatusBadge = ({ status }) => {
+  const value = String(status || "new").toLowerCase();
+  const palette = /converted|completed|resolved|selected|confirmed/.test(value) ? ["#dcfce7", "#166534"]
+    : /closed|cancelled|rejected|not_interested/.test(value) ? ["#fee2e2", "#991b1b"]
+    : /pending|follow|hold|no_response/.test(value) ? ["#fef3c7", "#92400e"] : ["#dbeafe", "#1e40af"];
+  return <span style={badgeStyle(...palette)}>{displayLabel(value)}</span>;
+};
+const PriorityBadge = ({ priority }) => {
+  const value = String(priority || "cold").toLowerCase().replace(/_/g, " ");
+  const palette = value === "very hot" ? ["#ffe4e6", "#9f1239"] : value === "hot" ? ["#ffedd5", "#9a3412"] : value === "warm" ? ["#fef3c7", "#92400e"] : ["#e0f2fe", "#075985"];
+  return <span style={badgeStyle(...palette)}>{displayLabel(value)}</span>;
+};
 
 function formatLeadDate(value) {
   const date = new Date(value || "");
-  if (!Number.isFinite(date.getTime())) return "Not available";
+  if (!value) return "Not available";
+  if (!Number.isFinite(date.getTime())) return String(value);
+  if (/^\d{4}-\d{2}-\d{2}$/.test(String(value))) return new Date(String(value) + "T00:00:00+05:30").toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata", day: "numeric", month: "long", year: "numeric" });
   return date.toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata", day: "numeric", month: "long", year: "numeric" }) + ", " + date.toLocaleTimeString("en-IN", { timeZone: "Asia/Kolkata", hour: "numeric", minute: "2-digit", second: "2-digit", hour12: true }) + " IST";
 }
 
@@ -166,7 +177,16 @@ function WhatsappWindowBadge({ row, panel = false }) {
   );
 }
 
-function LeadList({ rows, selectedId, onSelect, onSaved }) {
+function LeadList({ rows, selectedId, onSelect, onSaved, tab = "leads", title }) {
+  const sectionTitle = title || ({ leads: "Leads", admissions: "Admissions", appointments: "Appointments", support: "Support", faculty: "Faculty" }[tab]);
+  const isLead = tab === "leads";
+  const extraTitle = isLead ? "WhatsApp Window" : tab === "appointments" ? "Appointment Time" : tab === "faculty" ? "Mode / Created" : "Created";
+  const detailFields = isLead ? [["created_at", "Original enquiry"], ["last_enquiry_at", "Latest enquiry"], ["next_followup", "Next follow-up"], ["enquiry_count", "Enquiry count"], ["source", "Source"], ["note", "Follow-up note"], ["admin_note", "Admin note"]]
+    : tab === "admissions" ? [["email", "Email"], ["created_at", "Created"], ["next_followup", "Next follow-up"], ["admin_note", "Admin note"], ["note", "Follow-up note"]]
+    : tab === "appointments" ? [["datetime", "Appointment time"], ["created_at", "Created"], ["next_followup", "Next follow-up"], ["note", "Follow-up note"]]
+    : tab === "support" ? [["issue", "Issue"], ["description", "Description"], ["created_at", "Created"], ["note", "Follow-up note"]]
+    : [["course", "Course"], ["mode", "Mode"], ["created_at", "Created"], ["admin_note", "Admin note"], ["note", "Follow-up note"]];
+  const dateKeys = ["created_at", "last_enquiry_at", "next_followup", "datetime"];
   return <div className="lead-workspace">
     <style>{`
       .lead-workspace { background:#fff; border:1px solid #e2e8f0; border-radius:16px; box-shadow:0 6px 24px #0f172a08; overflow:hidden; color:#1e293b; }
@@ -176,6 +196,7 @@ function LeadList({ rows, selectedId, onSelect, onSaved }) {
       .lead-workspace .lead-summary { padding:18px 20px; border-top:1px solid #edf2f7; cursor:pointer; }
       .lead-workspace .lead-summary:hover { background:#f8fafc; }
       .lead-workspace .lead-summary.is-open { background:#eff6ff; box-shadow:inset 3px 0 #2563eb; }
+      .lead-workspace .mobile-field-label { display:none; }
       .lead-workspace .lead-cell { min-width:0; overflow-wrap:anywhere; }
       .lead-workspace .small { color:#64748b; font-size:12px; line-height:1.6; }
       .lead-workspace .lead-toggle { width:36px; height:36px; border:1px solid #cbd5e1; border-radius:10px; background:white; color:#1d4ed8; cursor:pointer; font-size:20px; }
@@ -188,34 +209,30 @@ function LeadList({ rows, selectedId, onSelect, onSaved }) {
       .lead-workspace select,.lead-workspace textarea,.lead-workspace input:not([type=checkbox]) { box-sizing:border-box; width:100%; border:1px solid #cbd5e1; border-radius:9px; padding:10px 12px; background:#fff; }
       .lead-workspace textarea { min-height:100px; }
       .lead-workspace .btn { border-radius:9px; }
-      @media(max-width:1000px) { .lead-workspace .lead-grid { grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:14px; } .lead-workspace .lead-labels { display:none; } .lead-workspace .lead-details { grid-template-columns:1fr; } .lead-workspace .lead-expanded { padding:12px; } }
+      @media(max-width:1100px) { .lead-workspace .lead-grid { grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:14px; } .lead-workspace .lead-labels { display:none; } .lead-workspace .mobile-field-label { display:block; margin-bottom:4px; font-size:11px; color:#64748b; } .lead-workspace .lead-details { grid-template-columns:1fr; } .lead-workspace .lead-expanded { padding:12px; } }
+      @media(max-width:620px) { .lead-workspace .lead-grid { grid-template-columns:minmax(0,1fr); } .lead-workspace .lead-summary { position:relative; padding-right:58px; } .lead-workspace .lead-toggle { position:absolute; top:16px; right:12px; } }
     `}</style>
-    <div className="lead-heading"><b>Leads <span className="small">({rows.length})</span></b><span className="small">Expand a lead to view details and take action · Refresh All for new messages</span></div>
-    <div className="lead-grid lead-labels"><span>Student Name</span><span>Mobile Number</span><span>Course</span><span>Priority / Status</span><span>Counselor</span><span>WhatsApp Window</span><span /></div>
-    {!rows.length && <div style={{ padding: 24 }}>No leads found</div>}
+    <div className="lead-heading"><b>{sectionTitle} <span className="small">({rows.length})</span></b><span className="small">Expand a record to view details and take action</span></div>
+    <div className="lead-grid lead-labels"><span>{tab === "faculty" ? "Faculty Name" : "Name"}</span><span>Mobile Number</span><span>{tab === "support" ? "Issue" : "Course"}</span><span>Priority / Status</span><span>Assigned Owner</span><span>{extraTitle}</span><span /></div>
+    {!rows.length && <div style={{ padding: 24 }}>No records found</div>}
     {rows.map(row => {
       const expanded = selectedId === row.id;
       return <Fragment key={row.id}>
         <div className={`lead-grid lead-summary ${expanded ? "is-open" : ""}`} onClick={() => onSelect(expanded ? null : row)}>
-          <div className="lead-cell"><strong>{row.name || "Unnamed lead"}</strong><div className="small">Lead #{row.id}</div></div>
-          <div className="lead-cell" style={{ fontVariantNumeric: "tabular-nums" }}>{row.mobile || "—"}</div>
-          <div className="lead-cell">{row.course || "—"}</div>
-          <div className="lead-cell"><PriorityBadge priority={row.priority} /><div style={{ marginTop: 6 }}><StatusBadge status={row.status} /></div></div>
-          <div className="lead-cell">{row.owner || "Unassigned"}</div>
-          <div className="lead-cell"><WhatsappWindowBadge row={row} /></div>
+          <div className="lead-cell"><strong>{row.name || "Unnamed lead"}</strong><div className="small">{isLead ? "Lead" : "Record"} #{row.id}</div></div>
+          <div className="lead-cell" style={{ fontVariantNumeric: "tabular-nums" }}><span className="mobile-field-label">Mobile Number</span>{row.mobile || "—"}</div>
+          <div className="lead-cell"><span className="mobile-field-label">{tab === "support" ? "Issue" : "Course"}</span>{(tab === "support" ? row.issue : row.course) || "—"}</div>
+          <div className="lead-cell"><span className="mobile-field-label">Priority / Status</span><PriorityBadge priority={row.priority} /><div style={{ marginTop: 6 }}><StatusBadge status={row.status} /></div></div>
+          <div className="lead-cell"><span className="mobile-field-label">Assigned Owner</span>{row.owner || "Unassigned"}</div>
+          <div className="lead-cell"><span className="mobile-field-label">{extraTitle}</span>{isLead ? <WhatsappWindowBadge row={row} /> : <>{tab === "faculty" && <div>{row.mode || "—"}</div>}<div className="small">{formatLeadDate(tab === "appointments" ? row.datetime : row.created_at)}</div></>}</div>
           <button type="button" className="lead-toggle" aria-expanded={expanded} aria-controls={`lead-panel-${row.id}`} aria-label={`${expanded ? "Collapse" : "Expand"} ${row.name || "lead"}`} onClick={event => { event.stopPropagation(); onSelect(expanded ? null : row); }}>{expanded ? "⌃" : "⌄"}</button>
         </div>
         {expanded && <section id={`lead-panel-${row.id}`} className="lead-expanded" aria-label={`Details for ${row.name || "lead"}`}>
-          <h3 style={{ marginTop: 0 }}>Lead Details</h3>
+          <h3 style={{ marginTop: 0 }}>{isLead ? "Lead" : "Record"} Details</h3>
           <div className="lead-details">
-            <div><span className="small">Original enquiry</span><p>{formatLeadDate(row.created_at)}</p></div>
-            <div><span className="small">Latest enquiry</span><p>{formatLeadDate(row.last_enquiry_at)}</p></div>
-            <div><span className="small">Enquiry count</span><p>{row.enquiry_count ?? 1}</p></div>
-            <div><span className="small">Source</span><p>{row.source || "—"}</p></div>
-            <div><span className="small">Follow-up note</span><p>{row.note || "—"}</p></div>
-            <div><span className="small">Admin note</span><p>{row.admin_note || "—"}</p></div>
+            {detailFields.map(([key, label]) => <div key={key}><span className="small">{label}</span><p>{dateKeys.includes(key) ? formatLeadDate(row[key]) : String(row[key] ?? "—")}</p></div>)}
           </div>
-          <ActionPanel tab="leads" row={row} onSaved={onSaved} />
+          <ActionPanel tab={tab} row={row} onSaved={onSaved} />
         </section>}
       </Fragment>;
     })}
@@ -451,14 +468,14 @@ function ActionPanel({ tab, row, onSaved }) {
         <label>
           Priority
           <select value={priority} onChange={(e) => setPriority(e.target.value)}>
-            {priorities.map((s) => <option key={s}>{s}</option>)}
+            {priorities.map((s) => <option key={s} value={s}>{displayLabel(s)}</option>)}
           </select>
         </label>
 
         <label>
           Status
           <select value={status} onChange={(e) => setStatus(e.target.value)}>
-            {(statusOptions[tab] || [row.status || "new"]).map((s) => <option key={s}>{s}</option>)}
+            {(statusOptions[tab] || [row.status || "new"]).map((s) => <option key={s} value={s}>{displayLabel(s)}</option>)}
           </select>
         </label>
 
@@ -1621,7 +1638,7 @@ export default function App() {
         ) : activeTab === "integration" ? (
           <IntegrationPanel />
         ) : activeTab === "pipeline" ? (
-          <Pipeline ActionPanel={ActionPanel} onSaved={loadAll} />
+          <Pipeline RecordList={LeadList} onSaved={loadAll} />
         ) : (
           <>
             <div className="searchBar">
@@ -1629,7 +1646,7 @@ export default function App() {
 
               <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}>
                 <option value="all">All Status</option>
-                {(statusOptions[activeTab] || []).map((s) => <option key={s}>{s}</option>)}
+                {(statusOptions[activeTab] || []).map((s) => <option key={s} value={s}>{displayLabel(s)}</option>)}
               </select>
 
               <select value={filterPriority} onChange={(e) => setFilterPriority(e.target.value)}>
@@ -1645,8 +1662,8 @@ export default function App() {
               </div>
             </div>
 
-            {activeTab === "leads" ? (
-              <LeadList rows={filteredRows} selectedId={selected?.id} onSelect={setSelected} onSaved={loadAll} />
+            {["leads", "admissions", "appointments", "support", "faculty"].includes(activeTab) ? (
+              <LeadList tab={activeTab} rows={filteredRows} selectedId={selected?.id} onSelect={setSelected} onSaved={loadAll} />
             ) : <div className="grid2">
               <DataTable tab={activeTab} rows={filteredRows} selectedId={selected?.id} onSelect={setSelected} />
 
