@@ -1,269 +1,98 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
-export default function Pipeline({ ActionPanel, onSaved }) {
+const stages = [
+  ["new_leads", "New Leads", "#2563eb"],
+  ["hot_leads", "Hot Leads", "#ea580c"],
+  ["very_hot_leads", "Very Hot 🔥", "#be123c"],
+  ["re_enquiry", "Re-Enquiry", "#7c3aed"],
+  ["followup_today", "Follow-up Today", "#0891b2"],
+  ["no_response", "No Response", "#64748b"],
+  ["converted", "Converted", "#15803d"],
+];
+
+export default function Pipeline({ RecordList, onSaved }) {
   const [data, setData] = useState({});
   const [selectedStage, setSelectedStage] = useState(null);
-  const [selectedLeads, setSelectedLeads] = useState([]);
-  const [editingLead, setEditingLead] = useState(null);
+  const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [query, setQuery] = useState("");
+  const [priority, setPriority] = useState("all");
+  const [status, setStatus] = useState("all");
+  const requestVersion = useRef(0);
 
   const loadPipeline = async () => {
+    const version = ++requestVersion.current;
     setLoading(true);
-
+    setError("");
     try {
       const res = await fetch("/api/admin/pipeline");
+      if (!res.ok) throw new Error(`Pipeline could not load (${res.status}). Please retry.`);
       const json = await res.json();
-
-      setData(json.data || {});
-
-      // Agar stage already open hai to uski list bhi refresh karo
-      if (selectedStage) {
-        const stageMap = {
-          "New Leads": "new_leads",
-          "Hot Leads": "hot_leads",
-          "Very Hot 🔥": "very_hot_leads",
-          "Re-Enquiry": "re_enquiry",
-          "Follow-up Today": "followup_today",
-          "No Response": "no_response",
-          "Converted": "converted",
-        };
-
-        const key = stageMap[selectedStage];
-        setSelectedLeads(json.data?.[key] || []);
-      }
+      if (version === requestVersion.current) setData(json.data || {});
     } catch (err) {
-      console.error("Pipeline load error:", err);
+      if (version === requestVersion.current) setError(err.message || "Pipeline could not load. Please retry.");
     } finally {
-      setLoading(false);
+      if (version === requestVersion.current) setLoading(false);
     }
   };
 
-  useEffect(() => {
-    loadPipeline();
-  }, []);
+  useEffect(() => { loadPipeline(); return () => { requestVersion.current += 1; }; }, []);
+  const selectedLeads = data[selectedStage] || [];
+  const title = stages.find(([key]) => key === selectedStage)?.[1];
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    const phone = /^[+\d\s()-]+$/.test(q) ? q.replace(/\D/g, "") : "";
+    return selectedLeads.filter(lead =>
+      (priority === "all" || String(lead.priority || "cold").toLowerCase().replace(/_/g, " ") === priority) &&
+      (status === "all" || String(lead.status || "new") === status) &&
+      (JSON.stringify(lead).toLowerCase().includes(q) || (phone && String(lead.mobile || "").replace(/\D/g, "").includes(phone)))
+    );
+  }, [selectedLeads, query, priority, status]);
 
-  const openStage = (title, list) => {
-    setSelectedStage(title);
-    setSelectedLeads(list || []);
-    setEditingLead(null);
+  const openStage = key => {
+    setSelectedStage(key);
+    setEditingId(null);
+    setQuery(""); setPriority("all"); setStatus("all");
   };
-
   const handleSaved = async () => {
     await loadPipeline();
     await onSaved?.();
-    setEditingLead(null);
+    setEditingId(null);
   };
 
-  const Card = ({ title, list }) => (
-    <div
-      onClick={() => openStage(title, list)}
-      style={{
-        padding: 20,
-        border: "1px solid #ddd",
-        borderRadius: 10,
-        cursor: "pointer",
-        background: "#fff",
-      }}
-    >
-      <h3 style={{ marginTop: 0 }}>{title}</h3>
-      <h2>{list?.length || 0}</h2>
-      <div style={{ fontSize: 12, color: "#666" }}>
-        Click to view leads
-      </div>
+  return <div className="pipeline-workspace">
+    <style>{`
+      .pipeline-workspace { color:#1e293b; }
+      .pipeline-workspace .pipeline-toolbar { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:18px; }
+      .pipeline-workspace .pipeline-stages { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:16px; }
+      .pipeline-workspace .pipeline-stage { text-align:left; padding:20px; border:1px solid #e2e8f0; border-radius:14px; background:#fff; cursor:pointer; box-shadow:0 4px 18px #0f172a06; font:inherit; color:inherit; }
+      .pipeline-workspace .pipeline-stage:hover { background:#f8fafc; }
+      .pipeline-workspace .pipeline-stage:focus-visible { outline:3px solid #93c5fd; }
+      .pipeline-workspace .pipeline-count { font-size:30px; font-weight:750; margin:12px 0 6px; }
+      .pipeline-workspace .pipeline-subtitle { font-size:12px; color:#64748b; }
+      .pipeline-workspace .pipeline-filters { display:grid; grid-template-columns:2fr 1fr 1fr; gap:12px; margin-bottom:16px; }
+      .pipeline-workspace .pipeline-filters input,.pipeline-workspace .pipeline-filters select { width:100%; box-sizing:border-box; border:1px solid #cbd5e1; border-radius:9px; padding:11px; background:white; }
+      @media(max-width:620px) { .pipeline-workspace .pipeline-filters { grid-template-columns:1fr; } }
+    `}</style>
+    <div className="pipeline-toolbar">
+      <div><h2 style={{ margin:0 }}>Pipeline</h2><span className="pipeline-subtitle">Select a stage to review and follow up with leads</span></div>
+      <button type="button" className="btn btn2" disabled={loading} onClick={loadPipeline}>{loading ? "Refreshing…" : "Refresh Pipeline"}</button>
     </div>
-  );
-
-  const formatDate = (value) => {
-    if (!value) return "-";
-
-    const d = new Date(value);
-
-    if (Number.isNaN(d.getTime())) {
-      return String(value);
-    }
-
-    return d.toLocaleString("en-IN");
-  };
-
-  return (
-    <div>
-      {loading && (
-        <div
-          style={{
-            marginBottom: 10,
-            fontSize: 13,
-            color: "#666",
-          }}
-        >
-          Refreshing pipeline...
-        </div>
-      )}
-
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(3, 1fr)",
-          gap: 20,
-        }}
-      >
-        <Card title="New Leads" list={data.new_leads} />
-        <Card title="Hot Leads" list={data.hot_leads} />
-        <Card title="Very Hot 🔥" list={data.very_hot_leads} />
-        <Card title="Re-Enquiry" list={data.re_enquiry} />
-        <Card title="Follow-up Today" list={data.followup_today} />
-        <Card title="No Response" list={data.no_response} />
-        <Card title="Converted" list={data.converted} />
-      </div>
-
-      {selectedStage && (
-        <div
-          style={{
-            marginTop: 25,
-            padding: 20,
-            border: "1px solid #ddd",
-            borderRadius: 10,
-            background: "#fff",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginBottom: 15,
-            }}
-          >
-            <h2 style={{ margin: 0 }}>
-              {selectedStage} ({selectedLeads.length})
-            </h2>
-
-            <button
-              onClick={() => {
-                setSelectedStage(null);
-                setSelectedLeads([]);
-                setEditingLead(null);
-              }}
-              style={{
-                padding: "8px 14px",
-                cursor: "pointer",
-                borderRadius: 6,
-              }}
-            >
-              Close
-            </button>
-          </div>
-
-          {selectedLeads.length === 0 ? (
-            <div>No leads available in this stage.</div>
-          ) : (
-            <div style={{ overflowX: "auto" }}>
-              <table
-                style={{
-                  width: "100%",
-                  borderCollapse: "collapse",
-                  minWidth: 1200,
-                }}
-              >
-                <thead>
-                  <tr>
-                    <th style={th}>ID</th>
-                    <th style={th}>Name</th>
-                    <th style={th}>Mobile</th>
-                    <th style={th}>Course</th>
-                    <th style={th}>Priority</th>
-                    <th style={th}>Status</th>
-                    <th style={th}>Counselor</th>
-                    <th style={th}>Enquiry Count</th>
-                    <th style={th}>Last Enquiry</th>
-                    <th style={th}>Next Follow-up</th>
-                    <th style={th}>Created</th>
-                    <th style={th}>Action</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {selectedLeads.map((lead) => (
-                    <tr key={lead.id}>
-                      <td style={td}>{lead.id}</td>
-                      <td style={td}>{lead.name || "-"}</td>
-                      <td style={td}>{lead.mobile || "-"}</td>
-                      <td style={td}>{lead.course || "-"}</td>
-                      <td style={td}>{lead.priority || "-"}</td>
-                      <td style={td}>{lead.status || "-"}</td>
-                      <td style={td}>{lead.owner || "-"}</td>
-                      <td style={td}>
-                        {lead.enquiry_count ?? 0}
-                      </td>
-                      <td style={td}>
-                        {formatDate(lead.last_enquiry_at)}
-                      </td>
-                      <td style={td}>
-                        {formatDate(lead.next_followup)}
-                      </td>
-                      <td style={td}>
-                        {formatDate(lead.created_at)}
-                      </td>
-
-                      <td style={td}>
-                        <button
-                          onClick={() => setEditingLead(lead)}
-                          style={{
-                            padding: "7px 12px",
-                            cursor: "pointer",
-                            borderRadius: 6,
-                            whiteSpace: "nowrap",
-                          }}
-                        >
-                          View / Edit
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
-      )}
-
-      {editingLead && ActionPanel && (
-        <div
-          style={{
-            marginTop: 20,
-          }}
-        >
-          <ActionPanel
-            tab="leads"
-            row={editingLead}
-            onSaved={handleSaved}
-          />
-
-          <button
-            onClick={() => setEditingLead(null)}
-            style={{
-              marginTop: 10,
-              padding: "8px 14px",
-              cursor: "pointer",
-              borderRadius: 6,
-            }}
-          >
-            Close Edit Panel
-          </button>
-        </div>
-      )}
+    {error && <div role="alert" style={{ padding:14, marginBottom:16, background:"#fef2f2", color:"#991b1b", borderRadius:10 }}>{error}</div>}
+    <div className="pipeline-stages">
+      {stages.map(([key, label, color]) => <button type="button" key={key} className="pipeline-stage" aria-pressed={selectedStage === key} onClick={() => openStage(key)} style={{ borderTop:`3px solid ${color}`, background:selectedStage === key ? "#eff6ff" : undefined }}>
+        <strong>{label}</strong><div className="pipeline-count" style={{ color }}>{data[key]?.length || 0}</div><span className="pipeline-subtitle">View leads →</span>
+      </button>)}
     </div>
-  );
+    {selectedStage && <section style={{ marginTop:24 }}>
+      <div className="pipeline-toolbar"><h3 style={{ margin:0 }}>{title} ({selectedLeads.length})</h3><button type="button" className="btn btn2" onClick={() => { setSelectedStage(null); setEditingId(null); }}>Close Stage</button></div>
+      <div className="pipeline-filters">
+        <input aria-label="Search pipeline leads" placeholder="Search by name, mobile number or course" value={query} onChange={e => setQuery(e.target.value)} />
+        <select aria-label="Filter pipeline priority" value={priority} onChange={e => setPriority(e.target.value)}><option value="all">All Priority</option>{["very hot", "hot", "warm", "cold"].map(value => <option key={value} value={value}>{value.replace(/\b\w/g, char => char.toUpperCase())}</option>)}</select>
+        <select aria-label="Filter pipeline status" value={status} onChange={e => setStatus(e.target.value)}><option value="all">All Status</option>{[...new Set(selectedLeads.map(lead => lead.status || "new"))].map(value => <option key={value} value={value}>{value.replace(/[_-]/g, " ").replace(/\b\w/g, char => char.toUpperCase())}</option>)}</select>
+      </div>
+      <RecordList rows={filtered} selectedId={editingId} onSelect={lead => setEditingId(lead?.id ?? null)} onSaved={handleSaved} tab="leads" title={title} />
+    </section>}
+  </div>;
 }
-
-const th = {
-  padding: 10,
-  borderBottom: "2px solid #ddd",
-  textAlign: "left",
-  whiteSpace: "nowrap",
-};
-
-const td = {
-  padding: 10,
-  borderBottom: "1px solid #eee",
-  verticalAlign: "top",
-};
