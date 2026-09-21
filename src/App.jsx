@@ -683,22 +683,44 @@ function ActionPanel({ tab, row, onSaved }) {
   );
 }
 
-function CounselorDashboard({ stats }) {
-  return (
-    <div className="ownerGrid">
-      {stats.map((s) => (
-        <div className="card ownerCard" key={s.owner}>
-          <div className="row">
-            <b>{s.owner}</b>
-            <span className="tag">{s.total}</span>
-          </div>
-          <div className="small">Hot: {s.hot} · Warm: {s.warm} · Cold: {s.cold}</div>
-          <div className="small">Converted: {s.converted}</div>
-          <div className="small">Follow-up: {s.follow_up}</div>
-        </div>
-      ))}
-    </div>
+function CounselorDashboard({ stats, data, onSaved }) {
+  const [owner, setOwner] = useState(null);
+  const [category, setCategory] = useState("total");
+  const [section, setSection] = useState("leads");
+  const [selectedId, setSelectedId] = useState(null);
+  const [search, setSearch] = useState("");
+  const sections = ["leads", "admissions", "appointments", "support", "faculty"];
+  const categories = [
+    ["total", "All", "#2563eb"], ["hot", "Hot", "#ea580c"],
+    ["warm", "Warm", "#ca8a04"], ["cold", "Cold", "#64748b"],
+    ["converted", "Converted", "#15803d"], ["follow_up", "Follow-up", "#0891b2"],
+  ];
+  const matches = (row) => {
+    const priority = String(row.priority || "cold").toLowerCase().replace(/_/g, " ");
+    const status = String(row.status || "").toLowerCase();
+    if (category === "hot") return priority === "hot";
+    if (category === "warm" || category === "cold") return priority === category;
+    if (category === "converted") return ["converted", "completed", "resolved", "selected"].includes(status);
+    if (category === "follow_up") return ["follow_up", "contacted", "interested", "confirmed", "in_progress"].includes(status);
+    return true;
+  };
+  const rows = (data[section] || []).filter(row =>
+    (row.owner || "Unassigned") === owner && matches(row) &&
+    JSON.stringify(row).toLowerCase().includes(search.trim().toLowerCase())
   );
+  return <div className="counselor-workspace">
+    <div className="row" style={{marginBottom:16,flexWrap:"wrap"}}><div><h2 style={{margin:0}}>Team & Departments</h2><span className="small">Select any count to view matching records and use its Action Panel.</span></div>{owner && <button className="btn btn2" onClick={() => {setOwner(null);setSelectedId(null);}}>Back to Team</button>}</div>
+    <div className="ownerGrid">{stats.map(s => <div className="card ownerCard" key={s.owner} style={{borderColor:owner===s.owner?"#2563eb":undefined}}>
+      <div className="row"><b>{s.owner}</b><span className="tag">{s.total}</span></div>
+      <div className="owner-counters">{categories.map(([key,label,color]) => <button type="button" key={key} style={{borderColor:color,color,background:owner===s.owner&&category===key?"#eff6ff":"#fff"}} onClick={() => {setOwner(s.owner);setCategory(key);setSelectedId(null);setSearch("");}}>{label}<strong>{s[key] ?? 0}</strong></button>)}</div>
+    </div>)}</div>
+    {owner && <section className="card" style={{marginTop:18}}>
+      <div className="row" style={{flexWrap:"wrap",marginBottom:12}}><div><h3 style={{margin:0}}>{owner} · {categories.find(c=>c[0]===category)?.[1]}</h3><span className="small">Counts include all five departments. Choose a section below to view its records.</span></div><button className="btn btn2" onClick={() => {setOwner(null);setSelectedId(null);}}>Close</button></div>
+      <div className="tabs">{sections.map(key => <button key={key} type="button" className={section===key?"btn":"btn btn2"} onClick={() => {setSection(key);setSelectedId(null);}}>{displayLabel(key)} ({(data[key]||[]).filter(r=>(r.owner||"Unassigned")===owner&&matches(r)).length})</button>)}</div>
+      <input aria-label="Search assigned records" placeholder="Search name, mobile, course or any field" value={search} onChange={e=>setSearch(e.target.value)} style={{marginBottom:12}} />
+      <LeadList tab={section} rows={rows} selectedId={selectedId} onSelect={row=>setSelectedId(row?.id??null)} onSaved={onSaved} title={`${owner} · ${displayLabel(section)}`} />
+    </section>}
+  </div>;
 }
 
 function Automation({ config, onSave }) {
@@ -1741,13 +1763,13 @@ export default function App() {
         </div>
 
         {activeTab === "counselors" ? (
-          <CounselorDashboard stats={stats} />
+          <CounselorDashboard stats={stats} data={data} onSaved={loadAll} />
         ) : activeTab === "automation" ? (
           <Automation config={config} onSave={saveConfig} />
         ) : activeTab === "integration" ? (
           <IntegrationPanel />
         ) : activeTab === "pipeline" ? (
-          <Pipeline RecordList={LeadList} onSaved={loadAll} snapshot={pipelineSnapshot} />
+          <Pipeline RecordList={LeadList} onSaved={loadAll} snapshot={pipelineSnapshot} apiBaseUrl={api.defaults.baseURL} />
         ) : (
           <>
             <div className="searchBar">
