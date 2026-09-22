@@ -123,8 +123,8 @@ function Login({ onLogin }) {
   );
 }
 
-const Kpi = ({ title, value }) => (
-  <div className="card stats-card">
+const Kpi = ({ title, value, onClick }) => (
+  <div className="card stats-card" role={onClick ? "button" : undefined} tabIndex={onClick ? 0 : undefined} onClick={onClick} onKeyDown={onClick ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onClick(); } } : undefined} style={onClick ? { cursor: "pointer", borderColor: "#93c5fd" } : undefined}>
     <div className="small">{title}</div>
     <div className="big">{value}</div>
   </div>
@@ -1751,7 +1751,7 @@ export default function App() {
               if (user?.role === "Counselor") {
                 rows = rows.filter((r) => String(r.owner || "").trim() === String(user.owner || "").trim());
               }
-              return <Kpi key={t.key} title={t.label} value={rows.length} />;
+              return <Kpi key={t.key} title={t.label} value={rows.length} onClick={user.access.includes(t.key) ? () => setActiveTab(t.key) : undefined} />;
             })}
         </div>
 
