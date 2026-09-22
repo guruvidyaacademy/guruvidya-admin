@@ -1,3 +1,4 @@
+import BookingDashboard from "./pages/BookingDashboard";
 import Pipeline from "./pages/Pipeline";
 import { useEffect, useMemo, useState, useRef, Fragment } from "react";
 import axios from "axios";
@@ -15,6 +16,7 @@ const USERS = [
       "leads",
       "admissions",
       "appointments",
+      "booking_dashboard",
       "support",
       "faculty",
       "alerts",
@@ -45,6 +47,7 @@ const allTabs = [
   ["leads", "Leads"],
   ["admissions", "Admissions"],
   ["appointments", "Appointments"],
+  ["booking_dashboard", "Student Booking"],
   ["support", "Support"],
   ["faculty", "Faculty"],
   ["alerts", "Alerts"],
@@ -1762,7 +1765,9 @@ export default function App() {
           ))}
         </div>
 
-        {activeTab === "counselors" ? (
+        {activeTab === "booking_dashboard" ? (
+          <BookingDashboard />
+        ) : activeTab === "counselors" ? (
           <CounselorDashboard stats={stats} data={data} onSaved={loadAll} />
         ) : activeTab === "automation" ? (
           <Automation config={config} onSave={saveConfig} />
