@@ -34,3 +34,36 @@
 .bk-action-restore{background:#eaf2ff;color:#2358a5;border-color:#bfd5f5}
 .bk-booking-actions .bk-btn:disabled,.bk-action-restore:disabled{opacity:.5;cursor:not-allowed}
 @media(max-width:650px){.bk-booking-actions{max-width:100%;gap:7px}.bk-booking-actions .bk-btn{min-height:38px;white-space:normal}}
+
+/* Final approved layout: Trash first, then three FULL-WIDTH stacked date sections.
+   Colour belongs to the date section, not to the appointment mode. */
+.booking-ui .bk-trash-section{border:1px solid #ffc4cb;background:#fffafb;padding:0;overflow:hidden;margin-bottom:14px}
+.booking-ui .bk-trash-head{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;padding:14px 18px;background:#fff0f2;border-bottom:1px solid #ffd5db}
+.booking-ui .bk-trash-head h3{color:#bd2638;font-size:18px;margin:0 0 3px}
+.booking-ui .bk-trash-section .bk-tablewrap{padding:8px 12px 12px}
+.booking-ui .bk-trash-section .bk-table{min-width:850px}
+.booking-ui .bk-date-section{width:100%;max-width:none;margin:14px 0;border-radius:12px;padding:0;overflow:hidden}
+.booking-ui .bk-date-heading{padding:15px 18px}
+.booking-ui .bk-date-heading h3{font-size:19px}
+.booking-ui .bk-date-today{border-color:#b9d8ff;background:#f8fbff}
+.booking-ui .bk-date-today .bk-date-heading{background:#eaf3ff;border-color:#c9e1ff}
+.booking-ui .bk-date-today .bk-date-count{background:#1268e6;color:#fff}
+.booking-ui .bk-date-upcoming{border-color:#bde7ca;background:#f9fffb}
+.booking-ui .bk-date-upcoming .bk-date-heading{background:#e9faef;border-color:#ccebd5}
+.booking-ui .bk-date-upcoming .bk-date-count{background:#159447;color:#fff}
+.booking-ui .bk-date-previous{border-color:#d5dce5;background:#fafbfc}
+.booking-ui .bk-date-previous .bk-date-heading{background:#edf1f5;border-color:#dce2e9}
+.booking-ui .bk-date-previous .bk-date-count{background:#526071;color:#fff}
+.booking-ui .bk-date-section .bk-mode-section{margin:10px 14px;border:1px solid #dce5ef;background:#fff;border-radius:9px}
+.booking-ui .bk-date-section .bk-mode-heading{background:#f6f9fc;border-bottom:1px solid #e0e7f0;padding:10px 14px}
+.booking-ui .bk-date-today .bk-mode-heading{background:#f0f7ff}
+.booking-ui .bk-date-upcoming .bk-mode-heading{background:#f0fbf4}
+.booking-ui .bk-date-previous .bk-mode-heading{background:#f3f5f8}
+.booking-ui .bk-date-section .bk-mode-online .bk-mode-heading,.booking-ui .bk-date-section .bk-mode-offline .bk-mode-heading{border-radius:0}
+.booking-ui .bk-date-section .bk-table{min-width:960px;background:#fff}
+.booking-ui .bk-date-section .bk-table tbody tr:nth-child(even){background:#fbfdff}
+.booking-ui .bk-date-section .bk-table tbody tr:hover{background:#f3f8ff}
+.booking-ui .bk-date-section .bk-trash-toolbar{background:#fff;padding:8px 12px}
+.booking-ui .bk-date-section .bk-status{font-size:12px;font-weight:700}
+.booking-ui .bk-date-section .bk-booking-actions .bk-btn{min-height:34px;text-transform:none}
+@media(max-width:700px){.booking-ui .bk-trash-head{align-items:flex-start}.booking-ui .bk-date-section .bk-mode-section{margin:8px}.booking-ui .bk-date-heading h3{font-size:17px}}
