@@ -9,3 +9,28 @@
 
 /* Separate mode tables within each appointment-date category */
 .bk-mode-section{margin:14px 0 20px;border:1px solid #dce5ef;border-radius:12px;overflow:hidden;background:#fff}.bk-mode-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 16px;background:#f3f7fb;border-bottom:1px solid #e1e9f2}.bk-mode-online .bk-mode-heading{background:#eff6ff}.bk-mode-offline .bk-mode-heading{background:#f1f8f3}.bk-mode-heading h4{margin:0 0 3px;font-size:15px;color:#203650}.bk-mode-count{font-size:12px;font-weight:700;color:#334b66;background:#fff;border:1px solid #dce5ef;border-radius:20px;padding:5px 10px}.bk-mode-section .bk-tablewrap{margin:0;border:0;border-radius:0}.bk-mode-section .bk-trash-toolbar{margin:0;border:0;border-bottom:1px solid #e1e9f2;border-radius:0}
+
+/* Booking list: informational status badges, consistent actions, and trash mode */
+.bk-status{display:inline-flex;align-items:center;justify-content:center;gap:4px;padding:5px 10px;border-radius:999px;font-weight:700;font-size:12px;line-height:1.3;text-transform:capitalize;white-space:nowrap;border:1px solid transparent;cursor:default}
+.bk-status-confirmed{background:#e7f7ee;color:#12653b;border-color:#b9e5ca}
+.bk-status-approved,.bk-status-completed{background:#e5f7f4;color:#12685f;border-color:#b8e5de}
+.bk-status-requested,.bk-status-awaiting{background:#fff4d9;color:#875500;border-color:#f1d898}
+.bk-status-rescheduled{background:#e8f1ff;color:#225aa7;border-color:#c3d8fa}
+.bk-status-cancelled{background:#fff0f0;color:#a52b34;border-color:#f3c9cd}
+.bk-status-no_show{background:#f0f2f5;color:#596273;border-color:#dce1e8}
+.bk-mode-badge{display:inline-flex;padding:5px 10px;border-radius:999px;font-size:12px;font-weight:700;text-transform:capitalize;border:1px solid transparent;white-space:nowrap}
+.bk-mode-online{background:#e7f0ff;color:#2358a5;border-color:#c7dbff}
+.bk-mode-offline{background:#f0eaff;color:#6942a1;border-color:#dfd0fa}
+.bk-booking-actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:10px;max-width:480px}
+.bk-booking-actions .bk-btn,.bk-action-restore{display:inline-flex;align-items:center;justify-content:center;min-height:34px;padding:7px 11px;border-radius:8px;font-size:12px;font-weight:650;line-height:1.25;white-space:nowrap;transition:background-color .15s,border-color .15s,box-shadow .15s}
+.bk-booking-actions .bk-btn:focus-visible,.bk-action-restore:focus-visible{outline:3px solid #80b8ff;outline-offset:2px}
+.bk-booking-actions .bk-join{background:#15804c;color:white;border-color:#15804c;text-decoration:none}
+.bk-booking-actions .bk-action-approve{background:#e6f6ed;color:#17683c;border-color:#b7e0c8}
+.bk-booking-actions .bk-action-reassign,.bk-booking-actions .bk-action-reschedule{background:#eaf2ff;color:#2459a5;border-color:#c5d9f7}
+.bk-booking-actions .bk-action-complete{background:#e5f6f2;color:#12695e;border-color:#b9e2d8}
+.bk-booking-actions .bk-action-cancel{background:#fff4f4;color:#a52b34;border-color:#eebdc3}
+.bk-booking-actions .bk-action-no_show{background:#f1f3f6;color:#525e70;border-color:#d6dce5}
+.bk-booking-actions .bk-action-secondary{background:#fff;color:#45566e;border-color:#d6dfe9}
+.bk-action-restore{background:#eaf2ff;color:#2358a5;border-color:#bfd5f5}
+.bk-booking-actions .bk-btn:disabled,.bk-action-restore:disabled{opacity:.5;cursor:not-allowed}
+@media(max-width:650px){.bk-booking-actions{max-width:100%;gap:7px}.bk-booking-actions .bk-btn{min-height:38px;white-space:normal}}
