@@ -67,3 +67,11 @@
 .booking-ui .bk-date-section .bk-status{font-size:12px;font-weight:700}
 .booking-ui .bk-date-section .bk-booking-actions .bk-btn{min-height:34px;text-transform:none}
 @media(max-width:700px){.booking-ui .bk-trash-head{align-items:flex-start}.booking-ui .bk-date-section .bk-mode-section{margin:8px}.booking-ui .bk-date-heading h3{font-size:17px}}
+
+/* Booking dashboard: consistent status and mode pills */
+.booking-ui .bk-mode-badge{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:7px;font-size:12px;font-weight:700;white-space:nowrap}
+.booking-ui .bk-mode-badge.bk-mode-online{background:#e6f3ff;color:#145aa2;border:1px solid #b8d9f9}
+.booking-ui .bk-mode-badge.bk-mode-offline{background:#f1eaff;color:#683ca2;border:1px solid #ddcef6}
+.booking-ui .bk-status.bk-status-confirmed{display:inline-flex;align-items:center;gap:5px;background:#e6f7eb;color:#16783d;border:1px solid #a8dcb8;border-radius:7px;padding:6px 12px;font-weight:700;text-transform:capitalize}
+.booking-ui .bk-trash-count{display:inline-flex;vertical-align:middle;align-items:center;margin-left:8px;padding:3px 9px;border-radius:999px;background:#fce2e2;color:#a72a32;font-size:12px;font-weight:700}
+.booking-ui .bk-date-heading h3,.booking-ui .bk-mode-heading h4{display:flex;align-items:center;gap:6px}
