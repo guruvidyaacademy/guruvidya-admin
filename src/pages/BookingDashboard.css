@@ -114,7 +114,9 @@
 .booking-ui .bk-row-actions .bk-view-btn:hover{background:#111827}
 .booking-ui .bk-date-section .bk-mode-heading h4,
 .booking-ui .bk-date-section .bk-mode-online .bk-mode-heading h4,
-.booking-ui .bk-date-section .bk-mode-offline .bk-mode-heading h4{color:#111827 !important}\n\n/* Final unified appointment-table UI: Mode, Status, View, Trash and Actions */
+.booking-ui .bk-date-section .bk-mode-offline .bk-mode-heading h4{color:#111827 !important}
+
+/* Final unified appointment-table UI: Mode, Status, View, Trash and Actions */
 .booking-ui .bk-date-section .bk-table td{color:#111827}
 .booking-ui .bk-date-section .bk-table td strong{color:#111827}
 
@@ -178,3 +180,21 @@
   font-weight:750;
   gap:6px;
 }
+
+
+/* Final row-text correction: appointment details must stay dark, never inherit blue/purple. */
+.booking-ui .bk-date-section .bk-table tbody td,
+.booking-ui .bk-date-section .bk-table tbody td strong,
+.booking-ui .bk-date-section .bk-table tbody td a:not(.bk-btn),
+.booking-ui .bk-date-section .bk-table tbody td span:not(.bk-mode-badge):not(.bk-status):not(.bk-mode-badge *):not(.bk-status *){
+  color:#111827 !important;
+}
+.booking-ui .bk-date-section .bk-table tbody .bk-mode-badge,
+.booking-ui .bk-date-section .bk-table tbody .bk-mode-badge *,
+.booking-ui .bk-date-section .bk-table tbody .bk-status,
+.booking-ui .bk-date-section .bk-table tbody .bk-status *,
+.booking-ui .bk-date-section .bk-table tbody .bk-btn,
+.booking-ui .bk-date-section .bk-table tbody .bk-btn *{
+  color:#fff !important;
+}
+.booking-ui .bk-mode-badge svg{display:block;flex:0 0 auto;stroke:currentColor}
