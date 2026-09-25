@@ -115,52 +115,71 @@
 .booking-ui .bk-date-section .bk-mode-heading h4,
 .booking-ui .bk-date-section .bk-mode-online .bk-mode-heading h4,
 .booking-ui .bk-date-section .bk-mode-offline .bk-mode-heading h4{color:#111827 !important}
-/* Requested status badge — final approved amber style. */
-.booking-ui .bk-status.bk-status-requested{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  gap:5px;
-  min-height:31px;
-  background:#D97706;
-  color:#FFFFFF;
-  border:1px solid #B45309;
-  border-radius:7px;
-  font-weight:750;
-  padding:6px 11px;
-  line-height:1.2;
-  box-sizing:border-box;
-  box-shadow:0 2px 5px rgba(180,83,9,.18);
-}
-.booking-ui .bk-status.bk-status-requested,
-.booking-ui .bk-status.bk-status-requested *{
-  color:#FFFFFF !important;
-}
-/* FINAL: Option 2 Gradient Modern — main appointment section headers only. */
+/* =========================================================
+   FINAL CONSOLIDATED APPROVED OVERRIDES — 25 Sep 2026
+   Preserve approved UI while preventing older rules overriding it.
+   ========================================================= */
+
+/* Option 2 — Gradient Modern: ONLY the three main date headers */
 .booking-ui .bk-date-today .bk-date-heading{
-  background:linear-gradient(110deg,#1e40af 0%,#0284c7 100%);
-  border-color:#1d4ed8;
+  background:linear-gradient(135deg,#2563eb 0%,#1d4ed8 100%) !important;
+  border-color:#1d4ed8 !important;
 }
 .booking-ui .bk-date-upcoming .bk-date-heading{
-  background:linear-gradient(110deg,#065f46 0%,#10b981 100%);
-  border-color:#047857;
+  background:linear-gradient(135deg,#16a34a 0%,#15803d 100%) !important;
+  border-color:#15803d !important;
 }
 .booking-ui .bk-date-previous .bk-date-heading{
-  background:linear-gradient(110deg,#334155 0%,#64748b 100%);
-  border-color:#475569;
+  background:linear-gradient(135deg,#64748b 0%,#475569 100%) !important;
+  border-color:#475569 !important;
 }
 .booking-ui .bk-date-section .bk-date-heading h3,
-.booking-ui .bk-date-section .bk-date-heading p,
-.booking-ui .bk-date-section .bk-date-heading h3 span{
+.booking-ui .bk-date-section .bk-date-heading p{
   color:#fff !important;
 }
-.booking-ui .bk-date-section .bk-date-heading p{opacity:.94}
-.booking-ui .bk-date-today .bk-date-count{
-  background:#1d8cf8;color:#fff;border:1px solid rgba(255,255,255,.2);box-shadow:0 2px 6px rgba(0,0,0,.12)
+.booking-ui .bk-date-today .bk-date-count{background:#3b82f6 !important;color:#fff !important;border-color:rgba(255,255,255,.28) !important}
+.booking-ui .bk-date-upcoming .bk-date-count{background:#22c55e !important;color:#fff !important;border-color:rgba(255,255,255,.28) !important}
+.booking-ui .bk-date-previous .bk-date-count{background:#64748b !important;color:#fff !important;border-color:rgba(255,255,255,.28) !important}
+
+/* Requested status — approved solid amber with white content */
+.booking-ui .bk-status.bk-status-requested{
+  display:inline-flex !important;
+  background:#d97706 !important;
+  color:#fff !important;
+  border:1px solid #b45309 !important;
+  border-radius:7px !important;
+  font-weight:750 !important;
+  padding:6px 11px !important;
+  box-shadow:0 2px 5px rgba(180,83,9,.18) !important;
 }
-.booking-ui .bk-date-upcoming .bk-date-count{
-  background:#10b956;color:#fff;border:1px solid rgba(255,255,255,.2);box-shadow:0 2px 6px rgba(0,0,0,.12)
+.booking-ui .bk-status.bk-status-requested *{color:#fff !important}
+
+/* Appointment numbered rows — all ordinary data stays dark black.
+   Badges/buttons keep their approved colours. */
+.booking-ui .bk-date-section .bk-table tbody td{
+  color:#111827 !important;
 }
-.booking-ui .bk-date-previous .bk-date-count{
-  background:#6b8cad;color:#fff;border:1px solid rgba(255,255,255,.2);box-shadow:0 2px 6px rgba(0,0,0,.12)
+.booking-ui .bk-date-section .bk-table tbody td strong{
+  color:#111827 !important;
 }
+.booking-ui .bk-date-section .bk-table tbody .bk-mode-badge,
+.booking-ui .bk-date-section .bk-table tbody .bk-status,
+.booking-ui .bk-date-section .bk-table tbody .bk-btn,
+.booking-ui .bk-date-section .bk-table tbody .bk-mode-badge *,
+.booking-ui .bk-date-section .bk-table tbody .bk-status *,
+.booking-ui .bk-date-section .bk-table tbody .bk-btn *{
+  color:#fff !important;
+}
+
+/* Move to Trash — approved solid red action treatment */
+.booking-ui .bk-btn.bk-danger{
+  background:#e73340 !important;
+  color:#fff !important;
+  border:1px solid #ca2532 !important;
+  border-radius:7px !important;
+  font-weight:750 !important;
+  box-shadow:0 2px 5px rgba(202,37,50,.15) !important;
+}
+.booking-ui .bk-btn.bk-danger:hover:not(:disabled){background:#ca2532 !important;color:#fff !important}
+.booking-ui .bk-btn.bk-danger *{color:#fff !important}
+.booking-ui .bk-btn.bk-danger:disabled{opacity:.45}
