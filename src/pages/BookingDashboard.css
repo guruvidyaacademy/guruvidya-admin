@@ -94,3 +94,9 @@
 .booking-ui .bk-booking-actions .bk-btn:focus-visible{outline:3px solid #86b7ff;outline-offset:2px}
 .booking-ui .bk-booking-detail{min-width:290px}
 @media(max-width:650px){.booking-ui .bk-booking-actions{max-width:100%}.booking-ui .bk-booking-actions .bk-btn{white-space:normal}}
+
+/* Final mode/action colour refinements */
+.booking-ui .bk-mode-badge.bk-mode-online{background:#0865db;color:#fff;border-color:#0756bc}
+.booking-ui .bk-mode-badge.bk-mode-offline{background:#7c3aed;color:#fff;border-color:#6d28d9}
+.booking-ui .bk-booking-actions .bk-action-reassign{background:#7c3aed;color:#fff;border-color:#6d28d9}
+.booking-ui .bk-date-section .bk-mode-heading h4{color:#111827}
