@@ -115,3 +115,16 @@
 .booking-ui .bk-date-section .bk-mode-heading h4,
 .booking-ui .bk-date-section .bk-mode-online .bk-mode-heading h4,
 .booking-ui .bk-date-section .bk-mode-offline .bk-mode-heading h4{color:#111827 !important}
+/* 25 Sep final requested booking-list corrections */
+.booking-ui .bk-date-section .bk-table tbody td,
+.booking-ui .bk-date-section .bk-table tbody td strong{color:#111827 !important}
+.booking-ui .bk-date-section .bk-table td:nth-child(9),
+.booking-ui .bk-date-section .bk-table td:nth-child(10){vertical-align:middle !important}
+.booking-ui .bk-date-section .bk-table td:nth-child(9) .bk-mode-badge,
+.booking-ui .bk-date-section .bk-table td:nth-child(10) .bk-status{
+display:inline-flex;align-items:center;justify-content:center;min-height:31px;margin:0;line-height:1.2;box-sizing:border-box}
+.booking-ui .bk-status.bk-status-cancelled{background:#e73340 !important;color:#fff !important;border-color:#ca2532 !important}
+.booking-ui .bk-row-actions{display:flex;align-items:center;gap:7px;flex-wrap:nowrap;white-space:nowrap}
+.booking-ui .bk-row-actions .bk-view-btn{background:#1f2937 !important;color:#fff !important;border-color:#111827 !important}
+.booking-ui .bk-row-actions .bk-danger{display:inline-flex;align-items:center;gap:5px;background:#e73340 !important;color:#fff !important;border-color:#ca2532 !important}
+.booking-ui .bk-row-actions .bk-danger:hover{background:#ca2532 !important}
