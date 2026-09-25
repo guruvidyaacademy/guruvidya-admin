@@ -136,3 +136,31 @@
 .booking-ui .bk-status.bk-status-requested *{
   color:#FFFFFF !important;
 }
+/* FINAL: Option 2 Gradient Modern — main appointment section headers only. */
+.booking-ui .bk-date-today .bk-date-heading{
+  background:linear-gradient(110deg,#1e40af 0%,#0284c7 100%);
+  border-color:#1d4ed8;
+}
+.booking-ui .bk-date-upcoming .bk-date-heading{
+  background:linear-gradient(110deg,#065f46 0%,#10b981 100%);
+  border-color:#047857;
+}
+.booking-ui .bk-date-previous .bk-date-heading{
+  background:linear-gradient(110deg,#334155 0%,#64748b 100%);
+  border-color:#475569;
+}
+.booking-ui .bk-date-section .bk-date-heading h3,
+.booking-ui .bk-date-section .bk-date-heading p,
+.booking-ui .bk-date-section .bk-date-heading h3 span{
+  color:#fff !important;
+}
+.booking-ui .bk-date-section .bk-date-heading p{opacity:.94}
+.booking-ui .bk-date-today .bk-date-count{
+  background:#1d8cf8;color:#fff;border:1px solid rgba(255,255,255,.2);box-shadow:0 2px 6px rgba(0,0,0,.12)
+}
+.booking-ui .bk-date-upcoming .bk-date-count{
+  background:#10b956;color:#fff;border:1px solid rgba(255,255,255,.2);box-shadow:0 2px 6px rgba(0,0,0,.12)
+}
+.booking-ui .bk-date-previous .bk-date-count{
+  background:#6b8cad;color:#fff;border:1px solid rgba(255,255,255,.2);box-shadow:0 2px 6px rgba(0,0,0,.12)
+}
