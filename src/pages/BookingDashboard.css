@@ -100,3 +100,18 @@
 .booking-ui .bk-mode-badge.bk-mode-offline{background:#7c3aed;color:#fff;border-color:#6d28d9}
 .booking-ui .bk-booking-actions .bk-action-reassign{background:#7c3aed;color:#fff;border-color:#6d28d9}
 .booking-ui .bk-date-section .bk-mode-heading h4{color:#111827}
+
+
+/* Final 5 requested corrections: alignment, cancelled, view/trash row, dark mode headings. */
+.booking-ui .bk-table td:nth-child(9),
+.booking-ui .bk-table td:nth-child(10){vertical-align:middle}
+.booking-ui .bk-mode-badge,
+.booking-ui .bk-status{min-height:31px;align-items:center;justify-content:center;box-sizing:border-box;line-height:1.2}
+.booking-ui .bk-status.bk-status-cancelled{display:inline-flex;background:#e73340;color:#fff;border:1px solid #ca2532;border-radius:7px;font-weight:750;padding:6px 11px;box-shadow:0 2px 5px rgba(202,37,50,.15)}
+.booking-ui .bk-row-actions{display:flex;align-items:center;gap:7px;flex-wrap:nowrap;white-space:nowrap}
+.booking-ui .bk-row-actions .bk-btn{min-height:34px;padding:7px 10px}
+.booking-ui .bk-row-actions .bk-view-btn{background:#1f2937;color:#fff;border-color:#111827}
+.booking-ui .bk-row-actions .bk-view-btn:hover{background:#111827}
+.booking-ui .bk-date-section .bk-mode-heading h4,
+.booking-ui .bk-date-section .bk-mode-online .bk-mode-heading h4,
+.booking-ui .bk-date-section .bk-mode-offline .bk-mode-heading h4{color:#111827 !important}
