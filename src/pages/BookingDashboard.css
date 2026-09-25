@@ -114,17 +114,9 @@
 .booking-ui .bk-row-actions .bk-view-btn:hover{background:#111827}
 .booking-ui .bk-date-section .bk-mode-heading h4,
 .booking-ui .bk-date-section .bk-mode-online .bk-mode-heading h4,
-.booking-ui .bk-date-section .bk-mode-offline .bk-mode-heading h4{color:#111827 !important}
-/* 25 Sep final requested booking-list corrections */
-.booking-ui .bk-date-section .bk-table tbody td,
-.booking-ui .bk-date-section .bk-table tbody td strong{color:#111827 !important}
-.booking-ui .bk-date-section .bk-table td:nth-child(9),
-.booking-ui .bk-date-section .bk-table td:nth-child(10){vertical-align:middle !important}
-.booking-ui .bk-date-section .bk-table td:nth-child(9) .bk-mode-badge,
-.booking-ui .bk-date-section .bk-table td:nth-child(10) .bk-status{
-display:inline-flex;align-items:center;justify-content:center;min-height:31px;margin:0;line-height:1.2;box-sizing:border-box}
-.booking-ui .bk-status.bk-status-cancelled{background:#e73340 !important;color:#fff !important;border-color:#ca2532 !important}
-.booking-ui .bk-row-actions{display:flex;align-items:center;gap:7px;flex-wrap:nowrap;white-space:nowrap}
-.booking-ui .bk-row-actions .bk-view-btn{background:#1f2937 !important;color:#fff !important;border-color:#111827 !important}
-.booking-ui .bk-row-actions .bk-danger{display:inline-flex;align-items:center;gap:5px;background:#e73340 !important;color:#fff !important;border-color:#ca2532 !important}
-.booking-ui .bk-row-actions .bk-danger:hover{background:#ca2532 !important}
+.booking-ui .bk-date-section .bk-mode-offline .bk-mode-heading h4{color:#111827 !important}\n\n/* Final status alignment refinement: one-line status badges; response detail removed from list. */
+.booking-ui .bk-table td:nth-child(9),
+.booking-ui .bk-table td:nth-child(10){vertical-align:middle !important}
+.booking-ui .bk-table td:nth-child(10)>.bk-status{vertical-align:middle;margin:0}
+.booking-ui .bk-status.bk-status-requested,
+.booking-ui .bk-status.bk-status-awaiting{display:inline-flex;align-items:center;justify-content:center;min-height:31px;background:#d97706;color:#fff;border:1px solid #b45309;border-radius:7px;font-weight:750;padding:6px 11px;box-shadow:0 2px 5px rgba(180,83,9,.16)}
