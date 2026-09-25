@@ -75,3 +75,22 @@
 .booking-ui .bk-status.bk-status-confirmed{display:inline-flex;align-items:center;gap:5px;background:#e6f7eb;color:#16783d;border:1px solid #a8dcb8;border-radius:7px;padding:6px 12px;font-weight:700;text-transform:capitalize}
 .booking-ui .bk-trash-count{display:inline-flex;vertical-align:middle;align-items:center;margin-left:8px;padding:3px 9px;border-radius:999px;background:#fce2e2;color:#a72a32;font-size:12px;font-weight:700}
 .booking-ui .bk-date-heading h3,.booking-ui .bk-mode-heading h4{display:flex;align-items:center;gap:6px}
+
+/* Booking UI approved mockup: date sections retain their existing blue/green/slate palettes. */
+.booking-ui .bk-mode-badge.bk-mode-online,.booking-ui .bk-mode-badge.bk-mode-offline{font-family:inherit;font-size:12px;font-weight:750;line-height:1.25;padding:5px 9px;border-radius:7px;gap:6px;min-height:29px;box-sizing:border-box}
+.booking-ui .bk-status.bk-status-confirmed{background:#07983b;color:#fff;border:1px solid #078336;border-radius:7px;font-weight:750;padding:6px 11px;box-shadow:0 2px 5px rgba(6,118,49,.15)}
+.booking-ui .bk-booking-actions{display:flex;flex-wrap:wrap;gap:7px;align-items:center;max-width:580px;margin-top:12px}
+.booking-ui .bk-booking-actions .bk-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:35px;padding:8px 11px;border-radius:7px;font-family:inherit;font-size:12px;font-weight:750;line-height:1.2;letter-spacing:0;white-space:nowrap;text-decoration:none;border:1px solid transparent;box-shadow:0 2px 5px rgba(15,23,42,.12);transition:filter .15s ease,transform .15s ease,box-shadow .15s ease}
+.booking-ui .bk-booking-actions .bk-btn:hover:not(:disabled){filter:brightness(.94);transform:translateY(-1px);box-shadow:0 4px 9px rgba(15,23,42,.15)}
+.booking-ui .bk-booking-actions .bk-btn:active:not(:disabled){transform:translateY(0)}
+.booking-ui .bk-booking-actions .bk-join{background:#07983b;color:#fff;border-color:#078336}
+.booking-ui .bk-booking-actions .bk-action-approve{background:#07983b;color:#fff;border-color:#078336}
+.booking-ui .bk-booking-actions .bk-action-reassign,.booking-ui .bk-booking-actions .bk-action-reschedule{background:#0865db;color:#fff;border-color:#0756bc}
+.booking-ui .bk-booking-actions .bk-action-complete{background:#078e87;color:#fff;border-color:#077b75}
+.booking-ui .bk-booking-actions .bk-action-cancel{background:#e73340;color:#fff;border-color:#ca2532}
+.booking-ui .bk-booking-actions .bk-action-no_show{background:#db7b10;color:#fff;border-color:#bb660a}
+.booking-ui .bk-booking-actions .bk-action-secondary{background:#51657e;color:#fff;border-color:#41546c}
+.booking-ui .bk-booking-actions .bk-btn:disabled{opacity:.5;box-shadow:none;cursor:not-allowed}
+.booking-ui .bk-booking-actions .bk-btn:focus-visible{outline:3px solid #86b7ff;outline-offset:2px}
+.booking-ui .bk-booking-detail{min-width:290px}
+@media(max-width:650px){.booking-ui .bk-booking-actions{max-width:100%}.booking-ui .bk-booking-actions .bk-btn{white-space:normal}}
