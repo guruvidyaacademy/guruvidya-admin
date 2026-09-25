@@ -198,3 +198,12 @@
   color:#fff !important;
 }
 .booking-ui .bk-mode-badge svg{display:block;flex:0 0 auto;stroke:currentColor}
+
+/* Final action-icon visibility fix: keep current button design, force action SVG icons white. */
+.booking-ui .bk-booking-actions .bk-action-reassign svg,
+.booking-ui .bk-booking-actions .bk-action-reschedule svg,
+.booking-ui .bk-booking-actions .bk-action-cancel svg,
+.booking-ui .bk-booking-actions .bk-action-complete svg,
+.booking-ui .bk-booking-actions .bk-action-no_show svg,
+.booking-ui .bk-booking-actions .bk-action-secondary svg,
+.booking-ui .bk-trash-btn svg{color:#fff;stroke:currentColor;flex:0 0 auto}
