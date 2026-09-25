@@ -114,9 +114,67 @@
 .booking-ui .bk-row-actions .bk-view-btn:hover{background:#111827}
 .booking-ui .bk-date-section .bk-mode-heading h4,
 .booking-ui .bk-date-section .bk-mode-online .bk-mode-heading h4,
-.booking-ui .bk-date-section .bk-mode-offline .bk-mode-heading h4{color:#111827 !important}\n\n/* Final status alignment refinement: one-line status badges; response detail removed from list. */
+.booking-ui .bk-date-section .bk-mode-offline .bk-mode-heading h4{color:#111827 !important}\n\n/* Final unified appointment-table UI: Mode, Status, View, Trash and Actions */
+.booking-ui .bk-date-section .bk-table td{color:#111827}
+.booking-ui .bk-date-section .bk-table td strong{color:#111827}
+
+/* One professional badge family */
+.booking-ui .bk-mode-badge,
+.booking-ui .bk-status{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  min-height:31px;
+  padding:6px 11px;
+  border-radius:8px;
+  border:1px solid transparent;
+  box-sizing:border-box;
+  font-family:inherit;
+  font-size:12px;
+  font-weight:750;
+  line-height:1.2;
+  white-space:nowrap;
+  box-shadow:0 2px 5px rgba(15,23,42,.14);
+}
+.booking-ui .bk-mode-badge.bk-mode-online{background:#2563eb;color:#fff;border-color:#1d4ed8}
+.booking-ui .bk-mode-badge.bk-mode-offline{background:#7c3aed;color:#fff;border-color:#6d28d9}
+.booking-ui .bk-status.bk-status-confirmed{background:#16a34a;color:#fff;border-color:#15803d}
+.booking-ui .bk-status.bk-status-cancelled{background:#dc3545;color:#fff;border-color:#c92a3a}
+.booking-ui .bk-status.bk-status-requested{background:#d97706;color:#fff;border-color:#b45309}
+
+/* Keep Mode and Status vertically centered after removing the Response line */
 .booking-ui .bk-table td:nth-child(9),
-.booking-ui .bk-table td:nth-child(10){vertical-align:middle !important}
-.booking-ui .bk-table td:nth-child(10)>.bk-status{vertical-align:middle;margin:0}
-.booking-ui .bk-status.bk-status-requested,
-.booking-ui .bk-status.bk-status-awaiting{display:inline-flex;align-items:center;justify-content:center;min-height:31px;background:#d97706;color:#fff;border:1px solid #b45309;border-radius:7px;font-weight:750;padding:6px 11px;box-shadow:0 2px 5px rgba(180,83,9,.16)}
+.booking-ui .bk-table td:nth-child(10){vertical-align:middle}
+
+/* View + row Trash use the same compact visual family */
+.booking-ui .bk-row-actions{display:flex;align-items:center;gap:7px;flex-wrap:nowrap;white-space:nowrap}
+.booking-ui .bk-row-actions .bk-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  min-height:34px;
+  padding:7px 11px;
+  border-radius:8px;
+  font-family:inherit;
+  font-size:12px;
+  font-weight:750;
+  line-height:1.2;
+  border:1px solid transparent;
+  box-shadow:0 2px 5px rgba(15,23,42,.14);
+}
+.booking-ui .bk-row-actions .bk-view-btn{background:#334155;color:#fff;border-color:#1f2937}
+.booking-ui .bk-row-actions .bk-view-btn:hover{background:#1f2937}
+.booking-ui .bk-row-actions .bk-trash-btn{background:#dc3545;color:#fff;border-color:#c92a3a}
+.booking-ui .bk-row-actions .bk-trash-btn:hover{background:#c92a3a;color:#fff}
+
+/* Expanded action buttons: same geometry/weight as the table controls */
+.booking-ui .bk-booking-actions .bk-btn{
+  min-height:34px;
+  padding:7px 11px;
+  border-radius:8px;
+  font-size:12px;
+  font-weight:750;
+  gap:6px;
+}
