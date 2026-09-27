@@ -183,3 +183,6 @@
 .booking-ui .bk-btn.bk-danger:hover:not(:disabled){background:#ca2532 !important;color:#fff !important}
 .booking-ui .bk-btn.bk-danger *{color:#fff !important}
 .booking-ui .bk-btn.bk-danger:disabled{opacity:.45}
+
+/* Branch/location column + online meeting icon polish */
+.booking-ui .bk-location-badge{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;font-weight:700;color:#334155}.booking-ui .bk-location-badge svg{color:#e85d0b;flex:0 0 auto}.booking-ui .bk-booking-actions .bk-join svg{color:#fff;stroke:#fff;flex:0 0 auto}
