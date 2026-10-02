@@ -297,9 +297,16 @@
 .booking-ui .bk-ops-card .bk-stat strong{font-size:22px;color:#fff;margin:2px 0}
 .booking-ui .bk-ops-card .bk-stat small{font-size:10px;line-height:1.25;color:rgba(255,255,255,.88)}
 .booking-ui .bk-ops-card>.bk-alert{border:1px solid #f8dfa2;background:#fff8e7;color:#77510b;padding:9px 11px;font-size:11px;border-radius:8px}
-.booking-ui .bk-ops-record{display:grid;grid-template-columns:38px minmax(0,1fr) auto;align-items:center;gap:10px;background:#fff;border:1px solid #dce7f5;border-left:4px solid #17b875;border-radius:8px;box-shadow:0 2px 7px rgba(30,62,102,.06);padding:9px 11px;margin:6px 0}
-.booking-ui .bk-ops-wa{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:#1fbd73;color:#fff;box-shadow:0 2px 6px rgba(31,189,115,.18);flex:0 0 34px}
-.booking-ui .bk-ops-record-copy{min-width:0;font-size:10.5px;color:#536984;line-height:1.35}
-.booking-ui .bk-ops-record-copy strong{display:block;color:#132f55;font-size:11.5px;font-weight:750;line-height:1.3;margin-bottom:2px}
+.booking-ui .bk-ops-record{display:grid;grid-template-columns:38px minmax(0,1fr) auto;align-items:center;gap:10px;background:#fff;border:1px solid #dce7f5;border-left:4px solid #17b875;box-shadow:0 2px 7px rgba(30,62,102,.06);padding:10px 11px}
+.booking-ui .bk-ops-wa{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:#1fbd73;color:#fff;box-shadow:0 2px 6px rgba(31,189,115,.18)}
+.booking-ui .bk-ops-record-copy{min-width:0;font-size:11px;color:#536984;line-height:1.42}
+.booking-ui .bk-ops-record-copy strong{display:block;color:#132f55;font-size:12px;margin-bottom:2px}
 .booking-ui .bk-ops-followup{justify-self:end;background:#f5f9ff!important;border-color:#79aef7!important;color:#075ac4!important;font-size:11px!important;padding:7px 10px!important}
-@media(max-width:700px){.booking-ui .bk-ops-record{display:grid;grid-template-columns:38px minmax(0,1fr) auto;align-items:center;gap:10px;background:#fff;border:1px solid #dce7f5;border-left:4px solid #17b875;border-radius:8px;box-shadow:0 2px 7px rgba(30,62,102,.06);padding:9px 11px;margin:6px 0}.booking-ui .bk-ops-followup{grid-column:2;justify-self:start}.booking-ui .bk-ops-card .bk-stat{min-height:96px}}
+@media(max-width:700px){.booking-ui .bk-ops-record{grid-template-columns:36px 1fr}.booking-ui .bk-ops-followup{grid-column:2;justify-self:start}.booking-ui .bk-ops-card .bk-stat{min-height:96px}}
+
+/* Notification Operations expanded detail rows: compact WhatsApp record style */
+.booking-ui .bk-ops-detail-row{display:grid;grid-template-columns:34px minmax(0,1fr);align-items:start;gap:9px;background:#fff;border:1px solid #dce7f5;border-left:4px solid #17b875;border-radius:8px;box-shadow:0 2px 7px rgba(30,62,102,.05);padding:8px 10px;margin:6px 0}
+.booking-ui .bk-ops-detail-row .bk-ops-wa{width:30px;height:30px;flex-basis:30px;margin-top:1px;background:#1fbd73;color:#fff;box-shadow:0 2px 5px rgba(31,189,115,.16)}
+.booking-ui .bk-ops-detail-copy{min-width:0;color:#536984;font-size:10.5px;line-height:1.35}
+.booking-ui .bk-ops-detail-copy strong{display:block;color:#132f55;font-size:11.5px;font-weight:750;line-height:1.3;margin-bottom:2px}
+.booking-ui .bk-ops-detail-copy time{display:block;color:#71839b;font-size:10px;margin-top:2px}
