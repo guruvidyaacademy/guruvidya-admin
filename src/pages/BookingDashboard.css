@@ -231,3 +231,21 @@
 .booking-ui .bk-wa-pill{font-size:9.5px;padding:4px 8px;font-weight:800}
 .booking-ui .bk-wa-pill.override{font-size:9px}
 .booking-ui .bk-wa-actions .bk-btn{font-size:10px;font-weight:700;min-height:36px;border-radius:8px}
+
+
+/* 2 Oct final WhatsApp test visual hierarchy polish — functionality unchanged */
+.booking-ui .bk-wa-test-panel>.bk-head .bk-icon{background:#25D366;color:#fff;border-color:#20bd5a;box-shadow:0 5px 14px rgba(37,211,102,.22)}
+.booking-ui .bk-wa-test-panel>.bk-head .bk-icon svg{width:27px;height:27px;stroke:#fff;stroke-width:2.15}
+.booking-ui .bk-wa-person-icon{color:#064fc4;background:#e6f2ff;border-color:#b8d7ff}
+.booking-ui .bk-wa-person-icon svg{width:28px;height:28px;stroke-width:2.45}
+.booking-ui .bk-wa-test-card.parent .bk-wa-person-icon{color:#5520b8;background:#f0e7ff;border-color:#d5bdf8}
+.booking-ui .bk-wa-title-row h4{font-size:16px;line-height:1.25;font-weight:800}
+.booking-ui .bk-wa-mobile-row label{font-size:14px;line-height:1.25;font-weight:700}
+.booking-ui .bk-wa-mobile-row input{font-size:14px;font-weight:500}
+.booking-ui .bk-wa-status-row>span{font-size:12px;line-height:1.25;font-weight:650}
+.booking-ui .bk-wa-status-row.incoming b{font-size:12px;font-weight:600}
+.booking-ui .bk-wa-pill{font-size:10px}
+.booking-ui .bk-wa-pill.override{font-size:9.5px}
+.booking-ui .bk-wa-actions .bk-btn{font-size:14px;line-height:1.15;font-weight:700;min-height:38px}
+.booking-ui .bk-wa-status-row.effective>span svg,.booking-ui .bk-wa-status-row.real-window>span svg{color:#e52d3c;stroke-width:2.25}
+.booking-ui .bk-wa-status-row.test-override>span svg{color:#145fd4;stroke-width:2.25}
