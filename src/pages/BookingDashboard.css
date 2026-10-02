@@ -264,3 +264,10 @@
 .booking-ui .bk-wa-real-dot{display:block;width:10px;height:10px;border-radius:50%;background:#1769e8;box-shadow:0 0 0 3px rgba(23,105,232,.10)}
 .booking-ui .bk-wa-status-row.effective .bk-wa-pill{font-weight:850}
 .booking-ui .bk-wa-status-row.real-window .bk-wa-pill{filter:saturate(.88)}
+
+/* 2 Oct Design 2: soft-blue common background for the three WhatsApp status rows only */
+.booking-ui .bk-wa-status-row.effective,
+.booking-ui .bk-wa-status-row.real-window,
+.booking-ui .bk-wa-status-row.test-override{
+  background:#eef7ff;
+}
