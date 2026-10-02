@@ -249,3 +249,18 @@
 .booking-ui .bk-wa-actions .bk-btn{font-size:11px;line-height:1.15;font-weight:650;min-height:36px;padding:7px 8px;gap:5px;border-radius:8px}
 .booking-ui .bk-wa-status-row.effective>span svg,.booking-ui .bk-wa-status-row.real-window>span svg{color:#e52d3c;stroke-width:2.25}
 .booking-ui .bk-wa-status-row.test-override>span svg{color:#145fd4;stroke-width:2.25}
+
+
+/* 2 Oct professional WhatsApp window status badges — visual only */
+.booking-ui .bk-wa-pill{gap:5px;border:1px solid transparent;box-shadow:0 1px 2px rgba(15,23,42,.05);letter-spacing:.01em}
+.booking-ui .bk-wa-pill-icon{width:16px;height:16px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex:0 0 16px}
+.booking-ui .bk-wa-pill.open{background:#dcf8e9;color:#087d4b;border-color:#bcefd5}
+.booking-ui .bk-wa-pill.open .bk-wa-pill-icon{background:#0ca968;color:#fff}
+.booking-ui .bk-wa-pill.closed{background:#ffe5e7;color:#c91e32;border-color:#ffcdd2}
+.booking-ui .bk-wa-pill.closed .bk-wa-pill-icon{background:#e11d35;color:#fff}
+.booking-ui .bk-wa-pill.testing .bk-wa-pill-icon{background:transparent;color:currentColor;width:15px;height:15px;flex-basis:15px}
+.booking-ui .bk-wa-pill.real{background:#deedff;color:#145fd4;border-color:#c3dcff}
+.booking-ui .bk-wa-pill.real .bk-wa-pill-icon{background:transparent;width:13px;height:13px;flex-basis:13px}
+.booking-ui .bk-wa-real-dot{display:block;width:10px;height:10px;border-radius:50%;background:#1769e8;box-shadow:0 0 0 3px rgba(23,105,232,.10)}
+.booking-ui .bk-wa-status-row.effective .bk-wa-pill{font-weight:850}
+.booking-ui .bk-wa-status-row.real-window .bk-wa-pill{filter:saturate(.88)}
