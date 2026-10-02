@@ -246,6 +246,6 @@
 .booking-ui .bk-wa-status-row.incoming b{font-size:12px;font-weight:600}
 .booking-ui .bk-wa-pill{font-size:10px}
 .booking-ui .bk-wa-pill.override{font-size:9.5px}
-.booking-ui .bk-wa-actions .bk-btn{font-size:14px;line-height:1.15;font-weight:700;min-height:38px}
+.booking-ui .bk-wa-actions .bk-btn{font-size:11px;line-height:1.15;font-weight:650;min-height:36px;padding:7px 8px;gap:5px;border-radius:8px}
 .booking-ui .bk-wa-status-row.effective>span svg,.booking-ui .bk-wa-status-row.real-window>span svg{color:#e52d3c;stroke-width:2.25}
 .booking-ui .bk-wa-status-row.test-override>span svg{color:#145fd4;stroke-width:2.25}
