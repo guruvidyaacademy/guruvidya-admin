@@ -271,3 +271,35 @@
 .booking-ui .bk-wa-status-row.test-override{
   background:#eef7ff;
 }
+
+/* Booking Notification Operations — approved Design 6 body + Design 4 header */
+.booking-ui .bk-ops-card{padding:0;overflow:hidden;border-color:#d6e5fa;background:#fff;box-shadow:0 3px 12px rgba(28,64,112,.07)}
+.booking-ui .bk-ops-card>.bk-muted,.booking-ui .bk-ops-card>.bk-error,.booking-ui .bk-ops-card>.bk-stats,.booking-ui .bk-ops-card>.bk-alert,.booking-ui .bk-ops-card>div:not(.bk-ops-head){margin-left:12px;margin-right:12px}
+.booking-ui .bk-ops-head{background:linear-gradient(90deg,#eaf4ff 0%,#dcecff 100%);border-bottom:1px solid #c9ddf8;padding:12px 14px;margin-bottom:9px}
+.booking-ui .bk-ops-head .bk-head{margin:0}
+.booking-ui .bk-ops-head .bk-icon{width:46px;height:46px;border-radius:50%;background:#0878ef;color:#fff;border:4px solid rgba(255,255,255,.72);box-shadow:0 3px 9px rgba(8,105,232,.22)}
+.booking-ui .bk-ops-head h2{font-size:18px;font-weight:800;color:#102c58}
+.booking-ui .bk-ops-head .bk-muted{font-size:11px;color:#3d5f8d}
+.booking-ui .bk-ops-refresh{background:#0869e8!important;border-color:#0869e8!important;color:#fff!important;border-radius:7px;box-shadow:0 2px 5px rgba(8,105,232,.16)}
+.booking-ui .bk-ops-card>.bk-error{display:flex;align-items:center;min-height:34px;margin-top:8px;margin-bottom:8px;padding:8px 11px;border:1px solid #ffd0d0;background:#fff0f0;color:#b42318;font-size:11px;font-weight:700}
+.booking-ui .bk-ops-card>.bk-error:before{content:'!';display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;margin-right:7px;background:#ef4444;color:#fff;font-size:12px;font-weight:900}
+.booking-ui .bk-ops-card .bk-stats{gap:9px;margin-top:8px;margin-bottom:9px}
+.booking-ui .bk-ops-card .bk-stat{position:relative;min-height:104px;border:0;border-radius:9px;padding:11px;color:#fff;box-shadow:0 4px 10px rgba(26,55,93,.12);transition:transform .12s ease,box-shadow .12s ease}
+.booking-ui .bk-ops-card .bk-stat:hover{transform:translateY(-1px);box-shadow:0 6px 13px rgba(26,55,93,.16)}
+.booking-ui .bk-ops-card .bk-stat:nth-child(1){background:linear-gradient(135deg,#1596f5,#0874dd)}
+.booking-ui .bk-ops-card .bk-stat:nth-child(2){background:linear-gradient(135deg,#ff8a2b,#f15c16)}
+.booking-ui .bk-ops-card .bk-stat:nth-child(3){background:linear-gradient(135deg,#1cc991,#05a96f)}
+.booking-ui .bk-ops-card .bk-stat:nth-child(4){background:linear-gradient(135deg,#9a5cf5,#7535d9)}
+.booking-ui .bk-ops-card .bk-stat.selected{outline:3px solid rgba(255,255,255,.78);outline-offset:-5px}
+.booking-ui .bk-ops-card .bk-stat-icon{width:31px;height:31px;border-radius:8px;background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.28)}
+.booking-ui .bk-ops-card .bk-stat-copy{font-size:11px;color:#fff}
+.booking-ui .bk-ops-card .bk-stat-copy>span{font-weight:750}
+.booking-ui .bk-ops-card .bk-stat strong{font-size:22px;color:#fff;margin:2px 0}
+.booking-ui .bk-ops-card .bk-stat small{font-size:10px;line-height:1.25;color:rgba(255,255,255,.88)}
+.booking-ui .bk-ops-card>.bk-alert{border:1px solid #f8dfa2;background:#fff8e7;color:#77510b;padding:9px 11px;font-size:11px;border-radius:8px}
+.booking-ui .bk-ops-record{display:grid;grid-template-columns:38px minmax(0,1fr) auto;align-items:center;gap:10px;background:#fff;border:1px solid #dce7f5;border-left:4px solid #17b875;box-shadow:0 2px 7px rgba(30,62,102,.06);padding:10px 11px}
+.booking-ui .bk-ops-wa{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:#1fbd73;color:#fff;box-shadow:0 2px 6px rgba(31,189,115,.18)}
+.booking-ui .bk-ops-record-copy{min-width:0;font-size:11px;color:#536984;line-height:1.42}
+.booking-ui .bk-ops-record-copy strong{display:block;color:#132f55;font-size:12px;margin-bottom:2px}
+.booking-ui .bk-ops-followup{justify-self:end;background:#f5f9ff!important;border-color:#79aef7!important;color:#075ac4!important;font-size:11px!important;padding:7px 10px!important}
+@media(max-width:700px){.booking-ui .bk-ops-record{grid-template-columns:36px 1fr}.booking-ui .bk-ops-followup{grid-column:2;justify-self:start}.booking-ui .bk-ops-card .bk-stat{min-height:96px}}
