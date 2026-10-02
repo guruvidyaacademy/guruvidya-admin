@@ -206,3 +206,28 @@
 .booking-ui .bk-wa-actions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;padding:0 14px 14px}.booking-ui .bk-wa-actions .bk-btn{margin:0;justify-content:center;min-height:38px;font-size:11px;padding:7px 6px}.booking-ui .bk-wa-actions .check{background:#edf6ff;color:#1769d1;border-color:#b9d8fb}.booking-ui .bk-wa-actions .open{background:#08a85a;color:#fff;border-color:#078f4d}.booking-ui .bk-wa-actions .close{background:#ef233c;color:#fff;border-color:#d91f35}.booking-ui .bk-wa-actions .real{background:#fff;color:#334155;border-color:#cbd5e1}
 @media(max-width:1050px){.booking-ui .bk-wa-test-grid{grid-template-columns:1fr}.booking-ui .bk-wa-actions{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:640px){.booking-ui .bk-wa-test-card-head{align-items:flex-start;flex-wrap:wrap}.booking-ui .bk-wa-active{margin-left:58px}.booking-ui .bk-wa-mobile-row{grid-template-columns:22px 1fr 38px}.booking-ui .bk-wa-mobile-row label{grid-column:2/4}.booking-ui .bk-wa-actions{grid-template-columns:1fr 1fr}.booking-ui .bk-wa-status-row{align-items:flex-start;flex-direction:column;gap:5px}}
+
+/* 2 Oct UI polish — match approved WhatsApp 24h test mockup; functionality unchanged */
+.booking-ui .bk-wa-test-panel>.bk-head .bk-icon{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:#dcfce7;color:#16a34a;border:1px solid #bbf7d0;box-shadow:0 4px 12px rgba(22,163,74,.12)}
+.booking-ui .bk-wa-test-panel>.bk-head .bk-icon svg{width:25px;height:25px;stroke-width:2}
+.booking-ui .bk-wa-person-icon{width:50px;height:50px;color:#075fd8;background:#e7f2ff;border:1px solid #b9d8ff;box-shadow:inset 0 0 0 4px rgba(255,255,255,.38)}
+.booking-ui .bk-wa-person-icon svg{width:27px;height:27px;stroke-width:2.15}
+.booking-ui .bk-wa-test-card.parent .bk-wa-person-icon{color:#6424c8;background:#f1e7ff;border-color:#d7bdf9}
+.booking-ui .bk-wa-title-row h4{font-size:16px;font-weight:800;letter-spacing:-.01em}
+.booking-ui .bk-wa-head-copy small{font-size:11px;line-height:1.35}
+.booking-ui .bk-wa-role{font-size:10px;padding:4px 8px}
+.booking-ui .bk-wa-active{font-size:10px;padding:5px 9px}
+.booking-ui .bk-wa-mobile-row{padding:12px 14px}.booking-ui .bk-wa-mobile-row label{font-size:12px;font-weight:700}
+.booking-ui .bk-wa-status-box{background:transparent;overflow:visible;margin:0 14px 12px}
+.booking-ui .bk-wa-status-row{min-height:32px;padding:4px 10px;border-bottom:0}
+.booking-ui .bk-wa-status-row.effective,.booking-ui .bk-wa-status-row.real-window,.booking-ui .bk-wa-status-row.test-override{background:#fff1f2}
+.booking-ui .bk-wa-status-row.effective{border-radius:9px 9px 0 0;padding-top:7px}
+.booking-ui .bk-wa-status-row.test-override{border-radius:0 0 9px 9px;padding-bottom:7px}
+.booking-ui .bk-wa-status-row>span{font-size:11.5px;font-weight:650;gap:7px;color:#334155}
+.booking-ui .bk-wa-status-row.effective>span svg,.booking-ui .bk-wa-status-row.real-window>span svg{color:#ef3340;stroke-width:2}
+.booking-ui .bk-wa-status-row.test-override>span svg{color:#246fe5;stroke-width:2}
+.booking-ui .bk-wa-status-row.incoming{margin-top:7px;border-radius:8px;background:#f8fafc;min-height:34px}
+.booking-ui .bk-wa-status-row.incoming>span svg{color:#2478e8}.booking-ui .bk-wa-status-row.incoming b{font-size:10.5px;font-weight:600;color:#64748b}
+.booking-ui .bk-wa-pill{font-size:9.5px;padding:4px 8px;font-weight:800}
+.booking-ui .bk-wa-pill.override{font-size:9px}
+.booking-ui .bk-wa-actions .bk-btn{font-size:10px;font-weight:700;min-height:36px;border-radius:8px}
