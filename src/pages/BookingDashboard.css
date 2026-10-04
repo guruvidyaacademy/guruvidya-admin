@@ -365,3 +365,18 @@
 .booking-ui .bk-email-note{display:flex;align-items:center;gap:7px;margin-top:10px;padding:8px 10px;border:1px solid #d3e7ff;border-radius:7px;background:#eaf5ff;color:#315e92;font-size:10.5px}.booking-ui .bk-email-note svg{color:#0864e8;flex:none}
 @media(max-width:850px){.booking-ui .bk-email-options{grid-template-columns:1fr}.booking-ui .bk-email-head{align-items:flex-start}.booking-ui .bk-email-master{padding-top:5px}}
 @media(max-width:580px){.booking-ui .bk-email-head{flex-direction:column}.booking-ui .bk-email-master{width:100%;justify-content:flex-start}.booking-ui .bk-email-body{padding:12px}.booking-ui .bk-email-icon{width:44px;height:44px}}
+
+/* Email Notifications — Design 6: Dark Blue Accent (Premium). Visual-only refinement. */
+.booking-ui .bk-email-settings{border-color:#0b63d8!important;border-left:4px solid #0875f5!important;background:#fff!important;box-shadow:0 7px 20px rgba(12,61,132,.12)}
+.booking-ui .bk-email-head{padding:15px 18px;background:linear-gradient(105deg,#063d88 0%,#075abf 58%,#0869d8 100%);border-bottom:0}
+.booking-ui .bk-email-head-left{gap:13px}.booking-ui .bk-email-icon{width:46px;height:46px;background:#fff;color:#0871ed;box-shadow:0 5px 14px rgba(0,0,0,.14)}
+.booking-ui .bk-email-title{color:#fff;font-size:16px}.booking-ui .bk-email-title strong{color:#fff}.booking-ui .bk-email-head p{color:#dcecff}.booking-ui .bk-email-head .bk-email-help{color:#fff}
+.booking-ui .bk-email-master .bk-switch-wrap input:checked+.bk-switch-track{background:#12b94f}.booking-ui .bk-email-master .bk-switch-wrap input:focus-visible+.bk-switch-track{outline-color:#9be7b6}.booking-ui .bk-email-enabled.on{background:#1aa85b;color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.15)}.booking-ui .bk-email-enabled.off{background:#e7edf5;color:#596a80}
+.booking-ui .bk-email-body{padding:14px 16px 15px;background:linear-gradient(180deg,#fff 0%,#f5f9ff 100%)}
+.booking-ui .bk-email-section-title{color:#123568;font-size:12.5px;margin-bottom:10px}
+.booking-ui .bk-email-options{gap:11px}.booking-ui .bk-email-option{border-color:#d8e2ef;border-radius:9px;background:linear-gradient(180deg,#fff 0%,#fbfdff 100%);box-shadow:0 2px 7px rgba(25,64,115,.05);transition:border-color .15s,box-shadow .15s,transform .15s}.booking-ui .bk-email-option:hover{border-color:#8dbbf5;box-shadow:0 4px 11px rgba(8,100,232,.09);transform:translateY(-1px)}
+.booking-ui .bk-email-option.selected{border:1.5px solid #0875f5;background:linear-gradient(135deg,#edf6ff 0%,#f8fbff 100%);box-shadow:0 0 0 1px rgba(8,117,245,.06),0 4px 12px rgba(8,100,232,.08)}
+.booking-ui .bk-email-option>svg{color:#0a4eaa}.booking-ui .bk-email-option.selected>svg{color:#0875f5}.booking-ui .bk-email-radio{border-color:#9fb3cb;background:#fff}.booking-ui .bk-email-option.selected .bk-email-radio{border-color:#0875f5}
+.booking-ui .bk-email-option strong{color:#15345f}.booking-ui .bk-email-option small{color:#617590}
+.booking-ui .bk-email-note{border-color:#d4e7ff;background:linear-gradient(90deg,#eaf5ff,#f4f9ff);color:#245c9d}.booking-ui .bk-email-note svg{color:#0875f5}
+@media(max-width:580px){.booking-ui .bk-email-head{padding:14px}.booking-ui .bk-email-settings{border-left-width:3px!important}}
