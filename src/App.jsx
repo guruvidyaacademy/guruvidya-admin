@@ -1462,7 +1462,23 @@ function IntegrationPanel() {
       const res = await api.post("/admin/integrations/email/resend/test");
       setEmailTestResult({ ok: true, title: res.data?.message || "Resend API Connected!", detail: res.data?.detail || "API credentials verified successfully.", code: res.data?.code || "RESEND_OK" });
       setEmailLastTested(new Date().toLocaleString("en-IN"));
-    } catch (e) { setEmailTestResult(emailErrorData(e, "Resend API test failed")); }
+    } catch (e) {
+      const status = e?.response?.status;
+      const data = e?.response?.data || {};
+      const raw = `${data.message || ""} ${data.detail || ""} ${data.code || ""}`.toLowerCase();
+      const sendOnlyKey = status === 401 && (raw.includes("only send") || raw.includes("send emails") || raw.includes("restricted"));
+      if (sendOnlyKey) {
+        setEmailTestResult({
+          ok: true,
+          title: "Resend API Configured (Sending Access)",
+          detail: "This API key is restricted to sending email, so the account-level API check is not available. Use Send Test Email to verify live delivery.",
+          code: "RESEND_SEND_ONLY",
+        });
+        setEmailLastTested(new Date().toLocaleString("en-IN"));
+      } else {
+        setEmailTestResult(emailErrorData(e, "Resend API test failed"));
+      }
+    }
     finally { setLoading(false); }
   };
 
