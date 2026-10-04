@@ -1261,6 +1261,12 @@ function IntegrationPanel() {
     emailSmtpPassword: "",
     emailSmtpPasswordSaved: false,
     emailSmtpSecurity: "STARTTLS",
+    emailPrimaryProvider: "resend",
+    emailFallbackProvider: "smtp",
+    emailAutoFailover: true,
+    emailResendApiKey: "",
+    emailResendApiKeySaved: false,
+    emailResendDomain: "guruvidya.in",
   });
 
   const [msg, setMsg] = useState("");
@@ -1277,6 +1283,7 @@ function IntegrationPanel() {
   const [testEmail, setTestEmail] = useState("");
   const [emailTestResult, setEmailTestResult] = useState(null);
   const [showEmailPassword, setShowEmailPassword] = useState(false);
+  const [showResendKey, setShowResendKey] = useState(false);
   const [emailPreset, setEmailPreset] = useState("GoDaddy / cPanel Email");
   const [emailLastTested, setEmailLastTested] = useState("");
 
@@ -1327,11 +1334,11 @@ function IntegrationPanel() {
     setLoading(true);
     setMsg("");
     try {
-      const { emailSmtpPasswordSaved, ...payload } = form;
+      const { emailSmtpPasswordSaved, emailResendApiKeySaved, ...payload } = form;
       const res = await api.post("/admin/integrations", payload);
       setMsg(res.data?.message || "Integration settings saved successfully");
-      if (form.emailSmtpPassword) {
-        setForm(prev => ({ ...prev, emailSmtpPassword: "", emailSmtpPasswordSaved: true }));
+      if (form.emailSmtpPassword || form.emailResendApiKey) {
+        setForm(prev => ({ ...prev, emailSmtpPassword: "", emailSmtpPasswordSaved: prev.emailSmtpPasswordSaved || Boolean(form.emailSmtpPassword), emailResendApiKey: "", emailResendApiKeySaved: prev.emailResendApiKeySaved || Boolean(form.emailResendApiKey) }));
       }
     } catch {
       setMsg("Save failed. Backend integration route check karo.");
@@ -1449,6 +1456,53 @@ function IntegrationPanel() {
     finally { setLoading(false); }
   };
 
+  const testResendConnection = async () => {
+    setLoading(true); setMsg(""); setEmailTestResult({ ok: null, title: "Testing Resend API…", detail: "Checking HTTPS API credentials and sending domain configuration." });
+    try {
+      const res = await api.post("/admin/integrations/email/resend/test");
+      setEmailTestResult({ ok: true, title: res.data?.message || "Resend API Connected!", detail: res.data?.detail || "API credentials verified successfully.", code: res.data?.code || "RESEND_OK" });
+      setEmailLastTested(new Date().toLocaleString("en-IN"));
+    } catch (e) { setEmailTestResult(emailErrorData(e, "Resend API test failed")); }
+    finally { setLoading(false); }
+  };
+
+  const sendResendTestEmail = async () => {
+    setLoading(true); setMsg(""); setEmailTestResult({ ok: null, title: "Sending through Resend API…", detail: `Trying delivery to ${testEmail}.` });
+    try {
+      const res = await api.post("/admin/integrations/email/resend/send-test", { email: testEmail });
+      setEmailTestResult({ ok: true, title: res.data?.message || "Test Email Sent Successfully!", detail: res.data?.detail || "Resend accepted the email for delivery.", code: res.data?.code || "RESEND_ACCEPTED" });
+      setEmailLastTested(new Date().toLocaleString("en-IN"));
+    } catch (e) { setEmailTestResult(emailErrorData(e, "Resend test email failed")); }
+    finally { setLoading(false); }
+  };
+
+  const saveRouting = async () => {
+    if (!integrationLoaded) return;
+    if (form.emailPrimaryProvider === form.emailFallbackProvider) { setMsg("Primary and fallback provider must be different."); return; }
+    await save();
+  };
+
+  const EmailIcon = ({name, size=19}) => {
+    const common={width:size,height:size,viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:"2",strokeLinecap:"round",strokeLinejoin:"round","aria-hidden":"true"};
+    const paths={
+      mail:<><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></>,
+      key:<><circle cx="7.5" cy="15.5" r="3.5"/><path d="m10 13 9-9 2 2-2 2 1.5 1.5-2 2L17 10l-5 5"/></>,
+      globe:<><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></>,
+      user:<><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></>,
+      reply:<><path d="m9 17-6-5 6-5v3h4c5 0 8 3 8 8-2-3-4-4-8-4H9z"/></>,
+      send:<><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></>,
+      server:<><rect x="3" y="4" width="18" height="6" rx="2"/><rect x="3" y="14" width="18" height="6" rx="2"/><path d="M7 7h.01M7 17h.01"/></>,
+      plug:<><path d="M8 12V5M16 12V5M6 9h12v3a6 6 0 0 1-12 0zM12 18v4"/></>,
+      shield:<><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/></>,
+      lock:<><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></>,
+      save:<><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/><path d="M17 21v-8H7v8M7 3v5h8"/></>,
+      wifi:<><path d="M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0M12 20h.01M2 9a14 14 0 0 1 20 0"/></>,
+      refresh:<><path d="M20 11a8 8 0 1 0-2 5.5"/><path d="M20 4v7h-7"/></>,
+      gear:<><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-4V21a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9A1.7 1.7 0 0 0 3 14H2.8v-4H3a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1a1.7 1.7 0 0 0 1.9.3A1.7 1.7 0 0 0 10 3V2.8h4V3a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2v4H21a1.7 1.7 0 0 0-1.6 1Z"/></>
+    };
+    return <svg {...common}>{paths[name] || paths.mail}</svg>;
+  };
+
   const integrationItems = [
     ["botsailor", "☘", "BotSailor (WhatsApp)"],
     ["razorpay", "↗", "Razorpay (Payments)"],
@@ -1528,40 +1582,53 @@ function IntegrationPanel() {
 
         {integrationSection === "ai" && <div className="int-card accent-purple"><div className="int-card-head"><div className="int-title"><span className="int-brand purple">✦</span><div><h3>AI Provider <span className="int-info">ⓘ</span></h3><p>Configure the AI provider used by CRM automation and smart features.</p></div></div>{statusPill(form.aiEnabled)}</div><div className="int-grid two"><label>Provider<select value={form.aiProvider || "OpenAI"} onChange={e=>update("aiProvider",e.target.value)}><option>OpenAI</option><option>Gemini</option><option>Claude</option><option>Other</option></select></label><label>API Key<input type="password" value={form.aiApiKey || ""} onChange={e=>update("aiApiKey",e.target.value)} placeholder="API Key"/></label><label>AI Status<select value={String(form.aiEnabled)} onChange={e=>update("aiEnabled",e.target.value === "true")}><option value="false">Disabled</option><option value="true">Enabled</option></select></label><label>Model<input disabled placeholder="Model selector will be enabled with provider API"/></label></div><div className="int-actions"><button className="int-btn save" onClick={save} disabled={loading || !integrationLoaded}>▣ Save Settings</button><button className="int-btn purple" disabled>✦ Test Connection</button></div></div>}
 
-        {integrationSection === "email" && <div className="int-card accent-pink email-service-card">
+        {integrationSection === "email" && <div className="int-card accent-pink email-service-card email-design-six">
           <div className="int-card-head email-service-head">
-            <div className="int-title"><span className="int-brand pink">✉</span><div><h3>Email Service <span className="int-info">ⓘ</span></h3><p>Central email server for booking, admission, reminders and system emails.</p></div></div>
-            <div className="email-head-status">
-              <span className={`int-status ${form.emailSmtpHost && form.emailSmtpUsername && (form.emailSmtpPasswordSaved || form.emailSmtpPassword) ? "ok" : "pending"}`}>{form.emailSmtpHost && form.emailSmtpUsername && (form.emailSmtpPasswordSaved || form.emailSmtpPassword) ? "✓ Configured" : "● Not Configured"}</span>
-              {emailLastTested && <small>Last tested: {emailLastTested}</small>}
+            <div className="int-title"><span className="int-brand pink"><EmailIcon name="mail" size={23}/></span><div><h3>Email Service <span className="int-info">ⓘ</span></h3><p>Central email server for booking, admission, reminders and system emails.</p></div></div>
+            <div className="email-head-status"><span className={`int-status ${(form.emailResendApiKeySaved || form.emailResendApiKey || (form.emailSmtpHost && form.emailSmtpUsername)) ? "ok" : "pending"}`}>✓ Email Service Configured</span>{emailLastTested && <small>Last tested: {emailLastTested}</small>}</div>
+          </div>
+
+          <section className="email-routing-card">
+            <div className="email-section-title"><span className="email-section-icon blue"><EmailIcon name="gear"/></span><div><b>Email Delivery Routing</b><small>Set primary and fallback provider for automatic failover.</small></div></div>
+            <div className="email-routing-grid">
+              <label>Primary Provider<select value={form.emailPrimaryProvider || "resend"} onChange={e=>update("emailPrimaryProvider",e.target.value)}><option value="resend">Resend API</option><option value="smtp">GoDaddy SMTP</option></select></label>
+              <div className="email-route-arrow">→</div>
+              <label className="email-toggle-label">Automatic Failover<button type="button" className={`email-toggle ${form.emailAutoFailover !== false ? "on" : ""}`} onClick={()=>update("emailAutoFailover", form.emailAutoFailover === false)}><span>{form.emailAutoFailover !== false ? "ON" : "OFF"}</span><i/></button></label>
+              <div className="email-route-arrow">→</div>
+              <label>Fallback Provider<select value={form.emailFallbackProvider || "smtp"} onChange={e=>update("emailFallbackProvider",e.target.value)}><option value="smtp">GoDaddy SMTP</option><option value="resend">Resend API</option></select></label>
+              <button type="button" className="int-btn purple email-route-save" onClick={saveRouting} disabled={loading || !integrationLoaded}><EmailIcon name="save"/> Save Routing</button>
             </div>
+          </section>
+
+          <div className="email-provider-columns">
+            <section className="email-provider-card resend-card">
+              <div className="email-provider-head"><span className="email-provider-logo resend">R</span><div><h4>Resend API</h4><small>Modern HTTPS email API. Recommended for reliable delivery.</small></div><span className="provider-role primary">PRIMARY</span><span className={`provider-health ${(form.emailResendApiKeySaved || form.emailResendApiKey) ? "connected" : "pending"}`}>{(form.emailResendApiKeySaved || form.emailResendApiKey) ? "Configured" : "Not Configured"}</span></div>
+              <div className="email-provider-fields">
+                <label><span className="email-field-icon"><EmailIcon name="key"/></span><span className="email-field-body">API Key<span className="email-password-wrap"><input type={showResendKey ? "text" : "password"} value={form.emailResendApiKey || ""} onChange={e=>update("emailResendApiKey",e.target.value)} placeholder={form.emailResendApiKeySaved ? "Saved •••••••• (enter new key to change)" : "re_..."}/><button type="button" className="email-eye" onClick={()=>setShowResendKey(v=>!v)}>{showResendKey ? "●" : "◉"}</button></span></span></label>
+                <label><span className="email-field-icon"><EmailIcon name="globe"/></span><span className="email-field-body">Sending Domain<input value={form.emailResendDomain || "guruvidya.in"} onChange={e=>update("emailResendDomain",e.target.value)} placeholder="guruvidya.in"/></span></label>
+                <label><span className="email-field-icon"><EmailIcon name="user"/></span><span className="email-field-body">Sender Name<input value={form.emailSenderName || ""} onChange={e=>update("emailSenderName",e.target.value)}/></span></label>
+                <label><span className="email-field-icon"><EmailIcon name="mail"/></span><span className="email-field-body">From Email<input value={form.emailFrom || ""} onChange={e=>update("emailFrom",e.target.value)} placeholder="team@guruvidya.in"/></span></label>
+                <label><span className="email-field-icon"><EmailIcon name="reply"/></span><span className="email-field-body">Reply-To Email<input value={form.emailReplyTo || ""} onChange={e=>update("emailReplyTo",e.target.value)} placeholder="team@guruvidya.in"/></span></label>
+                <label><span className="email-field-icon"><EmailIcon name="send"/></span><span className="email-field-body">Test Email Address<input value={testEmail} onChange={e=>setTestEmail(e.target.value)} placeholder="name@gmail.com"/></span></label>
+              </div>
+              <div className="int-actions email-provider-actions"><button className="int-btn save" onClick={save} disabled={loading || !integrationLoaded}><EmailIcon name="save"/> Save Settings</button><button className="int-btn test" onClick={testResendConnection} disabled={loading || !integrationLoaded}><EmailIcon name="wifi"/> Test API</button><button className="int-btn purple" onClick={sendResendTestEmail} disabled={loading || !integrationLoaded || !testEmail}><EmailIcon name="send"/> Send Test Email</button></div>
+            </section>
+
+            <section className="email-provider-card smtp-card">
+              <div className="email-provider-head"><span className="email-provider-logo godaddy">G</span><div><h4>GoDaddy SMTP</h4><small>cPanel SMTP server. Used as fallback if primary fails.</small></div><span className="provider-role secondary">SECONDARY</span><span className="provider-health configured">Configured</span></div>
+              <div className="email-provider-fields">
+                <label><span className="email-field-icon"><EmailIcon name="server"/></span><span className="email-field-body">SMTP Host<input value={form.emailSmtpHost || ""} onChange={e=>update("emailSmtpHost",e.target.value)} placeholder="mail.guruvidya.in"/></span></label>
+                <label><span className="email-field-icon"><EmailIcon name="plug"/></span><span className="email-field-body">SMTP Port<input type="number" value={form.emailSmtpPort || 465} onChange={e=>update("emailSmtpPort",Number(e.target.value))}/></span></label>
+                <label><span className="email-field-icon"><EmailIcon name="shield"/></span><span className="email-field-body">Security / Encryption<select value={form.emailSmtpSecurity || "SSL/TLS"} onChange={e=>update("emailSmtpSecurity",e.target.value)}><option>SSL/TLS</option><option>STARTTLS</option></select></span></label>
+                <label><span className="email-field-icon"><EmailIcon name="user"/></span><span className="email-field-body">Username<input value={form.emailSmtpUsername || ""} onChange={e=>update("emailSmtpUsername",e.target.value)} placeholder="team@guruvidya.in"/></span></label>
+                <label><span className="email-field-icon"><EmailIcon name="lock"/></span><span className="email-field-body">Password / API Secret<span className="email-password-wrap"><input type={showEmailPassword ? "text" : "password"} value={form.emailSmtpPassword || ""} onChange={e=>update("emailSmtpPassword",e.target.value)} placeholder={form.emailSmtpPasswordSaved ? "Saved •••••••• (enter new password to change)" : "SMTP password"}/><button type="button" className="email-eye" onClick={()=>setShowEmailPassword(v=>!v)}>{showEmailPassword ? "●" : "◉"}</button></span></span></label>
+                <label><span className="email-field-icon"><EmailIcon name="send"/></span><span className="email-field-body">Test Email Address<input value={testEmail} onChange={e=>setTestEmail(e.target.value)} placeholder="name@gmail.com"/></span></label>
+              </div>
+              <div className="int-actions email-provider-actions"><button className="int-btn save" onClick={save} disabled={loading || !integrationLoaded}><EmailIcon name="save"/> Save Settings</button><button className="int-btn test" onClick={testEmailConnection} disabled={loading || !integrationLoaded}><EmailIcon name="wifi"/> Test Connection</button><button className="int-btn purple" onClick={sendTestEmail} disabled={loading || !integrationLoaded || !testEmail}><EmailIcon name="send"/> Send Test Email</button></div>
+            </section>
           </div>
 
-          <div className="email-quick-setup">
-            <div className="email-quick-copy"><span className="email-quick-icon">⚙</span><div><b>Quick Setup Templates</b><small>Select your email provider to auto-fill recommended settings. You can still edit manually.</small></div></div>
-            <div className="email-preset-control"><label>Select Provider<select value={emailPreset} onChange={e=>setEmailPreset(e.target.value)}><option>GoDaddy / cPanel Email</option><option>Custom SMTP</option></select></label><span className="email-provider-mark">◎ <b>GoDaddy</b></span><button type="button" className="int-btn purple" onClick={()=>{ if(emailPreset === "GoDaddy / cPanel Email") setForm(prev=>({...prev,emailProvider:"SMTP",emailSmtpHost:"mail.guruvidya.in",emailSmtpPort:465,emailSmtpSecurity:"SSL/TLS"})); }}>⇩ Use Settings</button></div>
-          </div>
-
-          <div className="email-fields-grid">
-            <label><span className="email-field-icon">✉</span><span className="email-field-body">Email Provider<select value={form.emailProvider} onChange={e=>update("emailProvider",e.target.value)}><option>SMTP</option></select></span></label>
-            <label><span className="email-field-icon">⏻</span><span className="email-field-body">Email Service<select value={form.emailEnabled ? "Enabled" : "Disabled"} onChange={e=>update("emailEnabled",e.target.value === "Enabled")}><option>Enabled</option><option>Disabled</option></select></span></label>
-            <label><span className="email-field-icon">●</span><span className="email-field-body">Sender Name<input value={form.emailSenderName || ""} onChange={e=>update("emailSenderName",e.target.value)} placeholder="GuruVidya Academy Pvt. Ltd."/></span></label>
-            <label><span className="email-field-icon">✉</span><span className="email-field-body">From Email<input type="email" value={form.emailFrom || ""} onChange={e=>update("emailFrom",e.target.value)} placeholder="team@guruvidya.in"/></span></label>
-            <label><span className="email-field-icon">↩</span><span className="email-field-body">Reply-To Email<input type="email" value={form.emailReplyTo || ""} onChange={e=>update("emailReplyTo",e.target.value)} placeholder="team@guruvidya.in"/></span></label>
-            <label><span className="email-field-icon">◆</span><span className="email-field-body">Security / Encryption<select value={form.emailSmtpSecurity || "STARTTLS"} onChange={e=>update("emailSmtpSecurity",e.target.value)}><option>STARTTLS</option><option>SSL/TLS</option></select></span></label>
-            <label><span className="email-field-icon">▤</span><span className="email-field-body">SMTP Host<input value={form.emailSmtpHost || ""} onChange={e=>update("emailSmtpHost",e.target.value)} placeholder="mail.guruvidya.in"/></span></label>
-            <label><span className="email-field-icon">♜</span><span className="email-field-body">SMTP Port<input type="number" value={form.emailSmtpPort || 587} onChange={e=>update("emailSmtpPort",Number(e.target.value))} placeholder="465"/></span></label>
-            <label><span className="email-field-icon">●</span><span className="email-field-body">Username<input value={form.emailSmtpUsername || ""} onChange={e=>update("emailSmtpUsername",e.target.value)} placeholder="team@guruvidya.in"/></span></label>
-            <label><span className="email-field-icon">▣</span><span className="email-field-body">Password / API Secret<span className="email-password-wrap"><input type={showEmailPassword ? "text" : "password"} value={form.emailSmtpPassword || ""} onChange={e=>update("emailSmtpPassword",e.target.value)} placeholder={form.emailSmtpPasswordSaved ? "Saved •••••••• (enter new password to change)" : "SMTP password"}/><button type="button" className="email-eye" onClick={()=>setShowEmailPassword(v=>!v)} title={showEmailPassword ? "Hide password" : "Show password"}>{showEmailPassword ? "◉" : "◌"}</button></span></span></label>
-            <label><span className="email-field-icon">➤</span><span className="email-field-body">Test Email Address<input type="email" value={testEmail} onChange={e=>setTestEmail(e.target.value)} placeholder="your@email.com"/></span></label>
-            <div className="email-security-note"><span>ⓘ</span><div><b>Your credentials are stored securely in backend.</b><small>For security, a saved password is never sent back to the browser. Enter a new password only when you want to change it.</small></div></div>
-          </div>
-
-          <div className="int-actions email-actions"><button className="int-btn save" disabled={loading || !integrationLoaded} onClick={save}>▣ Save Settings</button><button className="int-btn test" disabled={loading || !integrationLoaded} onClick={testEmailConnection}>⌁ Test Connection</button><button className="int-btn purple" disabled={loading || !integrationLoaded || !testEmail} onClick={sendTestEmail}>➤ Send Test Email</button><button type="button" className="int-btn email-clear" disabled={loading} onClick={()=>{setForm(prev=>({...prev,emailSenderName:"",emailFrom:"",emailReplyTo:"",emailSmtpHost:"",emailSmtpPort:587,emailSmtpUsername:"",emailSmtpPassword:"",emailSmtpSecurity:"STARTTLS"}));setTestEmail("");setEmailTestResult(null);}}>↻ Clear Fields</button></div>
-          {emailTestResult && <div className={`email-test-result ${emailTestResult.ok === true ? "success" : emailTestResult.ok === false ? "error" : "working"}`} role="status">
-            <span className="email-test-result-icon">{emailTestResult.ok === true ? "✓" : emailTestResult.ok === false ? "!" : "↻"}</span>
-            <div><strong>{emailTestResult.title}</strong><p>{emailTestResult.detail}</p>{emailTestResult.code && <small>Server status: {emailTestResult.code}</small>}</div>
-          </div>}
+          <section className="email-provider-status"><div className="email-section-title"><span className="email-section-icon blue"><EmailIcon name="wifi"/></span><div><b>Provider Status & Test Results</b><small>Live result from the latest provider test or delivery attempt.</small></div><button type="button" className="email-refresh" onClick={()=>setEmailTestResult(null)}><EmailIcon name="refresh"/> Refresh Status</button></div>{emailTestResult && <div className={`email-test-result ${emailTestResult.ok === true ? "success" : emailTestResult.ok === false ? "error" : "working"}`} role="status"><span className="email-test-result-icon">{emailTestResult.ok === true ? "✓" : emailTestResult.ok === false ? "!" : "↻"}</span><div><strong>{emailTestResult.title}</strong><p>{emailTestResult.detail}</p>{emailTestResult.code && <small>Server status: {emailTestResult.code}</small>}</div></div>}</section>
         </div>}
 
         {integrationSection === "other" && <div className="int-card accent-slate"><div className="int-card-head"><div className="int-title"><span className="int-brand slate">✚</span><div><h3>Other Integrations</h3><p>Future services can be connected here without cluttering core settings.</p></div></div><span className="int-status pending">● Future Ready</span></div><div className="int-other-grid"><div>▰ <b>Google Drive</b><small>Files and documents</small></div><div>▣ <b>Google Calendar</b><small>Appointment sync</small></div><div>▤ <b>SMS Provider</b><small>SMS notifications</small></div><div>▣ <b>Collexo EMI</b><small>EMI integration</small></div><div>▥ <b>Analytics</b><small>Platform usage</small></div><div>⌁ <b>Custom Webhook</b><small>External systems</small></div></div></div>}
