@@ -1261,6 +1261,7 @@ function IntegrationPanel() {
   const [integrationLoaded, setIntegrationLoaded] = useState(false);
   const [integrationError, setIntegrationError] = useState("");
   const [importLoadError, setImportLoadError] = useState("");
+  const [integrationSection, setIntegrationSection] = useState("botsailor");
 
   const update = (key, value) => setForm((prev) => ({ ...prev, [key]: value }));
 
@@ -1397,207 +1398,89 @@ function IntegrationPanel() {
     }
   };
 
+  const integrationItems = [
+    ["botsailor", "☘", "BotSailor (WhatsApp)"],
+    ["razorpay", "↗", "Razorpay (Payments)"],
+    ["youtube", "▶", "YouTube (Live Classes)"],
+    ["myoperator", "☎", "MyOperator (Calls)"],
+    ["jitsi", "◉", "Jitsi Meet"],
+    ["ai", "✦", "AI Provider"],
+    ["email", "✉", "Email Service"],
+    ["other", "✚", "Other Integrations"],
+  ];
+
+  const statusPill = (enabled, readyLabel = "Connected") => (
+    <span className={`int-status ${enabled ? "ok" : "pending"}`}>{enabled ? `● ${readyLabel}` : "● Not Configured"}</span>
+  );
+
+  const FutureNote = ({ children }) => <div className="int-future-note">ⓘ {children}</div>;
+
   return (
-    <div className="card">
-      <div className="row">
-        <div>
-          <h3 style={{ margin: 0 }}>Integration Panel</h3>
-          <div className="notice">BotSailor API + Template Import + Bot Flow Import</div>
-        </div>
-        <span className="tag">Phase 3</span>
-      </div>
-
-      <div className="configGrid" style={{ marginTop: 18 }}>
-        <label>
-          BotSailor API Token
-          <input value={form.botsailorToken} onChange={(e) => update("botsailorToken", e.target.value)} placeholder="Paste BotSailor API Token" />
-        </label>
-
-        <label>
-          BotSailor API URL
-          <input value={form.botsailorApiUrl} onChange={(e) => update("botsailorApiUrl", e.target.value)} placeholder="https://botsailor.com/api/v1/whatsapp/send" />
-        </label>
-
-        <label>
-          Instance ID / Phone Number ID
-          <input value={form.botsailorInstanceId} onChange={(e) => update("botsailorInstanceId", e.target.value)} placeholder="Paste Phone Number ID" />
-        </label>
-
-        <label>
-          WhatsApp Status
-          <select value={String(form.whatsappEnabled)} onChange={(e) => update("whatsappEnabled", e.target.value === "true")}>
-            <option value="false">Disabled</option>
-            <option value="true">Enabled</option>
-          </select>
-        </label>
-
-        <label>
-          Test WhatsApp Mobile
-          <input value={form.testMobile || ""} onChange={(e) => update("testMobile", e.target.value)} placeholder="919599401607" />
-        </label>
-
-        <label>
-          Razorpay Key ID
-          <input value={form.razorpayKeyId || ""} onChange={(e) => update("razorpayKeyId", e.target.value)} placeholder="Future ready" />
-        </label>
-
-        <label>
-          Razorpay Key Secret
-          <input value={form.razorpayKeySecret || ""} onChange={(e) => update("razorpayKeySecret", e.target.value)} placeholder="Future ready" />
-        </label>
-
-        <label>
-          Razorpay
-          <select value={String(form.razorpayEnabled)} onChange={(e) => update("razorpayEnabled", e.target.value === "true")}>
-            <option value="false">Disabled</option>
-            <option value="true">Enabled</option>
-          </select>
-        </label>
-
-        <label>
-          YouTube API Key
-          <input value={form.youtubeApiKey || ""} onChange={(e) => update("youtubeApiKey", e.target.value)} placeholder="Future ready" />
-        </label>
-
-        <label>
-          YouTube
-          <select value={String(form.youtubeEnabled)} onChange={(e) => update("youtubeEnabled", e.target.value === "true")}>
-            <option value="false">Disabled</option>
-            <option value="true">Enabled</option>
-          </select>
-        </label>
-
-        <label>
-          MyOperator API Key
-          <input value={form.myoperatorApiKey || ""} onChange={(e) => update("myoperatorApiKey", e.target.value)} placeholder="Future ready" />
-        </label>
-
-        <label>
-          MyOperator
-          <select value={String(form.myoperatorEnabled)} onChange={(e) => update("myoperatorEnabled", e.target.value === "true")}>
-            <option value="false">Disabled</option>
-            <option value="true">Enabled</option>
-          </select>
-        </label>
-
-        <label>
-          AI Provider
-          <select value={form.aiProvider || "OpenAI"} onChange={(e) => update("aiProvider", e.target.value)}>
-            <option>OpenAI</option>
-            <option>Gemini</option>
-            <option>Claude</option>
-            <option>Other</option>
-          </select>
-        </label>
-
-        <label>
-          AI API Key
-          <input value={form.aiApiKey || ""} onChange={(e) => update("aiApiKey", e.target.value)} placeholder="Future ready" />
-        </label>
-
-        <label>
-          AI Status
-          <select value={String(form.aiEnabled)} onChange={(e) => update("aiEnabled", e.target.value === "true")}>
-            <option value="false">Disabled</option>
-            <option value="true">Enabled</option>
-          </select>
-        </label>
-      </div>
-
-      <div style={{ display: "flex", gap: 10, marginTop: 16, flexWrap: "wrap" }}>
-        <button className="btn btn3" onClick={save} disabled={loading || !integrationLoaded}>Save Integration Settings</button>
-        {(integrationError || importLoadError) && <div role="alert">
-          {integrationError && <p>{integrationError}</p>}
-          {importLoadError && <p>{importLoadError}</p>}
-          <button className="btn" type="button" onClick={() => { loadIntegration(); loadImported(); }}>Retry loading</button>
-        </div>}
-        <button className="btn btn4" onClick={testWhatsApp} disabled={loading}>Test WhatsApp API</button>
-        <button className="btn" onClick={importTemplates} disabled={loading}>Import BotSailor Templates</button>
-        <button className="btn btn2" onClick={importFlows} disabled={loading}>Import BotSailor Flows</button>
-      </div>
-
-      {msg && <div className="notice" style={{ marginTop: 12 }}>{msg}</div>}
-
-      <div style={boxStyle}>
-        <b>Imported Templates: {templates.length}</b>
-        <div className="small" style={{ marginTop: 6 }}>
-          {templates.length
-            ? templates.slice(0, 10).map((t) => `${t.template_name}${t.status ? ` (${t.status})` : ""}`).join(" · ")
-            : "No template imported yet."}
-        </div>
-      </div>
-
-      <div style={boxStyle}>
-        <b>Imported Bot Flows: {flows.length}</b>
-        <div className="small" style={{ marginTop: 6 }}>
-          {flows.length ? flows.slice(0, 10).map((f) => f.name).join(" · ") : "No bot flow imported yet."}
-        </div>
-      </div>
-
-      <div style={boxStyle}>
-        <div className="row" style={{ alignItems: "flex-start", gap: 12 }}>
-          <div>
-            <b>BotSailor Full Flow Data (TXT/JSON)</b>
-            <div className="small" style={{ marginTop: 6 }}>
-              Export Flow Data files ek saath select karein. Same flow dobara upload karne par edited version overwrite ho jayega.
-            </div>
-          </div>
-          <span className="tag">
-            Imported {flowDataStatus.imported}/{flowDataStatus.total} · Pending {flowDataStatus.pending}
-          </span>
-        </div>
-
-        <input
-          type="file"
-          multiple
-          accept=".txt,.json,text/plain,application/json"
-          onChange={(e) => setSelectedFlowFiles(Array.from(e.target.files || []))}
-          style={{ marginTop: 14 }}
-        />
-
-        <div className="small" style={{ marginTop: 8 }}>
-          {selectedFlowFiles.length
-            ? `${selectedFlowFiles.length} file(s) selected: ${selectedFlowFiles.map((file) => file.name).join(" · ")}`
-            : "No Flow Data file selected."}
-        </div>
-
-        <button
-          className="btn btn3"
-          onClick={importFlowDataFiles}
-          disabled={loading || !selectedFlowFiles.length}
-          style={{ marginTop: 12 }}
-        >
-          Import Selected Flow Data Files
-        </button>
-
-        {flowImportResults.length > 0 && (
-          <div style={{ marginTop: 12 }}>
-            {flowImportResults.map((item, index) => (
-              <div key={`${item.fileName}-${index}`} className="small" style={{ marginTop: 5 }}>
-                {item.success ? "✅" : "❌"} {item.fileName}
-                {item.title ? ` → ${item.title}` : ""}
-                {item.nodeCount ? ` (${item.nodeCount} nodes)` : ""}
-                {!item.success && item.message ? ` — ${item.message}` : ""}
-              </div>
-            ))}
-          </div>
-        )}
-
-        <div style={{ marginTop: 14, maxHeight: 260, overflowY: "auto" }}>
-          {(flowDataStatus.flows || []).map((flow) => (
-            <div key={flow.unique_id || flow.id} className="small" style={{ marginTop: 5 }}>
-              {flow.flow_data_imported ? "✅" : "⚠️"} {flow.name}
-              {flow.flow_data_imported
-                ? ` — Data imported (${flow.flow_node_count || 0} nodes)${flow.flow_data_source_file ? ` · ${flow.flow_data_source_file}` : ""}`
-                : " — TXT/JSON pending"}
-            </div>
+    <div className="integration-shell">
+      <aside className="integration-sidebar">
+        <div className="integration-side-title"><span className="integration-gear">⚙</span><div><b>Integration Panel</b><small>GuruVidya CRM</small></div></div>
+        <nav>
+          {integrationItems.map(([key, icon, label]) => (
+            <button key={key} type="button" className={integrationSection === key ? "active" : ""} onClick={() => setIntegrationSection(key)}>
+              <span className="int-nav-icon">{icon}</span><span>{label}</span>
+            </button>
           ))}
-        </div>
-      </div>
+        </nav>
+        <div className="integration-side-foot"><span>Phase 3</span><small>Central Integration Hub</small></div>
+      </aside>
 
-      <div className="whatsappBox" style={{ marginTop: 16 }}>
-        Integration settings are stored in PostgreSQL. After 24 hours, counselor can select an imported approved template from the Action Panel.
-      </div>
+      <section className="integration-content">
+        <div className="integration-page-head">
+          <div><h2>Integration Panel</h2><p>Manage third-party integrations, templates and service connections for GuruVidya CRM.</p></div>
+          <span className="int-phase">Phase 3</span>
+        </div>
+
+        {integrationSection === "botsailor" && <div className="int-card accent-green">
+          <div className="int-card-head"><div className="int-title"><span className="int-brand green">☘</span><div><h3>BotSailor (WhatsApp) <span className="int-info">ⓘ</span></h3><p>Configure BotSailor WhatsApp API settings, templates and flows.</p></div></div>{statusPill(form.whatsappEnabled)}</div>
+          <div className="int-grid two">
+            <label>BotSailor API Token<input type="password" value={form.botsailorToken} onChange={(e)=>update("botsailorToken",e.target.value)} placeholder="Paste BotSailor API Token" /></label>
+            <label>BotSailor API URL<input value={form.botsailorApiUrl} onChange={(e)=>update("botsailorApiUrl",e.target.value)} /></label>
+            <label>Instance ID / Phone Number ID<input type="password" value={form.botsailorInstanceId} onChange={(e)=>update("botsailorInstanceId",e.target.value)} placeholder="Paste Phone Number ID" /></label>
+            <label>WhatsApp Status<select value={String(form.whatsappEnabled)} onChange={(e)=>update("whatsappEnabled",e.target.value === "true")}><option value="false">Disabled</option><option value="true">Enabled</option></select></label>
+            <label>Test WhatsApp Mobile<input value={form.testMobile || ""} onChange={(e)=>update("testMobile",e.target.value)} placeholder="919599401607" /></label>
+          </div>
+          <div className="int-actions">
+            <button className="int-btn save" onClick={save} disabled={loading || !integrationLoaded}>▣ Save Settings</button>
+            <button className="int-btn test" onClick={testWhatsApp} disabled={loading}>➤ Test WhatsApp API</button>
+            <button className="int-btn purple" onClick={importTemplates} disabled={loading}>▤ Import Templates</button>
+            <button className="int-btn navy" onClick={importFlows} disabled={loading}>▰ Import Flows</button>
+          </div>
+          {(integrationError || importLoadError) && <div className="int-alert">{integrationError || importLoadError} <button type="button" onClick={()=>{loadIntegration();loadImported();}}>Retry</button></div>}
+          {msg && <div className="int-message">{msg}</div>}
+          <div className="int-summary-grid">
+            <div className="int-summary purple"><span>▣</span><div><b>Imported Templates: {templates.length}</b><small>{templates.length ? templates.slice(0,4).map(t=>t.template_name).join(", ") : "No template imported yet."}</small></div></div>
+            <div className="int-summary blue"><span>▤</span><div><b>Imported Bot Flows: {flows.length}</b><small>{flows.length ? flows.slice(0,4).map(f=>f.name).join(", ") : "No bot flow imported yet."}</small></div></div>
+            <div className="int-summary soft"><span>✓</span><div><b>Flow Data</b><small>Imported {flowDataStatus.imported}/{flowDataStatus.total} · Pending {flowDataStatus.pending}</small></div></div>
+          </div>
+          <div className="int-flow-box">
+            <div className="int-flow-head"><div><b>BotSailor Full Flow Data (TXT/JSON)</b><small>Export Flow Data files ek saath select karein. Same flow dobara upload karne par edited version overwrite ho jayega.</small></div><span className="int-phase">Imported {flowDataStatus.imported}/{flowDataStatus.total}</span></div>
+            <input type="file" multiple accept=".txt,.json,text/plain,application/json" onChange={(e)=>setSelectedFlowFiles(Array.from(e.target.files || []))}/>
+            <div className="small">{selectedFlowFiles.length ? `${selectedFlowFiles.length} file(s) selected: ${selectedFlowFiles.map(f=>f.name).join(" · ")}` : "No Flow Data file selected."}</div>
+            <button className="int-btn save" onClick={importFlowDataFiles} disabled={loading || !selectedFlowFiles.length}>Import Selected Flow Data Files</button>
+            {flowImportResults.length > 0 && <div className="int-log-list">{flowImportResults.map((item,index)=><div key={`${item.fileName}-${index}`}>{item.success ? "✓" : "✕"} {item.fileName}{item.title ? ` → ${item.title}` : ""}</div>)}</div>}
+            <div className="int-log-list">{(flowDataStatus.flows || []).slice(0,10).map(flow=><div key={flow.unique_id || flow.id}>{flow.flow_data_imported ? "✓" : "⚠"} {flow.name}{flow.flow_data_imported ? ` — Data imported (${flow.flow_node_count || 0} nodes)` : " — TXT/JSON pending"}</div>)}</div>
+          </div>
+        </div>}
+
+        {integrationSection === "razorpay" && <div className="int-card accent-blue"><div className="int-card-head"><div className="int-title"><span className="int-brand blue">↗</span><div><h3>Razorpay (Payments) <span className="int-info">ⓘ</span></h3><p>Configure Razorpay for online payments and EMI options.</p></div></div>{statusPill(form.razorpayEnabled)}</div><div className="int-grid two"><label>Key ID<input value={form.razorpayKeyId || ""} onChange={e=>update("razorpayKeyId",e.target.value)} placeholder="rzp_test_XXXXXXXX"/></label><label>Key Secret<input type="password" value={form.razorpayKeySecret || ""} onChange={e=>update("razorpayKeySecret",e.target.value)} placeholder="••••••••••••"/></label><label>Razorpay Status<select value={String(form.razorpayEnabled)} onChange={e=>update("razorpayEnabled",e.target.value === "true")}><option value="false">Disabled</option><option value="true">Enabled</option></select></label><label>Environment<select disabled><option>Test / Live mode will be activated with payment workflow</option></select></label></div><div className="int-actions"><button className="int-btn save" onClick={save} disabled={loading || !integrationLoaded}>▣ Save Settings</button><button className="int-btn test" disabled>⌁ Test Connection</button></div><FutureNote>Current backend keeps the existing Razorpay settings only. Payment workflow/test endpoint has not been activated by this design update.</FutureNote></div>}
+
+        {integrationSection === "youtube" && <div className="int-card accent-red"><div className="int-card-head"><div className="int-title"><span className="int-brand red">▶</span><div><h3>YouTube (Live Classes) <span className="int-info">ⓘ</span></h3><p>Configure YouTube API for live classes and video streaming.</p></div></div>{statusPill(form.youtubeEnabled,"Ready")}</div><div className="int-grid two"><label>YouTube API Key<input type="password" value={form.youtubeApiKey || ""} onChange={e=>update("youtubeApiKey",e.target.value)} placeholder="YouTube API Key"/></label><label>YouTube Status<select value={String(form.youtubeEnabled)} onChange={e=>update("youtubeEnabled",e.target.value === "true")}><option value="false">Disabled</option><option value="true">Enabled</option></select></label><label>Primary Live Provider<input value="YouTube" readOnly/></label><label>Fallback Provider<input value="Jitsi Meet (planned fallback)" readOnly/></label></div><div className="int-actions"><button className="int-btn save" onClick={save} disabled={loading || !integrationLoaded}>▣ Save Settings</button><button className="int-btn test" disabled>▶ Test YouTube Connection</button></div><FutureNote>YouTube/Jitsi automatic fallback will be connected when the live-class server workflow is implemented.</FutureNote></div>}
+
+        {integrationSection === "myoperator" && <div className="int-card accent-orange"><div className="int-card-head"><div className="int-title"><span className="int-brand orange">☎</span><div><h3>MyOperator (Calls) <span className="int-info">ⓘ</span></h3><p>Configure MyOperator for IVR and call management.</p></div></div>{statusPill(form.myoperatorEnabled)}</div><div className="int-grid two"><label>API Key<input type="password" value={form.myoperatorApiKey || ""} onChange={e=>update("myoperatorApiKey",e.target.value)} placeholder="MyOperator API Key"/></label><label>MyOperator Status<select value={String(form.myoperatorEnabled)} onChange={e=>update("myoperatorEnabled",e.target.value === "true")}><option value="false">Disabled</option><option value="true">Enabled</option></select></label><label>Calling Number<input disabled placeholder="Configure when calling API is connected"/></label><label>Company / Resource ID<input disabled placeholder="Configure when calling API is connected"/></label></div><div className="int-actions"><button className="int-btn save" onClick={save} disabled={loading || !integrationLoaded}>▣ Save Settings</button><button className="int-btn test" disabled>☎ Test Connection</button></div><FutureNote>Existing MyOperator key/status remain saveable. Additional call controls need the MyOperator server API routes before activation.</FutureNote></div>}
+
+        {integrationSection === "jitsi" && <div className="int-card accent-purple"><div className="int-card-head"><div className="int-title"><span className="int-brand purple">◉</span><div><h3>Jitsi Meet (Online Meetings) <span className="int-info">ⓘ</span></h3><p>Online counselling and free live-class fallback configuration.</p></div></div><span className="int-status pending">● Server Setup Pending</span></div><div className="int-grid two"><label>Jitsi Server URL<input value="https://meet.jit.si" readOnly/></label><label>Room Prefix<input value="GuruVidya" readOnly/></label><label>Online Counselling<select disabled><option>Planned: Enabled</option></select></label><label>Auto Generate Meeting Room<select disabled><option>Planned: Enabled</option></select></label><label>Live Class Fallback<select disabled><option>Planned: YouTube → Jitsi</option></select></label><label>Open Meeting In<select disabled><option>New Tab</option></select></label></div><div className="int-actions"><button className="int-btn save" disabled>▣ Save Settings</button><button className="int-btn purple" disabled>▣ Test Meeting</button></div><FutureNote>Jitsi is shown in the final professional layout, but no fake persistence has been added. Server-side Jitsi settings/meeting generation must be added before these controls are enabled.</FutureNote></div>}
+
+        {integrationSection === "ai" && <div className="int-card accent-purple"><div className="int-card-head"><div className="int-title"><span className="int-brand purple">✦</span><div><h3>AI Provider <span className="int-info">ⓘ</span></h3><p>Configure the AI provider used by CRM automation and smart features.</p></div></div>{statusPill(form.aiEnabled)}</div><div className="int-grid two"><label>Provider<select value={form.aiProvider || "OpenAI"} onChange={e=>update("aiProvider",e.target.value)}><option>OpenAI</option><option>Gemini</option><option>Claude</option><option>Other</option></select></label><label>API Key<input type="password" value={form.aiApiKey || ""} onChange={e=>update("aiApiKey",e.target.value)} placeholder="API Key"/></label><label>AI Status<select value={String(form.aiEnabled)} onChange={e=>update("aiEnabled",e.target.value === "true")}><option value="false">Disabled</option><option value="true">Enabled</option></select></label><label>Model<input disabled placeholder="Model selector will be enabled with provider API"/></label></div><div className="int-actions"><button className="int-btn save" onClick={save} disabled={loading || !integrationLoaded}>▣ Save Settings</button><button className="int-btn purple" disabled>✦ Test Connection</button></div></div>}
+
+        {integrationSection === "email" && <div className="int-card accent-pink"><div className="int-card-head"><div className="int-title"><span className="int-brand pink">✉</span><div><h3>Email Service <span className="int-info">ⓘ</span></h3><p>Central email server for booking, admission, reminders and system emails.</p></div></div><span className="int-status pending">● Not Configured</span></div><div className="int-grid two"><label>Email Provider<select disabled><option>SMTP</option></select></label><label>Sender Name<input disabled value="GuruVidya Academy Pvt. Ltd." readOnly/></label><label>From Email<input disabled placeholder="appointments@guruvidya.in"/></label><label>Reply-To Email<input disabled placeholder="support@guruvidya.in"/></label><label>SMTP Host<input disabled placeholder="smtp.example.com"/></label><label>SMTP Port<input disabled placeholder="587"/></label><label>Username<input disabled placeholder="SMTP username"/></label><label>Password / API Secret<input disabled type="password" placeholder="••••••••••••"/></label></div><div className="int-actions"><button className="int-btn save" disabled>▣ Save Settings</button><button className="int-btn test" disabled>➤ Test Connection</button><button className="int-btn purple" disabled>✉ Send Test Email</button></div><FutureNote>Email Service panel is ready visually. Credentials are intentionally disabled until secure backend storage and test/send routes are implemented; current Booking Email settings remain untouched.</FutureNote></div>}
+
+        {integrationSection === "other" && <div className="int-card accent-slate"><div className="int-card-head"><div className="int-title"><span className="int-brand slate">✚</span><div><h3>Other Integrations</h3><p>Future services can be connected here without cluttering core settings.</p></div></div><span className="int-status pending">● Future Ready</span></div><div className="int-other-grid"><div>▰ <b>Google Drive</b><small>Files and documents</small></div><div>▣ <b>Google Calendar</b><small>Appointment sync</small></div><div>▤ <b>SMS Provider</b><small>SMS notifications</small></div><div>▣ <b>Collexo EMI</b><small>EMI integration</small></div><div>▥ <b>Analytics</b><small>Platform usage</small></div><div>⌁ <b>Custom Webhook</b><small>External systems</small></div></div></div>}
+      </section>
     </div>
   );
 }
