@@ -1249,6 +1249,18 @@ function IntegrationPanel() {
     aiProvider: "OpenAI",
     aiApiKey: "",
     aiEnabled: false,
+
+    emailEnabled: false,
+    emailProvider: "SMTP",
+    emailSenderName: "GuruVidya Academy Pvt. Ltd.",
+    emailFrom: "",
+    emailReplyTo: "",
+    emailSmtpHost: "",
+    emailSmtpPort: 587,
+    emailSmtpUsername: "",
+    emailSmtpPassword: "",
+    emailSmtpPasswordSaved: false,
+    emailSmtpSecurity: "STARTTLS",
   });
 
   const [msg, setMsg] = useState("");
@@ -1262,6 +1274,7 @@ function IntegrationPanel() {
   const [integrationError, setIntegrationError] = useState("");
   const [importLoadError, setImportLoadError] = useState("");
   const [integrationSection, setIntegrationSection] = useState("botsailor");
+  const [testEmail, setTestEmail] = useState("");
 
   const update = (key, value) => setForm((prev) => ({ ...prev, [key]: value }));
 
@@ -1310,7 +1323,8 @@ function IntegrationPanel() {
     setLoading(true);
     setMsg("");
     try {
-      const res = await api.post("/admin/integrations", form);
+      const { emailSmtpPasswordSaved, ...payload } = form;
+      const res = await api.post("/admin/integrations", payload);
       setMsg(res.data?.message || "Integration settings saved successfully");
     } catch {
       setMsg("Save failed. Backend integration route check karo.");
@@ -1398,6 +1412,24 @@ function IntegrationPanel() {
     }
   };
 
+  const testEmailConnection = async () => {
+    setLoading(true); setMsg("");
+    try {
+      const res = await api.post("/admin/integrations/email/test");
+      setMsg(res.data?.message || "SMTP connection successful");
+    } catch (e) { setMsg(e.response?.data?.message || "SMTP connection failed"); }
+    finally { setLoading(false); }
+  };
+
+  const sendTestEmail = async () => {
+    setLoading(true); setMsg("");
+    try {
+      const res = await api.post("/admin/integrations/email/send-test", { email: testEmail });
+      setMsg(res.data?.message || "Test email sent");
+    } catch (e) { setMsg(e.response?.data?.message || "Test email failed"); }
+    finally { setLoading(false); }
+  };
+
   const integrationItems = [
     ["botsailor", "☘", "BotSailor (WhatsApp)"],
     ["razorpay", "↗", "Razorpay (Payments)"],
@@ -1477,7 +1509,24 @@ function IntegrationPanel() {
 
         {integrationSection === "ai" && <div className="int-card accent-purple"><div className="int-card-head"><div className="int-title"><span className="int-brand purple">✦</span><div><h3>AI Provider <span className="int-info">ⓘ</span></h3><p>Configure the AI provider used by CRM automation and smart features.</p></div></div>{statusPill(form.aiEnabled)}</div><div className="int-grid two"><label>Provider<select value={form.aiProvider || "OpenAI"} onChange={e=>update("aiProvider",e.target.value)}><option>OpenAI</option><option>Gemini</option><option>Claude</option><option>Other</option></select></label><label>API Key<input type="password" value={form.aiApiKey || ""} onChange={e=>update("aiApiKey",e.target.value)} placeholder="API Key"/></label><label>AI Status<select value={String(form.aiEnabled)} onChange={e=>update("aiEnabled",e.target.value === "true")}><option value="false">Disabled</option><option value="true">Enabled</option></select></label><label>Model<input disabled placeholder="Model selector will be enabled with provider API"/></label></div><div className="int-actions"><button className="int-btn save" onClick={save} disabled={loading || !integrationLoaded}>▣ Save Settings</button><button className="int-btn purple" disabled>✦ Test Connection</button></div></div>}
 
-        {integrationSection === "email" && <div className="int-card accent-pink"><div className="int-card-head"><div className="int-title"><span className="int-brand pink">✉</span><div><h3>Email Service <span className="int-info">ⓘ</span></h3><p>Central email server for booking, admission, reminders and system emails.</p></div></div><span className="int-status pending">● Not Configured</span></div><div className="int-grid two"><label>Email Provider<select disabled><option>SMTP</option></select></label><label>Sender Name<input disabled value="GuruVidya Academy Pvt. Ltd." readOnly/></label><label>From Email<input disabled placeholder="appointments@guruvidya.in"/></label><label>Reply-To Email<input disabled placeholder="support@guruvidya.in"/></label><label>SMTP Host<input disabled placeholder="smtp.example.com"/></label><label>SMTP Port<input disabled placeholder="587"/></label><label>Username<input disabled placeholder="SMTP username"/></label><label>Password / API Secret<input disabled type="password" placeholder="••••••••••••"/></label></div><div className="int-actions"><button className="int-btn save" disabled>▣ Save Settings</button><button className="int-btn test" disabled>➤ Test Connection</button><button className="int-btn purple" disabled>✉ Send Test Email</button></div><FutureNote>Email Service panel is ready visually. Credentials are intentionally disabled until secure backend storage and test/send routes are implemented; current Booking Email settings remain untouched.</FutureNote></div>}
+        {integrationSection === "email" && <div className="int-card accent-pink">
+          <div className="int-card-head"><div className="int-title"><span className="int-brand pink">✉</span><div><h3>Email Service <span className="int-info">ⓘ</span></h3><p>Central email server for booking, admission, reminders and system emails.</p></div></div>{statusPill(form.emailEnabled, form.emailSmtpHost && form.emailSmtpUsername && (form.emailSmtpPasswordSaved || form.emailSmtpPassword) ? "Configured" : "Enabled")}</div>
+          <div className="int-grid two">
+            <label>Email Provider<select value={form.emailProvider} onChange={e=>update("emailProvider",e.target.value)}><option>SMTP</option></select></label>
+            <label>Email Service<select value={form.emailEnabled ? "Enabled" : "Disabled"} onChange={e=>update("emailEnabled",e.target.value === "Enabled")}><option>Enabled</option><option>Disabled</option></select></label>
+            <label>Sender Name<input value={form.emailSenderName || ""} onChange={e=>update("emailSenderName",e.target.value)} placeholder="GuruVidya Academy Pvt. Ltd."/></label>
+            <label>From Email<input type="email" value={form.emailFrom || ""} onChange={e=>update("emailFrom",e.target.value)} placeholder="appointments@guruvidya.in"/></label>
+            <label>Reply-To Email<input type="email" value={form.emailReplyTo || ""} onChange={e=>update("emailReplyTo",e.target.value)} placeholder="support@guruvidya.in"/></label>
+            <label>Security<select value={form.emailSmtpSecurity || "STARTTLS"} onChange={e=>update("emailSmtpSecurity",e.target.value)}><option>STARTTLS</option><option>SSL/TLS</option></select></label>
+            <label>SMTP Host<input value={form.emailSmtpHost || ""} onChange={e=>update("emailSmtpHost",e.target.value)} placeholder="smtp.example.com"/></label>
+            <label>SMTP Port<input type="number" value={form.emailSmtpPort || 587} onChange={e=>update("emailSmtpPort",Number(e.target.value))} placeholder="587"/></label>
+            <label>Username<input value={form.emailSmtpUsername || ""} onChange={e=>update("emailSmtpUsername",e.target.value)} placeholder="SMTP username"/></label>
+            <label>Password / API Secret<input type="password" value={form.emailSmtpPassword || ""} onChange={e=>update("emailSmtpPassword",e.target.value)} placeholder={form.emailSmtpPasswordSaved ? "Saved •••••••• (leave blank to keep)" : "SMTP password"}/></label>
+            <label>Test Email Address<input type="email" value={testEmail} onChange={e=>setTestEmail(e.target.value)} placeholder="your@email.com"/></label>
+          </div>
+          <div className="int-actions"><button className="int-btn save" disabled={loading || !integrationLoaded} onClick={save}>▣ Save Settings</button><button className="int-btn test" disabled={loading || !integrationLoaded} onClick={testEmailConnection}>➤ Test Connection</button><button className="int-btn purple" disabled={loading || !integrationLoaded || !testEmail} onClick={sendTestEmail}>✉ Send Test Email</button></div>
+          <FutureNote>Save SMTP settings first, then Test Connection. Test Email verifies actual delivery. Booking Email recipient settings remain separate and unchanged.</FutureNote>
+        </div>}
 
         {integrationSection === "other" && <div className="int-card accent-slate"><div className="int-card-head"><div className="int-title"><span className="int-brand slate">✚</span><div><h3>Other Integrations</h3><p>Future services can be connected here without cluttering core settings.</p></div></div><span className="int-status pending">● Future Ready</span></div><div className="int-other-grid"><div>▰ <b>Google Drive</b><small>Files and documents</small></div><div>▣ <b>Google Calendar</b><small>Appointment sync</small></div><div>▤ <b>SMS Provider</b><small>SMS notifications</small></div><div>▣ <b>Collexo EMI</b><small>EMI integration</small></div><div>▥ <b>Analytics</b><small>Platform usage</small></div><div>⌁ <b>Custom Webhook</b><small>External systems</small></div></div></div>}
       </section>
