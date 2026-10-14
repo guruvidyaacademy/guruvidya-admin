@@ -478,3 +478,29 @@
    Keep the parent mounted so existing location CRUD and data loading remain intact. */
 .booking-ui .bk-main[data-booking-view="Location Manager"] > #bk-settings > :not(.bk-location){display:none!important;}
 .booking-ui .bk-main[data-booking-view="Location Manager"] > #bk-settings > .bk-location{display:block!important;}
+
+/* Booking Settings secondary navigation - preserve existing control markup */
+#bk-settings[data-settings-tab="notifications"] .bk-formgrid>.gv-wa-notifications{display:block!important}
+#bk-settings[data-settings-tab="appointment"] .bk-formgrid>.gv-wa-notifications,
+#bk-settings[data-settings-tab="form"] .bk-formgrid>.gv-wa-notifications,
+#bk-settings[data-settings-tab="email"] .bk-formgrid>.gv-wa-notifications,
+#bk-settings[data-settings-tab="verification"] .bk-formgrid>.gv-wa-notifications{display:none!important}
+.bk-settings-subnav{display:flex;flex-wrap:wrap;gap:9px;margin:14px 0 20px;padding:12px;background:#f2f6fb;border:1px solid #dbe6f0;border-radius:12px}
+.bk-settings-subnav button{display:inline-flex;align-items:center;gap:7px;border:1px solid #d9e4ef;background:#fff;color:#33465f;border-radius:8px;padding:10px 12px;font-size:12px;font-weight:700;cursor:pointer;line-height:1.25}
+.bk-settings-subnav button.selected{background:#198754;color:#fff;border-color:#198754;box-shadow:0 2px 5px #19875430}
+.bk-settings-subnav button:hover:not(.selected){background:#e5f5ed;border-color:#a8d5be}
+.bk-settings-subnav-top{margin:0 0 14px}
+#bk-settings[data-settings-tab="appointment"] .bk-formgrid>.bk-field:nth-child(n+7),
+#bk-settings[data-settings-tab="form"] .bk-formgrid>.bk-field:not(.bk-address-setting),
+#bk-settings[data-settings-tab="email"] .bk-formgrid>.bk-field:not(.bk-email-settings),
+#bk-settings[data-settings-tab="verification"] .bk-formgrid>.bk-field:not(.bk-wa-policy),
+#bk-settings[data-settings-tab="notifications"] .bk-formgrid>.bk-field{display:none!important}
+#bk-settings[data-settings-tab="appointment"] .bk-wa-notification-panel,
+#bk-settings[data-settings-tab="form"] .bk-wa-notification-panel,
+#bk-settings[data-settings-tab="email"] .bk-wa-notification-panel,
+#bk-settings[data-settings-tab="verification"] .bk-wa-notification-panel{display:none!important}
+#bk-settings[data-settings-tab="appointment"] .bk-wa-automated-notifications,
+#bk-settings[data-settings-tab="form"] .bk-wa-automated-notifications,
+#bk-settings[data-settings-tab="email"] .bk-wa-automated-notifications,
+#bk-settings[data-settings-tab="verification"] .bk-wa-automated-notifications{display:none!important}
+@media(max-width:700px){.bk-settings-subnav{gap:6px;padding:8px}.bk-settings-subnav button{font-size:11px;padding:9px}}
