@@ -441,3 +441,30 @@
 .booking-ui .bk-auth-message h3{margin:0 0 7px}.booking-ui .bk-auth-message p{margin:0 0 8px}.booking-ui .bk-auth-message small{color:#815b35}
 @media(max-width:850px){.booking-ui .bk-page-layout{grid-template-columns:1fr}.booking-ui .bk-side{position:static}.booking-ui .bk-side-links{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:500px){.booking-ui .bk-side-links{grid-template-columns:1fr}}
+
+/* Independent sidebar views: preserve mounted forms, data and WhatsApp controls. */
+.booking-ui .bk-side{background:linear-gradient(180deg,#071e37,#092e4b);border-radius:12px;position:sticky;top:14px}
+.booking-ui .bk-side-links button.active{background:#00ad3f;color:#fff;box-shadow:0 4px 12px #001e2d30}
+.booking-ui .bk-side-links button:hover:not(.active){background:#184665}
+.booking-ui .bk-view-heading{background:#fff;border:1px solid #dce7f4;border-radius:10px;padding:14px 16px;margin-bottom:12px}
+.booking-ui .bk-view-heading h2{font-size:18px;margin:0}
+.booking-ui .bk-main[data-booking-view] > .bk-card{display:none}
+.booking-ui .bk-main[data-booking-view="Booking List"] > #bk-bookings,
+.booking-ui .bk-main[data-booking-view="Booking List"] > .bk-ops-card,
+.booking-ui .bk-main[data-booking-view="Booking List"] > .bk-wa-test-panel,
+.booking-ui .bk-main[data-booking-view="Counselors"] > #bk-counselors,
+.booking-ui .bk-main[data-booking-view="Working Hours"] > #bk-counselors,
+.booking-ui .bk-main[data-booking-view="Holidays"] > #bk-holidays,
+.booking-ui .bk-main[data-booking-view="Booking Settings"] > #bk-settings,
+.booking-ui .bk-main[data-booking-view="Location Manager"] > #bk-settings,
+.booking-ui .bk-main[data-booking-view="Trash"] > #bk-trash{display:block}
+/* Location Manager shares the existing settings form state and CRUD actions. */
+.booking-ui .bk-main[data-booking-view="Location Manager"] > #bk-settings > :not(.bk-formgrid){display:none!important}
+.booking-ui .bk-main[data-booking-view="Location Manager"] > #bk-settings > .bk-formgrid{display:block}
+.booking-ui .bk-main[data-booking-view="Location Manager"] > #bk-settings > .bk-formgrid > :not(.bk-location){display:none!important}
+.booking-ui .bk-main[data-booking-view="Location Manager"] > #bk-settings > .bk-formgrid > .bk-location{display:block!important}
+/* Working hours are configured per counselor; keep counselor selection and save. */
+.booking-ui .bk-main[data-booking-view="Working Hours"] #bk-counselors .bk-booking-detail > .bk-formgrid > .bk-field:not(:has(.bk-hours-wrap)){display:none}
+@media(max-width:850px){.booking-ui .bk-side{position:static}}
+.booking-ui .bk-main[data-booking-view="Booking Settings"] #bk-settings .bk-location{display:none!important}
+.booking-ui .bk-main[data-booking-view="Working Hours"] #bk-counselors .bk-booking-detail > .bk-formgrid > :not(:has(.bk-hours-wrap)){display:none}
