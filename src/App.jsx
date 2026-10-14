@@ -1695,6 +1695,7 @@ export default function App() {
 
   const logout = () => {
     localStorage.removeItem("guruvidya_user");
+    sessionStorage.removeItem("gv_booking_token");
     setUser(null);
   };
 
