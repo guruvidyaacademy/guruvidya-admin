@@ -47,7 +47,7 @@ const allTabs = [
   ["leads", "Leads"],
   ["admissions", "Admissions"],
   ["appointments", "Appointments"],
-  ["booking_dashboard", "Student Booking"],
+  ["booking_dashboard", "Booking Dashboard"],
   ["support", "Support"],
   ["faculty", "Faculty"],
   ["alerts", "Alerts"],
