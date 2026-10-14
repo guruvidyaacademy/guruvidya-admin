@@ -470,6 +470,6 @@
 .booking-ui .bk-main[data-booking-view="Working Hours"] #bk-counselors .bk-booking-detail > .bk-formgrid > :not(:has(.bk-hours-wrap)){display:none}
 
 /* Dedicated Booking Dashboard menu views */
-.bk-main[data-booking-view="Location Manager"] #bk-settings > :not(.bk-location) {display:none !important;}
+/* Location Manager content lives inside the settings form grid; do not hide its parent. */
 .bk-main[data-booking-view="Working Hours"] #bk-settings > :not(.bk-location) {display:none !important;}
 .bk-main[data-booking-view="Working Hours"] #bk-settings > .bk-location {display:none !important;}
