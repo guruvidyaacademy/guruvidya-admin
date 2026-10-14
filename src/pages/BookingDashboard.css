@@ -423,3 +423,21 @@
 .bk-floating-menu button:hover,.bk-floating-menu button:focus-visible{background:#2265b2;color:white;outline:0}
 #bk-bookings,#bk-counselors,#bk-holidays,#bk-settings,#bk-trash{scroll-margin-top:95px}
 @media(max-width:720px){.bk-floating-menu{position:static}.bk-floating-menu-title{width:100%;border:0;border-bottom:1px solid #54718d}.bk-floating-menu button{flex:1 1 40%;justify-content:flex-start}}
+
+/* Integration Panel-style Booking navigation (isolated to Booking Dashboard) */
+.booking-ui .bk-page-layout{display:grid;grid-template-columns:235px minmax(0,1fr);gap:16px;align-items:start}
+.booking-ui .bk-side{background:linear-gradient(155deg,#1260ac,#103c73);border-radius:13px;padding:11px;color:#fff;position:sticky;top:12px;box-shadow:0 7px 19px rgba(17,61,110,.16)}
+.booking-ui .bk-side-title{display:flex;gap:9px;align-items:center;padding:11px 8px 15px;border-bottom:1px solid #ffffff40}
+.booking-ui .bk-side-title strong{display:block;font-size:14px;line-height:1.35}
+.booking-ui .bk-side-title small{display:block;color:#c8e1fc;font-size:11px;margin-top:3px}
+.booking-ui .bk-side-icon{display:grid;place-items:center;background:#287cce;padding:9px;border-radius:9px}
+.booking-ui .bk-side-links{display:grid;gap:5px;padding-top:13px}
+.booking-ui .bk-side-links button{display:flex;align-items:center;gap:10px;text-align:left;width:100%;border:0;border-radius:7px;padding:11px 10px;color:#eef6ff;background:transparent;cursor:pointer;font-size:13px;font-weight:600}
+.booking-ui .bk-side-links button:hover,.booking-ui .bk-side-links button:focus-visible{background:#286fb1;outline:2px solid #ffffff55}
+.booking-ui .bk-side-links button.active{background:#29b96a;color:white;box-shadow:0 2px 6px #06365d35}
+.booking-ui .bk-side-footer{font-size:10px;color:#b7d3ef;border-top:1px solid #ffffff40;margin-top:15px;padding:13px 7px 5px}
+.booking-ui .bk-main{min-width:0}
+.booking-ui .bk-auth-message{display:flex;gap:14px;align-items:flex-start;padding:24px;border:1px solid #f2c7a6;background:#fff8ed;border-radius:12px;max-width:720px;margin:20px auto}
+.booking-ui .bk-auth-message h3{margin:0 0 7px}.booking-ui .bk-auth-message p{margin:0 0 8px}.booking-ui .bk-auth-message small{color:#815b35}
+@media(max-width:850px){.booking-ui .bk-page-layout{grid-template-columns:1fr}.booking-ui .bk-side{position:static}.booking-ui .bk-side-links{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:500px){.booking-ui .bk-side-links{grid-template-columns:1fr}}
