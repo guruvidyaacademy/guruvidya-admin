@@ -98,7 +98,7 @@ function Login({ onLogin }) {
     const u = USERS.find((x) => x.email === email.trim() && x.password === password);
     if (!u) return setError("Wrong email or password");
     localStorage.setItem("guruvidya_user", JSON.stringify(u));
-    onLogin(u);
+    onLogin({...u, bookingLoginPassword: password});
   };
 
   return (
@@ -1817,7 +1817,7 @@ export default function App() {
         </div>
 
         {activeTab === "booking_dashboard" ? (
-          <BookingDashboard />
+          <BookingDashboard crmEmail={user.email} crmBookingPassword={user.bookingLoginPassword} />
         ) : activeTab === "counselors" ? (
           <CounselorDashboard stats={stats} data={data} onSaved={loadAll} />
         ) : activeTab === "automation" ? (

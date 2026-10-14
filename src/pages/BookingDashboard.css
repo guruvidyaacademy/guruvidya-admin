@@ -415,3 +415,11 @@
 .booking-ui .gv-wa-summary-head>div{flex:1;min-width:0}
 .booking-ui .gv-wa-summary-head>svg{flex:0 0 43px}
 @media(max-width:640px){.booking-ui .gv-wa-recipient-head{flex-wrap:wrap}.booking-ui .gv-wa-master{margin-left:auto!important}}
+
+/* Booking Dashboard navigation - isolated to this page */
+.bk-floating-menu{position:sticky;top:8px;z-index:12;display:flex;flex-wrap:wrap;align-items:center;gap:5px;background:#102b4e;border:1px solid #1c4775;border-radius:12px;padding:9px 11px;margin:0 0 14px;box-shadow:0 5px 14px #102b4e18}
+.bk-floating-menu-title{display:flex;align-items:center;gap:8px;color:white;font-weight:700;padding:8px 13px;margin-right:7px;border-right:1px solid #54718d}
+.bk-floating-menu button{display:inline-flex;align-items:center;gap:6px;color:#e8f3ff;background:transparent;border:0;border-radius:7px;padding:9px 10px;cursor:pointer;font-size:13px}
+.bk-floating-menu button:hover,.bk-floating-menu button:focus-visible{background:#2265b2;color:white;outline:0}
+#bk-bookings,#bk-counselors,#bk-holidays,#bk-settings,#bk-trash{scroll-margin-top:95px}
+@media(max-width:720px){.bk-floating-menu{position:static}.bk-floating-menu-title{width:100%;border:0;border-bottom:1px solid #54718d}.bk-floating-menu button{flex:1 1 40%;justify-content:flex-start}}
