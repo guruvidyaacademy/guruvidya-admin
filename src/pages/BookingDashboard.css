@@ -533,3 +533,12 @@
 #bk-settings[data-settings-tab="whatsapp"] .bk-wa-automated-notifications{display:block!important}
 #bk-settings[data-settings-tab="appointment"] .bk-formgrid > .gv-wa-notifications,
 #bk-settings[data-settings-tab="form"] .bk-formgrid > .gv-wa-notifications{display:none!important}
+
+/* Nested booking status/date navigation */
+.bk-status-nav-group { min-width: 0; }
+.bk-status-nav-group > button { width: 100%; }
+.bk-status-chevron { margin-left: auto; opacity: .8; font-size: 13px; }
+.bk-status-date-submenus { margin: 3px 0 6px 12px; padding-left: 8px; border-left: 2px solid rgba(190,218,242,.45); display: flex; flex-direction: column; gap: 3px; }
+.bk-status-date-submenus button { width: 100%; display: flex; align-items: center; gap: 7px; text-align: left; padding: 7px 8px; font-size: 11px; border: 0; border-radius: 6px; background: transparent; color: #fff; cursor: pointer; }
+.bk-status-date-submenus button:hover { background: rgba(255,255,255,.12); }
+.bk-status-date-submenus button.bk-submenu-active { background: #27b95d; color: #fff; font-weight: 700; }
