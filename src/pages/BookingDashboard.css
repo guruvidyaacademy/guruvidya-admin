@@ -473,3 +473,8 @@
 /* Location Manager content lives inside the settings form grid; do not hide its parent. */
 .bk-main[data-booking-view="Working Hours"] #bk-settings > :not(.bk-location) {display:none !important;}
 .bk-main[data-booking-view="Working Hours"] #bk-settings > .bk-location {display:none !important;}
+
+/* 15 Oct: Location Manager is a DIRECT child of #bk-settings, not inside .bk-formgrid.
+   Keep the parent mounted so existing location CRUD and data loading remain intact. */
+.booking-ui .bk-main[data-booking-view="Location Manager"] > #bk-settings > :not(.bk-location){display:none!important;}
+.booking-ui .bk-main[data-booking-view="Location Manager"] > #bk-settings > .bk-location{display:block!important;}
