@@ -51,7 +51,7 @@ export default function BookingDashboard({crmEmail,crmBookingPassword}){
   return()=>{cancelled=true;};
  },[crmEmail,crmBookingPassword]);
  const bookingStatusNav=[['all','All Bookings','calendar'],['requested','Pending Approval','clock'],['confirmed','Confirmed','check'],['rescheduled','Rescheduled','calendar'],['cancelled','Cancelled','x']];
- const bookingSettingsNav=[['appointment','Appointment Rules','settings'],['form','Student Booking Form','users'],['email','Email Notifications','mail'],['verification','WhatsApp Verification','whatsapp'],['notifications','WhatsApp Notifications','bell'],['window','WhatsApp 24h Window Test','clock'],['operations','Notification Operations','bell']];
+ const bookingSettingsNav=[['appointment','Appointment Rules','settings'],['form','Student Booking Form','users'],['whatsapp','WhatsApp Management','whatsapp'],['window','WhatsApp 24h Window Test','clock'],['operations','Notification Operations','bell']];
  const bookingNav=[['Booking List','bk-bookings','calendar'],['Counselors','bk-counselors','users'],['Holidays','bk-holidays','calendar'],['Booking Settings','bk-settings','settings'],['Working Hours','bk-settings','clock'],['Location Manager','bk-settings','pin'],['Trash','bk-trash','trash']];
  const jumpToBooking=(id,label)=>{setActiveBookingMenu(label);setError('');setNotice('');if(label==='Trash')loadTrash();};
  const login=async e=>{e.preventDefault();setError('');try{const x=await request('/admin/booking/session','POST',{email,password},'');setPassword('');setToken(x.token);}catch(e){setError(e.message);}};

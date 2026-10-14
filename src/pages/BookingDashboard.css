@@ -519,3 +519,17 @@
 .bk-mode-filter-bar button.bk-mode-filter-selected{background:#1d65a5;border-color:#1d65a5;color:#fff}
 .bk-mode-filter-bar button:focus-visible,.bk-sidebar-submenus button:focus-visible{outline:2px solid #79c7ff;outline-offset:2px}
 @media(max-width:650px){.bk-mode-filter-bar button{flex:1;padding:9px 7px}.bk-sidebar-submenus{margin-left:5px}}
+
+/* 15 Oct: final five-section Booking Settings organization.
+   Student Booking Form owns Address + Email; WhatsApp Management owns
+   Verification + Automated Notifications. No changes to saving logic. */
+#bk-settings[data-settings-tab="form"] .bk-formgrid > .bk-field.bk-email-settings{display:block!important}
+#bk-settings[data-settings-tab="form"] .bk-formgrid > .bk-field.bk-address-setting{display:block!important}
+#bk-settings[data-settings-tab="form"] .bk-formgrid > .gv-wa-notifications{display:none!important}
+#bk-settings[data-settings-tab="whatsapp"] .bk-formgrid > .bk-field{display:none!important}
+#bk-settings[data-settings-tab="whatsapp"] .bk-formgrid > .bk-field.bk-wa-policy{display:flex!important}
+#bk-settings[data-settings-tab="whatsapp"] .bk-formgrid > .gv-wa-notifications{display:block!important}
+#bk-settings[data-settings-tab="whatsapp"] .bk-wa-notification-panel,
+#bk-settings[data-settings-tab="whatsapp"] .bk-wa-automated-notifications{display:block!important}
+#bk-settings[data-settings-tab="appointment"] .bk-formgrid > .gv-wa-notifications,
+#bk-settings[data-settings-tab="form"] .bk-formgrid > .gv-wa-notifications{display:none!important}
