@@ -504,3 +504,18 @@
 #bk-settings[data-settings-tab="email"] .bk-wa-automated-notifications,
 #bk-settings[data-settings-tab="verification"] .bk-wa-automated-notifications{display:none!important}
 @media(max-width:700px){.bk-settings-subnav{gap:6px;padding:8px}.bk-settings-subnav button{font-size:11px;padding:9px}}
+
+/* Booking List and Booking Settings: compact expandable left navigation */
+.bk-side-nav-group{width:100%}
+.bk-side-nav-group>.bk-parent-active{background:#1d5586!important;color:#fff!important}
+.bk-nav-chevron{margin-left:auto;font-size:16px;line-height:1}
+.bk-sidebar-submenus{display:flex;flex-direction:column;gap:3px;margin:3px 0 8px 11px;padding-left:9px;border-left:2px solid rgba(180,216,242,.35)}
+.bk-side-links .bk-sidebar-submenus button{display:flex;align-items:center;gap:8px;width:100%;min-height:32px;padding:7px 9px;border:0;border-radius:6px;background:transparent;color:#f1f7ff;text-align:left;font-size:12px;line-height:1.3;cursor:pointer;box-shadow:none}
+.bk-side-links .bk-sidebar-submenus button span{overflow-wrap:anywhere}
+.bk-side-links .bk-sidebar-submenus button:hover{background:rgba(255,255,255,.13)}
+.bk-side-links .bk-sidebar-submenus button.bk-submenu-active{background:#24b65c!important;color:#fff!important;font-weight:700}
+.bk-mode-filter-bar{display:flex;flex-wrap:wrap;gap:7px;margin:14px 0 12px}
+.bk-mode-filter-bar button{display:inline-flex;align-items:center;justify-content:center;gap:5px;border:1px solid #d7e1eb;border-radius:7px;background:#fff;color:#365574;padding:9px 15px;font-weight:650;cursor:pointer}
+.bk-mode-filter-bar button.bk-mode-filter-selected{background:#1d65a5;border-color:#1d65a5;color:#fff}
+.bk-mode-filter-bar button:focus-visible,.bk-sidebar-submenus button:focus-visible{outline:2px solid #79c7ff;outline-offset:2px}
+@media(max-width:650px){.bk-mode-filter-bar button{flex:1;padding:9px 7px}.bk-sidebar-submenus{margin-left:5px}}
