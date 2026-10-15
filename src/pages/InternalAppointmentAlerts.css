@@ -6,3 +6,12 @@
 .gvia-history-export{height:39px;min-width:92px;white-space:nowrap;justify-self:end}
 @media(max-width:760px){.gvia-history-filters{grid-template-columns:repeat(2,minmax(0,1fr))}.gvia-history-export{width:100%;justify-self:stretch}}
 @media(max-width:460px){.gvia-history-filters{grid-template-columns:1fr}.gvia-history-export{width:100%}}
+
+/* Recipient-wise expandable 24h reminder monitor */
+.gvia-monitor-hint{padding:12px 14px;border:1px solid #dbeafe;border-radius:10px;background:#f1f7ff;color:#3b5678;font-size:12px;line-height:1.6;margin-bottom:15px}
+.gvia-monitor-list{display:grid;gap:12px}.gvia-monitor-recipient{border:1px solid #dce5f0;border-radius:13px;overflow:hidden;background:#fff;box-shadow:0 2px 8px rgba(23,55,93,.035)}
+.gvia-monitor-toggle{display:flex;align-items:center;gap:12px;width:100%;border:0;background:white;text-align:left;padding:15px;cursor:pointer;color:#193454}.gvia-monitor-toggle:hover{background:#f7faff}
+.gvia-monitor-avatar{width:37px;height:37px;display:grid;place-items:center;flex:none;border-radius:11px;background:#e8f0ff;color:#255ec1;font-weight:800}.gvia-monitor-person{display:grid;gap:4px;flex:1;min-width:0}.gvia-monitor-person strong{font-size:14px}.gvia-monitor-person small{color:#77879c;font-size:11px}.gvia-monitor-chevron{color:#7489a2;font-size:18px;margin-left:8px}
+.gvia-monitor-meta{display:flex;flex-wrap:wrap;gap:9px 25px;padding:0 15px 14px 64px;color:#8190a3;font-size:11px}.gvia-monitor-meta span{display:flex;gap:6px;flex-wrap:wrap}.gvia-monitor-meta strong{color:#364d68;font-weight:600}
+.gvia-monitor-expanded{border-top:1px solid #e7edf6;background:#fbfdff;padding:16px}.gvia-monitor-timeline-title{display:flex;justify-content:space-between;align-items:center;font-weight:750;color:#213d5e;margin-bottom:12px;font-size:13px}.gvia-monitor-timeline-title span{font-size:11px;color:#71859e;font-weight:500}.gvia-monitor-channel{white-space:nowrap;font-weight:600}.gvia-monitor-disclaimer{font-size:11px;line-height:1.5;color:#7b8ba0;margin:12px 0 0}.gvia-monitor-empty{padding:15px;color:#788ba0;font-size:12px}
+@media(max-width:650px){.gvia-monitor-meta{padding-left:15px}.gvia-monitor-toggle{gap:8px}.gvia-monitor-avatar{width:31px;height:31px}.gvia-monitor-expanded{padding:10px}}
