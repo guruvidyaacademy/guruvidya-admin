@@ -1818,7 +1818,7 @@ export default function App() {
         </div>
 
         {activeTab === "booking_dashboard" ? (
-          <BookingDashboard crmEmail={user.email} crmBookingPassword={user.bookingLoginPassword} />
+          <BookingDashboard crmEmail={user.email} crmBookingPassword={user.bookingLoginPassword || user.password} />
         ) : activeTab === "counselors" ? (
           <CounselorDashboard stats={stats} data={data} onSaved={loadAll} />
         ) : activeTab === "automation" ? (
