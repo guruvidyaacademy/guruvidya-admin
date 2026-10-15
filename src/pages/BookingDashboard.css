@@ -542,3 +542,34 @@
 .bk-status-date-submenus button { width: 100%; display: flex; align-items: center; gap: 7px; text-align: left; padding: 7px 8px; font-size: 11px; border: 0; border-radius: 6px; background: transparent; color: #fff; cursor: pointer; }
 .bk-status-date-submenus button:hover { background: rgba(255,255,255,.12); }
 .bk-status-date-submenus button.bk-submenu-active { background: #27b95d; color: #fff; font-weight: 700; }
+
+/* Design 3 — Dark Premium. Visual changes only; booking actions unchanged. */
+@media(min-width:851px){
+  .booking-ui .bk-page-layout{grid-template-columns:260px minmax(0,1fr);gap:16px}
+}
+.booking-ui .bk-side{background:linear-gradient(155deg,#081327 0%,#0a203c 55%,#102b4a 100%);border:1px solid #244464;border-radius:14px;box-shadow:0 10px 28px rgba(4,19,43,.19);padding:12px}
+.booking-ui .bk-side-title{border-bottom-color:#2c4564}
+.booking-ui .bk-side-icon{background:#103b64;color:#00d8f5}
+.booking-ui .bk-side-links{gap:4px}
+.booking-ui .bk-side-links button{border-radius:8px;min-height:38px;transition:background .17s ease,box-shadow .17s ease,transform .17s ease}
+.booking-ui .bk-side-links .bk-side-nav-group>.bk-parent-active{background:linear-gradient(105deg,#112a4c,#1a375d)!important;box-shadow:inset 3px 0 #00d8f5;color:#fff!important}
+.booking-ui .bk-side-links .bk-side-nav-group:first-child>.bk-parent-active{background:linear-gradient(105deg,#103b64,#142b4b)!important}
+.booking-ui .bk-side-links .bk-status-nav-group>button.bk-submenu-active{background:linear-gradient(110deg,#5e27ec,#285bfc)!important;color:#fff!important;box-shadow:0 3px 10px rgba(67,56,232,.24)}
+.booking-ui .bk-side-links .bk-sidebar-submenus .bk-status-date-submenus button.bk-submenu-active{background:linear-gradient(110deg,#00986f,#00b77f)!important;color:#fff!important;box-shadow:inset 3px 0 #6ef1bd,0 3px 10px rgba(0,128,93,.22)}
+.booking-ui .bk-side-links .bk-sidebar-submenus>button.bk-submenu-active{background:linear-gradient(110deg,#00986f,#00b77f)!important;color:#fff!important;box-shadow:inset 3px 0 #6ef1bd}
+.booking-ui .bk-side-links .bk-sidebar-submenus button:hover:not(.bk-submenu-active){background:#203e65!important;transform:translateX(1px)}
+.booking-ui .bk-side-links .bk-sidebar-submenus{border-left-color:#28547a;margin-left:12px;padding-left:10px}
+.booking-ui .bk-side-links .bk-sidebar-submenus button{font-size:12px;line-height:1.35;min-height:34px;padding:8px 9px}
+.booking-ui .bk-side-links .bk-status-date-submenus button{padding-left:9px}
+.booking-ui .bk-side-links .bk-side-nav-group>button:not(.bk-parent-active):hover{background:#193e67!important}
+.booking-ui .bk-side-footer{border-top-color:#294765}
+.booking-ui .bk-mode-filter-bar{display:flex;gap:9px;background:linear-gradient(145deg,#101b31,#162944);border:1px solid #2b4262;border-radius:13px;padding:13px;margin:14px 0 13px;width:fit-content;max-width:100%;box-shadow:0 5px 15px rgba(5,23,46,.12)}
+.booking-ui .bk-mode-filter-bar button{display:flex;flex-direction:column;gap:8px;align-items:center;justify-content:center;min-width:102px;min-height:78px;padding:12px 15px;border:1px solid #3b516e;border-radius:10px;background:#1b2b45;color:#edf5ff;font-size:12px;font-weight:700;box-shadow:none;transition:background .18s ease,transform .18s ease,box-shadow .18s ease}
+.booking-ui .bk-mode-filter-bar button svg{flex-shrink:0}
+.booking-ui .bk-mode-filter-bar button:nth-child(2) svg{color:#8cf1f0}
+.booking-ui .bk-mode-filter-bar button:nth-child(3) svg{color:#ff6379}
+.booking-ui .bk-mode-filter-bar button.bk-mode-filter-selected{background:linear-gradient(140deg,#6830f4,#3539e9);border-color:#7758ff;color:#fff;box-shadow:0 5px 14px rgba(84,54,228,.25)}
+.booking-ui .bk-mode-filter-bar button:hover{transform:translateY(-2px);border-color:#7e8efa;box-shadow:0 6px 14px rgba(44,52,135,.22)}
+.booking-ui .bk-mode-filter-bar button:focus-visible{outline:2px solid #9cecff;outline-offset:3px}
+@media(max-width:850px){.booking-ui .bk-page-layout{grid-template-columns:1fr}.booking-ui .bk-side{position:static}}
+@media(max-width:500px){.booking-ui .bk-mode-filter-bar{width:100%;box-sizing:border-box;gap:6px;padding:8px}.booking-ui .bk-mode-filter-bar button{min-width:0;flex:1;padding:10px 5px;font-size:11px;min-height:70px}}
