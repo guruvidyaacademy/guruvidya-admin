@@ -17,3 +17,6 @@
 @media(max-width:650px){.gvia-monitor-meta{padding-left:15px}.gvia-monitor-toggle{gap:8px}.gvia-monitor-avatar{width:31px;height:31px}.gvia-monitor-expanded{padding:10px}}
 
 .gvia-delivery-detail{display:block;max-width:260px;white-space:normal;overflow-wrap:anywhere;color:#61738b;font-weight:400;margin-top:4px}.gvia-pill.red{background:#fee2e2;color:#b91c1c}
+
+/* Overview live-data presentation */
+.gvia-overview-table{min-width:480px!important}.gvia-overview-window-status{padding:16px 0 7px}.gvia-overview-disclaimer{font-size:11px;line-height:1.5;color:#71839a;margin-top:13px}.gvia-window-card .gvia-full-label{text-align:left}.gvia-window-card a.gvia-btn{display:inline-flex;text-decoration:none;align-items:center}.gvia-window-card .gvia-full-label select{margin-top:6px}
