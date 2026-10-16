@@ -15,3 +15,5 @@
 .gvia-monitor-meta{display:flex;flex-wrap:wrap;gap:9px 25px;padding:0 15px 14px 64px;color:#8190a3;font-size:11px}.gvia-monitor-meta span{display:flex;gap:6px;flex-wrap:wrap}.gvia-monitor-meta strong{color:#364d68;font-weight:600}
 .gvia-monitor-expanded{border-top:1px solid #e7edf6;background:#fbfdff;padding:16px}.gvia-monitor-timeline-title{display:flex;justify-content:space-between;align-items:center;font-weight:750;color:#213d5e;margin-bottom:12px;font-size:13px}.gvia-monitor-timeline-title span{font-size:11px;color:#71859e;font-weight:500}.gvia-monitor-channel{white-space:nowrap;font-weight:600}.gvia-monitor-disclaimer{font-size:11px;line-height:1.5;color:#7b8ba0;margin:12px 0 0}.gvia-monitor-empty{padding:15px;color:#788ba0;font-size:12px}
 @media(max-width:650px){.gvia-monitor-meta{padding-left:15px}.gvia-monitor-toggle{gap:8px}.gvia-monitor-avatar{width:31px;height:31px}.gvia-monitor-expanded{padding:10px}}
+
+.gvia-delivery-detail{display:block;max-width:260px;white-space:normal;overflow-wrap:anywhere;color:#61738b;font-weight:400;margin-top:4px}.gvia-pill.red{background:#fee2e2;color:#b91c1c}
