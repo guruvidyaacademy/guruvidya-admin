@@ -20,3 +20,16 @@
 
 /* Overview live-data presentation */
 .gvia-overview-table{min-width:480px!important}.gvia-overview-window-status{padding:16px 0 7px}.gvia-overview-disclaimer{font-size:11px;line-height:1.5;color:#71839a;margin-top:13px}.gvia-window-card .gvia-full-label{text-align:left}.gvia-window-card a.gvia-btn{display:inline-flex;text-decoration:none;align-items:center}.gvia-window-card .gvia-full-label select{margin-top:6px}
+
+/* Overview: full-width recipient cards, followed by status and alert history */
+.gvia-window-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:14px}
+.gvia-recipient-window{min-width:0;border:1px solid #dce6f2;border-radius:12px;background:linear-gradient(160deg,#f7faff,#fff);padding:18px;display:flex;flex-direction:column;align-items:flex-start;gap:10px}
+.gvia-recipient-window-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;width:100%}
+.gvia-recipient-window-top strong{font-size:15px;color:#183456;display:block;overflow-wrap:anywhere}
+.gvia-recipient-window-top small{display:block;font-size:12px;color:#72849b;margin-top:4px}
+.gvia-recipient-window-time{font-size:23px;font-weight:800;letter-spacing:-.4px;font-variant-numeric:tabular-nums;color:#b83c51}
+.gvia-recipient-window-time.green{color:#09865f}.gvia-recipient-window-time.amber{color:#b37b10}
+.gvia-recipient-window p{font-size:12px;color:#647894;margin:0}
+.gvia-chat-link{display:inline-flex;text-decoration:none;margin-top:auto;align-items:center}
+.gvia-no-phone{font-size:12px;color:#71839a}
+@media(max-width:600px){.gvia-window-grid{grid-template-columns:1fr}.gvia-recipient-window{padding:14px}}
