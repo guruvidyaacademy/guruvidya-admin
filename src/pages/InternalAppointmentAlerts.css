@@ -43,3 +43,11 @@
 
 /* Provider-aware tracking display: unknown receipts are never represented as delivered/read. */
 .gvia-tracking-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:10px 0 14px}.gvia-tracking-panel{border:1px solid #e2e9f2;border-radius:11px;padding:13px;background:#fff}.gvia-tracking-title{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:12px;color:#27374c}.gvia-tracking-steps{display:flex;gap:8px;margin-top:14px}.gvia-tracking-step{flex:1;min-width:0;text-align:center;display:flex;flex-direction:column;align-items:center;gap:4px;color:#8a97a9}.gvia-tracking-step strong{font-size:11px}.gvia-tracking-step small{font-size:10px;line-height:1.35}.gvia-tracking-step.verified{color:#15803d}.gvia-tracking-dot{height:23px;width:23px;border-radius:50%;background:#edf1f6;display:flex;align-items:center;justify-content:center;font-weight:700}.gvia-tracking-step.verified .gvia-tracking-dot{background:#dcfce7}.gvia-tracking-note{font-size:10px;color:#64748b;line-height:1.5;margin:12px 0 0}@media(max-width:750px){.gvia-tracking-grid{grid-template-columns:1fr}}
+
+/* Expandable per-reminder delivery tracking; table and scheduler remain unchanged. */
+.gvia-reminder-track-button{display:block;margin-top:6px;border:0;background:transparent;color:#2563eb;font-size:11px;font-weight:650;padding:4px 0;cursor:pointer;text-align:left}
+.gvia-reminder-track-button:hover{text-decoration:underline}
+.gvia-reminder-track-detail{border:1px solid #dce6f2;background:#f8fbff;border-radius:12px;margin:12px 0;padding:12px}
+.gvia-reminder-track-detail .gvia-tracking-panel{margin-top:10px}
+.gvia-reminder-track-heading{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;color:#24364f;font-size:12px}
+.gvia-reminder-track-heading span{color:#71839a;font-size:11px}
