@@ -69,6 +69,16 @@ export default function InternalAppointmentAlerts({tab='overview',token='',base=
    return {...item,number:i+1,total:schedule.filter(x=>x.on&&['Email','WhatsApp'].includes(x.channel)).length,due,valid,state,delivery};
   }).sort((a,b)=>(a.hour*60+a.minute)-(b.hour*60+b.minute));
  };
+ // Keep completed reminder cycles visible after a real Acknowledge reply opens a new window.
+ // Historical delivery rows are immutable audit records; the current cycle is calculated separately.
+ const previousReminderCycles=r=>{
+  const current=windows[r.id]?new Date(windows[r.id]).getTime():NaN;
+  const rows=reminderDeliveries.filter(d=>Number(d.recipient_id)===Number(r.id)&&Number.isFinite(new Date(d.incoming_at).getTime())&&(!Number.isFinite(current)||Math.abs(new Date(d.incoming_at).getTime()-current)>1000));
+  const cycles=new Map();
+  rows.forEach(d=>{const key=new Date(d.incoming_at).toISOString();if(!cycles.has(key))cycles.set(key,[]);cycles.get(key).push(d)});
+  return [...cycles.entries()].sort((a,b)=>new Date(b[0])-new Date(a[0])).slice(0,10);
+ };
+ const reminderStatus=d=>d.status==='read'?'Read':d.status==='delivered'?'Delivered':d.status==='sent'?'Sent':d.status==='failed'?'Failed':String(d.status||'').startsWith('skipped')?'Skipped':d.status==='pending'?'Processing':String(d.status||'Not Tracked');
  const formatReminderTime=due=>Number.isFinite(due)?new Date(due).toLocaleString('en-IN',{timeZone:'Asia/Kolkata',day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}):'—';
  const countStatus=status=>recipients.filter(r=>windowInfo(r).status===status).length;
  const persist=async(path,method,body,success)=>{setLoading(true);try{await api(path,method,body);await load();setNotice(success)}catch(e){setNotice(e.message)}finally{setLoading(false)}};
@@ -109,6 +119,15 @@ export default function InternalAppointmentAlerts({tab='overview',token='',base=
  </React.Fragment>)}
  {!reminders.length&&<tr><td colSpan={7} className="gvia-monitor-empty">No enabled reminders. Configure them in Reminder Schedule.</td></tr>}
  </tbody></table></div>
+ {previousReminderCycles(r).length>0&&<div className="gvia-monitor-history" style={{marginTop:20,paddingTop:16,borderTop:'1px solid #dce6f3'}}>
+ <div className="gvia-monitor-timeline-title">Previous reminder cycles <span>Saved delivery and acknowledgement history · newest first</span></div>
+ {previousReminderCycles(r).map(([cycle,deliveries])=><div key={cycle} style={{marginBottom:16}}>
+ <div style={{fontWeight:700,margin:'10px 0'}}>Window started: {formatReminderTime(new Date(cycle).getTime())} (IST) <Pill tone="neutral">Previous cycle</Pill></div>
+ <div className="gvia-tablewrap"><table><thead><tr><th>Channel</th><th>After Incoming</th><th>Sent At (IST)</th><th>Delivery Status</th><th>Provider / Details</th></tr></thead><tbody>
+ {[...deliveries].sort((a,b)=>Number(a.offset_minutes)-Number(b.offset_minutes)).map(d=><React.Fragment key={d.id}><tr><td>{d.channel==='whatsapp'?'◉ WhatsApp':'✉ Email'}</td><td>{Math.floor(Number(d.offset_minutes)/60)}h {Number(d.offset_minutes)%60}m</td><td>{['sent','delivered','read'].includes(d.status)?formatReminderTime(new Date(d.created_at).getTime()):'—'}</td><td><Pill tone={['sent','delivered','read'].includes(d.status)?'green':d.status==='failed'?'red':'neutral'}>{reminderStatus(d)}</Pill></td><td title={d.detail||''}>{d.provider||'—'}{d.detail&&<small className="gvia-delivery-detail">{d.detail}</small>}</td></tr>
+ <tr className="gvia-monitor-inline-tracking-row"><td colSpan={5}><TrackingTimeline channel={d.channel} item={d}/></td></tr></React.Fragment>)}
+ </tbody></table></div></div>)}
+ </div>}
  <p className="gvia-monitor-disclaimer">Sent means the provider accepted the message, not that the recipient received or read it. WhatsApp Delivered/Read require verified BotSailor/Meta status callbacks; Email opens require provider tracking. Not Tracked means no matching delivery record is available.</p>
  </div>}
  </section>})}{!recipients.length&&sampleEmpty}</div>
