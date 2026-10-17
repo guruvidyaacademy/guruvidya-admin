@@ -52,8 +52,7 @@
 .gvia-reminder-track-heading{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;color:#24364f;font-size:12px}
 .gvia-reminder-track-heading span{color:#71839a;font-size:11px}
 
-/* Inline reminder tracking, attached to the corresponding reminder row. */
-.gvia-monitor-inline-tracking-row > td { padding: 0 10px 10px !important; border-top: 0 !important; }
-.gvia-monitor-inline-tracking { padding: 8px 12px; background: #f5faff; border: 1px solid #dceaf7; border-radius: 8px; }
-.gvia-monitor-inline-tracking .gvia-reminder-track-heading { margin-bottom: 5px; }
-@media (max-width: 700px) { .gvia-monitor-inline-tracking { min-width: 580px; } }
+/* Inline tracking sits directly under each reminder row. */
+.gvia-monitor-inline-tracking-row > td {padding: 0 10px 10px !important; border-top: 0 !important;}
+.gvia-monitor-inline-tracking {padding: 8px 12px; background: #f5faff; border: 1px solid #dceaf7; border-radius: 8px;}
+.gvia-monitor-inline-tracking .gvia-reminder-track-heading {margin-bottom: 5px;}
