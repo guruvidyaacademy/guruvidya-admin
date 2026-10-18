@@ -11,6 +11,7 @@ const blank='—';
 export default function InternalAppointmentAlerts({tab='overview',token='',base=''}){
  const [recipients,setRecipients]=useState([]),[departments,setDepartments]=useState([]),[rules,setRules]=useState(initialRules),[schedule,setSchedule]=useState(defaults),[newRecipient,setNewRecipient]=useState({name:'',department:'',phone:'',email:''}),[newDepartment,setNewDepartment]=useState(''),[filter,setFilter]=useState(''),[editId,setEditId]=useState(null),[notice,setNotice]=useState('');
  const [reminderDeliveries,setReminderDeliveries]=useState([]);
+ const [previousCyclesExpanded,setPreviousCyclesExpanded]=useState({});
  const [history,setHistory]=useState([]),[historyFilter,setHistoryFilter]=useState({event:'',channel:'',status:''});
  const [historyPeriod,setHistoryPeriod]=useState('today'),[historyFrom,setHistoryFrom]=useState(''),[historyTo,setHistoryTo]=useState(''),[historySearch,setHistorySearch]=useState(''),[historyPage,setHistoryPage]=useState(1),[historyExpanded,setHistoryExpanded]=useState({});
  const [activity,setActivity]=useState({items:[],total:0,page:1,pageSize:10});
@@ -120,8 +121,8 @@ export default function InternalAppointmentAlerts({tab='overview',token='',base=
  {!reminders.length&&<tr><td colSpan={7} className="gvia-monitor-empty">No enabled reminders. Configure them in Reminder Schedule.</td></tr>}
  </tbody></table></div>
  {previousReminderCycles(r).length>0&&<div className="gvia-monitor-history" style={{marginTop:20,paddingTop:16,borderTop:'1px solid #dce6f3'}}>
- <div className="gvia-monitor-timeline-title">Previous reminder cycles <span>Saved delivery and acknowledgement history · newest first</span></div>
- {previousReminderCycles(r).map(([cycle,deliveries])=><div key={cycle} style={{marginBottom:16}}>
+ <button type="button" aria-expanded={!!previousCyclesExpanded[r.id]} onClick={()=>setPreviousCyclesExpanded(p=>({...p,[r.id]:!p[r.id]}))} style={{display:'flex',alignItems:'center',justifyContent:'space-between',width:'100%',padding:'12px 14px',border:'1px solid #dce6f3',borderRadius:10,background:'#f7faff',color:'#193b67',cursor:'pointer',textAlign:'left'}}><span><strong>Previous Reminder Cycle</strong><small style={{display:'block',marginTop:3,color:'#667b96'}}>Latest previous window · saved delivery and acknowledgement history</small></span><span aria-hidden="true" style={{fontSize:20}}>{previousCyclesExpanded[r.id]?'▴':'▾'}</span></button>
+ {previousCyclesExpanded[r.id]&&previousReminderCycles(r).map(([cycle,deliveries])=><div key={cycle} style={{marginBottom:16}}>
  <div style={{fontWeight:700,margin:'10px 0'}}>Window started: {formatReminderTime(new Date(cycle).getTime())} (IST) <Pill tone="neutral">Previous cycle</Pill></div>
  <div className="gvia-tablewrap"><table><thead><tr><th>Channel</th><th>After Incoming</th><th>Sent At (IST)</th><th>Delivery Status</th><th>Provider / Details</th></tr></thead><tbody>
  {[...deliveries].sort((a,b)=>Number(a.offset_minutes)-Number(b.offset_minutes)).map(d=><React.Fragment key={d.id}><tr><td>{d.channel==='whatsapp'?'◉ WhatsApp':'✉ Email'}</td><td>{Math.floor(Number(d.offset_minutes)/60)}h {Number(d.offset_minutes)%60}m</td><td>{['sent','delivered','read'].includes(d.status)?formatReminderTime(new Date(d.created_at).getTime()):'—'}</td><td><Pill tone={['sent','delivered','read'].includes(d.status)?'green':d.status==='failed'?'red':'neutral'}>{reminderStatus(d)}</Pill></td><td title={d.detail||''}>{d.provider||'—'}{d.detail&&<small className="gvia-delivery-detail">{d.detail}</small>}</td></tr>
