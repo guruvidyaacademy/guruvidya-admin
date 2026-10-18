@@ -76,7 +76,7 @@ export default function InternalAppointmentAlerts({tab='overview',token='',base=
   const rows=reminderDeliveries.filter(d=>Number(d.recipient_id)===Number(r.id)&&Number.isFinite(new Date(d.incoming_at).getTime())&&(!Number.isFinite(current)||Math.abs(new Date(d.incoming_at).getTime()-current)>1000));
   const cycles=new Map();
   rows.forEach(d=>{const key=new Date(d.incoming_at).toISOString();if(!cycles.has(key))cycles.set(key,[]);cycles.get(key).push(d)});
-  return [...cycles.entries()].sort((a,b)=>new Date(b[0])-new Date(a[0])).slice(0,10);
+  return [...cycles.entries()].sort((a,b)=>new Date(b[0])-new Date(a[0])).slice(0,1);
  };
  const reminderStatus=d=>d.status==='read'?'Read':d.status==='delivered'?'Delivered':d.status==='sent'?'Sent':d.status==='failed'?'Failed':String(d.status||'').startsWith('skipped')?'Skipped':d.status==='pending'?'Processing':String(d.status||'Not Tracked');
  const formatReminderTime=due=>Number.isFinite(due)?new Date(due).toLocaleString('en-IN',{timeZone:'Asia/Kolkata',day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}):'—';
