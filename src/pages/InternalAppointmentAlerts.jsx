@@ -1,6 +1,6 @@
-import React,{useState,useEffect,useCallback} from 'react';
+import React,{useState,useEffect,useCallback,useRef} from 'react';
 import './InternalAppointmentAlerts.css';
-const sections={overview:['Overview','Real-time appointment notification overview'],recipients:['Recipients','Manage authorized WhatsApp and email contacts'],departments:['Departments','Department structure and event routing'],rules:['Notification Rules','Control which appointment events are eligible for each channel'],monitor:['24h Window Monitor','Recipient-wise WhatsApp service-window tracking'],schedule:['Reminder Schedule','Manage renewal reminder intervals'],history:['Alert History','Delivery and acknowledgement audit trail']};
+const sections={overview:['Overview','Real-time appointment notification overview'],recipients:['Recipients','Manage authorized WhatsApp and email contacts'],departments:['Departments','Department structure and event routing'],rules:['Notification Rules','Control which appointment events are eligible for each channel'],monitor:['24h Window Monitor','Recipient-wise WhatsApp service-window tracking'],schedule:['Reminder Schedule','Manage renewal reminder intervals'],history:['Booking Notification Tracking','Confirmed, rescheduled and cancelled booking notification delivery']};
 const events=['Confirmed','Rescheduled','Cancelled'];
 const defaults=[{id:1,channel:'Email',hour:18,minute:0,on:true},{id:2,channel:'Email',hour:22,minute:0,on:true},{id:3,channel:'WhatsApp',hour:23,minute:15,on:true},{id:4,channel:'Email',hour:23,minute:30,on:true}];
 const initialRules={master:true,counselor:true,email:true,closedMaster:false,open:[true,true,true],closed:[true,true,true]};
@@ -12,6 +12,8 @@ export default function InternalAppointmentAlerts({tab='overview',token='',base=
  const [recipients,setRecipients]=useState([]),[departments,setDepartments]=useState([]),[rules,setRules]=useState(initialRules),[schedule,setSchedule]=useState(defaults),[newRecipient,setNewRecipient]=useState({name:'',department:'',phone:'',email:''}),[newDepartment,setNewDepartment]=useState(''),[filter,setFilter]=useState(''),[editId,setEditId]=useState(null),[notice,setNotice]=useState('');
  const [reminderDeliveries,setReminderDeliveries]=useState([]);
  const [previousCyclesExpanded,setPreviousCyclesExpanded]=useState({});
+ const [historyLastUpdated,setHistoryLastUpdated]=useState(null);
+ const historyRefreshBusy=useRef(false);
  const [history,setHistory]=useState([]),[historyFilter,setHistoryFilter]=useState({event:'',channel:'',status:''});
  const [historyPeriod,setHistoryPeriod]=useState('today'),[historyFrom,setHistoryFrom]=useState(''),[historyTo,setHistoryTo]=useState(''),[historySearch,setHistorySearch]=useState(''),[historyPage,setHistoryPage]=useState(1),[historyExpanded,setHistoryExpanded]=useState({});
  const [activity,setActivity]=useState({items:[],total:0,page:1,pageSize:10});
@@ -29,6 +31,20 @@ export default function InternalAppointmentAlerts({tab='overview',token='',base=
  const load=useCallback(async()=>{if(!token)return;setLoading(true);try{const data=await api('/config');setDepartments(data.departments.map(x=>x.name));setDepartmentsData(data.departments);setRecipients(data.recipients);setRouting(Object.fromEntries(data.departments.map(x=>[x.name,[x.confirmed,x.rescheduled,x.cancelled]])));setNotice('');}catch(e){setNotice('Unable to load saved recipients and departments: '+e.message)}finally{setLoading(false)}},[api,token]);
  const loadExtras=useCallback(async()=>{if(!token)return;try{const saved=await api('/settings');if(saved.rules)setRules(saved.rules);if(saved.schedule)setSchedule(saved.schedule);const rows=await api('/history');setHistory(rows||[]);const deliveryRows=await api('/reminder-deliveries');setReminderDeliveries(deliveryRows||[]);}catch(e){setNotice('Alert settings/history unavailable: '+e.message)}},[api,token]);
  useEffect(()=>{loadExtras()},[loadExtras]);
+ const refreshBookingHistory=useCallback(async()=>{
+  if(!token||historyRefreshBusy.current)return;
+  historyRefreshBusy.current=true;
+  try{const rows=await api('/history');setHistory(rows||[]);setHistoryLastUpdated(Date.now());}
+  catch(e){setNotice('Booking notification tracking refresh failed: '+e.message)}
+  finally{historyRefreshBusy.current=false}
+ },[api,token]);
+ useEffect(()=>{
+  if(tab!=='history'||!token)return;
+  refreshBookingHistory();
+  const id=setInterval(()=>{if(!document.hidden)refreshBookingHistory()},15000);
+  return ()=>clearInterval(id);
+ },[tab,token,refreshBookingHistory]);
+
  const loadActivity=useCallback(async()=>{if(!token)return;if(activityFilter.period==='custom'&&(!activityFilter.from||!activityFilter.to))return;
   setActivityLoading(true);setActivityError('');try{const query=new URLSearchParams(Object.entries(activityFilter).filter(([,v])=>v!==''));const data=await api('/overview-activity?'+query.toString());setActivity(data);}catch(e){setActivityError(e.message)}finally{setActivityLoading(false)}
  },[api,token,activityFilter]);
@@ -142,7 +158,7 @@ export default function InternalAppointmentAlerts({tab='overview',token='',base=
  const statusOptions=[...new Set(rows.map(x=>x.status).filter(Boolean))].sort();
  const filtered=rows.filter(x=>{const day=istDay(x.created_at);return day>=fifteenDayStart&&day<=today&&(historyPeriod==='today'?day===today:historyPeriod==='7days'?day>=sevenDayStart&&day<=today:(!historyFrom||day>=historyFrom)&&(!historyTo||day<=historyTo))&&(!historyFilter.event|| (x.event===historyFilter.event))&&(!historyFilter.channel||x.channel===historyFilter.channel)&&(!historyFilter.status||x.status===historyFilter.status)&&(!historySearch||[x.name,x.booking_id,x.phone,x.recipient_id,x.destination].some(v=>String(v||'').toLowerCase().includes(historySearch.trim().toLowerCase())))}).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
  const map=new Map();filtered.forEach(x=>{if(!map.has(x.groupKey))map.set(x.groupKey,{key:x.groupKey,name:x.name,booking:x.booking_id,kind:x.kind,phone:x.phone||'',events:[]});map.get(x.groupKey).events.push(x)});const groups=[...map.values()];const pages=Math.max(1,Math.ceil(groups.length/10));const page=Math.min(historyPage,pages);
- return <Card title="Internal Alert History" sub="Booking notifications · Last 15 days · Confirmed, rescheduled and cancelled" actions={<button className="gvia-btn" onClick={async()=>{try{const a=await api('/history');setHistory(a||[])}catch(e){setNotice(e.message)}}}>↻ Refresh History</button>}>
+ return <Card title="Booking Notification Tracking" sub="Confirmed, rescheduled and cancelled · Last 15 days · Auto-refresh every 15 seconds" actions={<div style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap"}}><span style={{fontSize:12,color:"#64748b"}} aria-live="off">{historyLastUpdated?"Updated "+new Date(historyLastUpdated).toLocaleTimeString("en-IN",{timeZone:"Asia/Kolkata",hour:"2-digit",minute:"2-digit",second:"2-digit"}):"Waiting for update"}</span><button className="gvia-btn" onClick={refreshBookingHistory}>↻ Refresh</button></div>}>
  <div className="gvia-activity-toolbar"><div className="gvia-activity-period">{[['today','Today'],['7days','7 Days'],['custom','Custom']].map(([v,l])=><button key={v} type="button" className={'gvia-activity-period-btn '+(historyPeriod===v?'active':'')} onClick={()=>{setHistoryPeriod(v);setHistoryPage(1)}}>{l}</button>)}</div>
  {historyPeriod==='custom'&&<div className="gvia-activity-dates"><label>From <input type="date" value={historyFrom} onChange={e=>{setHistoryFrom(e.target.value);setHistoryPage(1)}}/></label><label>To <input type="date" min={historyFrom||undefined} value={historyTo} onChange={e=>{setHistoryTo(e.target.value);setHistoryPage(1)}}/></label></div>}
  <div className="gvia-history-filters"><select aria-label="All Events" value={historyFilter.event} onChange={e=>{setHistoryFilter(p=>({...p,event:e.target.value}));setHistoryPage(1)}}><option value="">All Events</option>{eventOptions.map(v=><option key={v} value={v}>{v}</option>)}</select><select aria-label="All Channels" value={historyFilter.channel} onChange={e=>{setHistoryFilter(p=>({...p,channel:e.target.value}));setHistoryPage(1)}}><option value="">All Channels</option><option value="whatsapp">WhatsApp</option><option value="email">Email</option></select><select aria-label="All Statuses" value={historyFilter.status} onChange={e=>{setHistoryFilter(p=>({...p,status:e.target.value}));setHistoryPage(1)}}><option value="">All Statuses</option>{statusOptions.map(v=><option key={v} value={v}>{activityStatus(v)}</option>)}</select></div><div className="gvia-activity-filters"><input placeholder="Search name, mobile or booking ID" aria-label="Search alert history" value={historySearch} onChange={e=>{setHistorySearch(e.target.value);setHistoryPage(1)}}/></div></div>
