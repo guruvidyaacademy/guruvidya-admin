@@ -574,18 +574,20 @@
 @media(max-width:850px){.booking-ui .bk-page-layout{grid-template-columns:1fr}.booking-ui .bk-side{position:static}}
 @media(max-width:500px){.booking-ui .bk-mode-filter-bar{width:100%;box-sizing:border-box;gap:6px;padding:8px}.booking-ui .bk-mode-filter-bar button{min-width:0;flex:1;padding:10px 5px;font-size:11px;min-height:70px}}
 
-/* GuruVidya booking dashboard: independently scrolling desktop navigation/content. */
+/* Booking Dashboard: one page/content scroll, with a sticky, self-contained navigation.
+   Avoid a third nested content scrollbar while preserving long booking tables. */
 @media (min-width: 851px) {
   .booking-ui .bk-page-layout {
-    height: calc(100dvh - 128px);
-    min-height: 480px;
-    align-items: stretch;
-    overflow: hidden;
+    height: auto;
+    min-height: 0;
+    align-items: start;
+    overflow: visible;
   }
   .booking-ui .bk-side {
-    position: relative;
-    top: auto;
-    height: 100%;
+    position: sticky;
+    top: 12px;
+    height: calc(100dvh - 24px);
+    max-height: calc(100dvh - 24px);
     min-height: 0;
     display: flex;
     flex-direction: column;
@@ -604,11 +606,9 @@
   }
   .booking-ui .bk-main {
     min-height: 0;
-    overflow-y: auto;
-    overflow-x: hidden;
-    overscroll-behavior: contain;
-    scrollbar-width: thin;
-    scrollbar-color: #b7c9de transparent;
+    height: auto;
+    max-height: none;
+    overflow: visible;
   }
 }
 @media (max-width: 850px) {
