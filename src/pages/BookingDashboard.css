@@ -615,3 +615,25 @@
   .booking-ui .bk-page-layout { height: auto; overflow: visible; }
   .booking-ui .bk-side, .booking-ui .bk-main { height: auto; max-height: none; overflow: visible; }
 }
+
+/* 19 Oct 11:58 PM baseline: restore overview cards hidden by legacy view isolation. */
+.booking-ui .bk-main[data-booking-view="Main Overview"] > .gv-booking-overview,
+.booking-ui .bk-main[data-booking-view="Booking Overview"] > .gv-booking-overview,
+.booking-ui .bk-main[data-booking-view="Booking Settings"] > .gv-booking-overview {
+  display: block;
+}
+/* Keep navigation rows content-sized, even when only a few sections are expanded. */
+.booking-ui .bk-side-links {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+}
+.booking-ui .bk-side-links > button,
+.booking-ui .bk-side-links > .bk-side-nav-group {
+  flex: 0 0 auto;
+}
+.booking-ui .bk-side-links > button {
+  min-height: 38px;
+  height: auto;
+}
