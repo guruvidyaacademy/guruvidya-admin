@@ -50,7 +50,7 @@ export default function InternalAppointmentAlerts({tab='overview',token='',base=
  const formatActivityTime=value=>value?new Date(value).toLocaleString('en-IN',{timeZone:'Asia/Kolkata',day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}):'—';
  const activityTone=status=>['sent','delivered','read'].includes(status)?'green':status==='failed'?'red':'neutral';
  const activityStatus=status=>status==='skipped_closed'?'Skipped · Window Closed':String(status||'—').replace(/_/g,' ');
- const trackingLabel=(item)=>{const s=String(item?.status||'').toLowerCase();if(s==='read')return 'Read';if(s==='delivered')return 'Delivered';if(s==='opened')return 'Opened';if(s==='clicked')return 'Clicked';return 'Not Tracked';};
+ const trackingLabel=(item)=>{const s=String(item?.status||'').toLowerCase();if(s==='sent')return 'Sent';if(s==='read')return 'Read';if(s==='delivered')return 'Delivered';if(s==='opened')return 'Opened';if(s==='clicked')return 'Clicked';return 'Not Tracked';};
  const formatClickTime=value=>value?new Date(value).toLocaleTimeString('en-IN',{timeZone:'Asia/Kolkata',hour:'2-digit',minute:'2-digit',second:'2-digit'}):'—';
  const TrackingTimeline=({item,channel})=>{const email=channel==='email';const steps=email?['Sent','Delivered','Opened','Clicked']:['Sent','Delivered','Read','Clicked'];const state=String(item?.status||'').toLowerCase();const ranks=email?{sent:0,delivered:1,opened:2,clicked:3}:{sent:0,delivered:1,read:2};const rank=Object.prototype.hasOwnProperty.call(ranks,state)?ranks[state]:-1;
  const history=Array.isArray(item?.click_history)?item.click_history.filter(e=>e&&e.button&&e.at).slice().sort((x,y)=>new Date(x.at)-new Date(y.at)):[];
