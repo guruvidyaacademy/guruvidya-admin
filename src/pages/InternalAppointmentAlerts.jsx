@@ -46,6 +46,19 @@ export default function InternalAppointmentAlerts({tab='overview',token='',base=
   setActivityLoading(true);setActivityError('');try{const query=new URLSearchParams(Object.entries(activityFilter).filter(([,v])=>v!==''));const data=await api('/overview-activity?'+query.toString());setActivity(data);}catch(e){setActivityError(e.message)}finally{setActivityLoading(false)}
  },[api,token,activityFilter]);
  useEffect(()=>{if(tab==='overview'||tab==='rules')loadActivity()},[tab,loadActivity]);
+ // Auto-refresh the two internal-team delivery tracking views every 15 seconds.
+ // Keep filters, expanded rows and unsaved notification rules intact.
+ useEffect(()=>{
+  if(!token||(tab!=='overview'&&tab!=='rules'))return;
+  let active=true;
+  const tick=async()=>{
+   if(typeof document!=='undefined'&&document.visibilityState==='hidden')return;
+   if(!active)return;
+   try{await loadActivity()}catch(e){/* Keep last successful data. */}
+  };
+  const id=setInterval(tick,15000);
+  return ()=>{active=false;clearInterval(id)};
+ },[tab,token,loadActivity]);
  useEffect(()=>{if(tab==='overview')setActivityFilter(p=>({...p,period:'today',page:1}))},[tab]);
  const updateActivity=(field,value)=>setActivityFilter(p=>({...p,[field]:value,page:1}));
  const formatActivityTime=value=>value?new Date(value).toLocaleString('en-IN',{timeZone:'Asia/Kolkata',day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}):'—';
