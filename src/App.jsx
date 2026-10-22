@@ -1662,7 +1662,7 @@ export default function App() {
     }
   });
 
-  const [activeTab, setActiveTab] = useState("leads");
+  const [activeTab, setActiveTab] = useState(() => new URLSearchParams(window.location.search).has("gv_booking_ref") ? "booking_dashboard" : "leads");
   const [data, setData] = useState({
     leads: [],
     admissions: [],
