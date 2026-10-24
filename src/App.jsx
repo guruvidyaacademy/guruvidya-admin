@@ -3,6 +3,18 @@ import Pipeline from "./pages/Pipeline";
 import { useEffect, useMemo, useState, useRef, Fragment } from "react";
 import axios from "axios";
 
+// Approved WhatsApp online template uses ?gv_join_ref=<booking reference>.
+// Forward to the backend's validated meeting resolver before showing the CRM UI.
+if (typeof window !== 'undefined') {
+  const joinRef = new URLSearchParams(window.location.search).get('gv_join_ref');
+  if (joinRef !== null) {
+    const valid = /^[-A-Za-z0-9_]{4,100}$/.test(joinRef);
+    window.location.replace(valid
+      ? `https://guruvidya-backend.onrender.com/api/public/booking/internal-team-alert/join/${encodeURIComponent(joinRef)}`
+      : 'https://admins.guruvidya.in/');
+  }
+}
+
 const api = axios.create({
   baseURL: "https://guruvidya-backend.onrender.com/api",
 });
