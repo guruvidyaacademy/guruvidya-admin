@@ -3,11 +3,26 @@ import Pipeline from "./pages/Pipeline";
 import { useEffect, useMemo, useState, useRef, Fragment } from "react";
 import axios from "axios";
 
+// CLOSED-window approved templates keep the existing Meta URL prefixes.
+// Signed suffixes redirect to the backend, which records the exact delivery
+// and button click before forwarding to the current meeting / CRM page.
+if (typeof window !== 'undefined') {
+  const params = new URLSearchParams(window.location.search);
+  const signed = /^(\d+)\.(\d+)\.([a-f0-9]{64})$/;
+  const joinToken = params.get('gv_join_ref');
+  const crmToken = params.get('gv_booking_ref');
+  const action = joinToken && signed.test(joinToken) ? 'join' : crmToken && signed.test(crmToken) ? 'crm' : null;
+  const token = action === 'join' ? joinToken : crmToken;
+  if (action) {
+    window.location.replace(`https://guruvidya-backend.onrender.com/api/public/booking/internal-team-alert/closed-cta/${action}/${encodeURIComponent(token)}`);
+  }
+}
+
 // Approved WhatsApp online template uses ?gv_join_ref=<booking reference>.
 // Forward to the backend's validated meeting resolver before showing the CRM UI.
 if (typeof window !== 'undefined') {
   const joinRef = new URLSearchParams(window.location.search).get('gv_join_ref');
-  if (joinRef !== null) {
+  if (joinRef !== null && !/^(\d+)\.(\d+)\.([a-f0-9]{64})$/.test(joinRef)) {
     const valid = /^[-A-Za-z0-9_]{4,100}$/.test(joinRef);
     window.location.replace(valid
       ? `https://guruvidya-backend.onrender.com/api/public/booking/internal-team-alert/join/${encodeURIComponent(joinRef)}`
