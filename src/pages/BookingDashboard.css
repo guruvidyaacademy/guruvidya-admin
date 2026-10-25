@@ -449,6 +449,7 @@
 .booking-ui .bk-view-heading{background:#fff;border:1px solid #dce7f4;border-radius:10px;padding:14px 16px;margin-bottom:12px}
 .booking-ui .bk-view-heading h2{font-size:18px;margin:0}
 .booking-ui .bk-main[data-booking-view] > .bk-card{display:none}
+.booking-ui .bk-main[data-booking-view="Smart Appointment Reminders"] > #bk-smart-reminders-panel,
 .booking-ui .bk-main[data-booking-view="Booking List"] > #bk-bookings,
 .booking-ui .bk-main[data-booking-view="Booking List"] > .bk-ops-card,
 .booking-ui .bk-main[data-booking-view="Booking List"] > .bk-wa-test-panel,
