@@ -638,3 +638,8 @@
   min-height: 38px;
   height: auto;
 }
+
+/* Smart Appointment Reminders: isolated navigation, matching approved blue dashboard. */
+.booking-ui .sr-sidebar-nav{background:linear-gradient(150deg,#0968c8,#064d9d);border:1px solid #1389e8;border-radius:9px;padding:6px 5px;margin:3px 0 8px}
+.booking-ui .bk-side-links .sr-sidebar-parent{display:flex;align-items:center;background:transparent;color:#fff;gap:9px;font-weight:750;padding:12px 9px}
+.booking-ui .sr-sidebar-parent>span:nth-child(2){flex:1}.booking-ui .sr-sidebar-children{display:grid;gap:3px;padding:0 4px 5px}.booking-ui .bk-side-links .sr-sidebar-children button{color:#eaf3ff;font-size:12px;padding:10px 11px;gap:10px}.booking-ui .bk-side-links .sr-sidebar-children button.sr-sidebar-child-active{background:#e9f3ff;color:#073f9b;box-shadow:0 2px 8px #061c3b24}.booking-ui .bk-side-links .sr-sidebar-children button:hover:not(.sr-sidebar-child-active){background:#197bd1}
