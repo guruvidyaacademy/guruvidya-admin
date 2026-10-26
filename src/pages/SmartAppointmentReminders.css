@@ -229,3 +229,12 @@
 .sr-settings-page .sr-bottom-note svg{flex-shrink:0;color:#0b58c4}
 @media(max-width:900px){.sr-settings-page .sr-settings-lower{grid-template-columns:1fr 1fr}.sr-settings-page .sr-master{flex-wrap:wrap}.sr-settings-page .sr-master-status{flex:1}}
 @media(max-width:760px){.sr-settings-page .sr-settings-lower,.sr-settings-page .sr-settings-grid{grid-template-columns:1fr}.sr-settings-page .sr-master-lock{width:65px;height:65px}.sr-settings-page .sr-master-status{min-width:100%}.sr-settings-page .sr-save{width:100%}.sr-settings-page .sr-settings-grid>.sr-panel{overflow-x:auto}.sr-settings-page .sr-settings-table{min-width:490px}}
+
+/* Approved compact time selectors; existing table and toggles preserved. */
+.sr-settings-page .sr-time-pickers{display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.sr-settings-page .sr-time-pickers select{width:51px;max-width:51px;padding:6px 2px;border:1px solid #cadbf1;border-radius:6px;background:#fff;color:#12326a;font-size:11px;font-weight:650;cursor:pointer}
+.sr-settings-page .sr-master-toggle{display:flex;flex-direction:column;align-items:center;gap:7px;font-size:11px;font-weight:750;color:#15376e;white-space:nowrap}
+.sr-settings-page .sr-master-on{background:linear-gradient(105deg,#e2f8eb,#eafaf1);border-color:#b4e4c9}
+.sr-settings-page .sr-master-on .sr-master-lock{background:#d9f3e4;color:#169b60}
+.sr-settings-page .sr-master-on h3 em{color:#128650}
+@media(max-width:760px){.sr-settings-page .sr-time-pickers select{width:48px;max-width:48px}}
