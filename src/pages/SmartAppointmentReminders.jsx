@@ -61,6 +61,28 @@ function manualButtonEvents(test,channel){
   const outcome=key==='yes_attend'?'Attendance confirmation recorded':key==='yes_attend_open'?'Confirmation page opened':key==='reschedule'?'Reschedule page opened — not completed':key==='cancel'?'Cancellation page opened — not completed':'Button response recorded';
   return {channel,key,label:MANUAL_BUTTON_LABELS[key]||key.replaceAll('_',' '),first,last,total:Math.max(Number(row.click_count)||0,times.length,1),times,outcome,type:'click'};
  });
+ // Email YES link opening and attendance confirmation are two stages of the same
+ // button action. Preserve their separate audit timestamps, but render one row
+ // and do not count the successful confirmation as a second button click.
+ if(channel==='email'){
+  const openIndex=clicks.findIndex(e=>e.key==='yes_attend_open');
+  const confirmIndex=clicks.findIndex(e=>e.key==='yes_attend');
+  if(openIndex!==-1&&confirmIndex!==-1){
+   const opened=clicks[openIndex],confirmed=clicks[confirmIndex];
+   const times=[...opened.times].sort((a,b)=>new Date(a)-new Date(b));
+   const confirmedTimes=[...confirmed.times].sort((a,b)=>new Date(a)-new Date(b));
+   const merged={...opened,key:'yes_attend',label:"Yes, I'll Attend",total:opened.total,
+    first:opened.first,last:opened.last,times,
+    confirmedAt:confirmedTimes[0]||confirmed.first,
+    confirmationTimes:confirmedTimes,
+    outcome:'Attendance confirmation recorded'};
+   clicks.splice(Math.max(openIndex,confirmIndex),1);
+   clicks.splice(Math.min(openIndex,confirmIndex),1,merged);
+  }else if(confirmIndex!==-1){
+   // Legacy links may only report a confirmed event. Keep the verified event.
+   clicks[confirmIndex]={...clicks[confirmIndex],confirmedAt:clicks[confirmIndex].first};
+  }
+ }
  // The existing 4h preference audit is authoritative for follow-up Yes/No.
  // These are preference events, not additional clicks in the provider's click count.
  if(channel==='whatsapp'&&test?.stage==='4h'&&test?.followup_choice){
@@ -85,7 +107,7 @@ function ManualTrackingCard({test,channel}){
   <div className="sr-manual-premium-heading"><span className="sr-manual-premium-logo"><TrackingIcon name={wa?'whatsapp':'mail'} size={21}/></span><span><b>{wa?'WhatsApp':'Email'}</b><small>{wa?'BotSailor':'Resend'} · Manual Test</small></span><span className="sr-manual-premium-badge">{test?(accepted?'Provider accepted':test.status):'Not tested'}</span></div>
   <div className="sr-manual-premium-events">{events.map((name,i)=>{const at=timestamps[i],observed=i===0?accepted:i===3?clicks>0:Boolean(at);return <div className="sr-manual-premium-event" key={name}><span className={'sr-manual-premium-event-icon '+(observed?'verified':'')}><TrackingIcon name={iconNames[i]} size={17}/></span><div><b>{name}</b><small>{i===0&&accepted?'Provider accepted send request':observed?(i===3?`${clicks} recorded click${clicks===1?'':'s'}`:'Provider event recorded'):i===0?'No accepted send':'Awaiting verified event'}</small></div><time>{fmt(at)}</time></div>})}</div>
   <details className="sr-manual-inline-clicks"><summary><TrackingIcon name="ref" size={16}/> Button-wise activity <span>{clicks} clicks{entries.some(e=>e.type==='preference')?' · follow-up recorded':''}</span></summary>
-   {entries.length?entries.map((e,i)=><div className="sr-manual-inline-button" key={e.key+'-'+i}><div className="sr-manual-button-item-head"><strong>{e.label}</strong><span>{e.total} {e.type==='preference'?'event'+(e.total===1?'':'s'):'click'+(e.total===1?'':'s')}</span></div><div className="sr-manual-button-times"><span>First: <b>{fmt(e.first)}</b></span><span>Last: <b>{fmt(e.last)}</b></span></div><div className="sr-manual-button-outcome">{e.outcome}</div>{e.times.length>1&&<details><summary>All timestamps ({e.times.length})</summary><ol>{e.times.map((at,j)=><li key={j}>{fmt(at)}</li>)}</ol></details>}</div>):<p className="sr-muted">No verified button activity recorded.</p>}
+   {entries.length?entries.map((e,i)=><div className="sr-manual-inline-button" key={e.key+'-'+i}><div className="sr-manual-button-item-head"><strong>{e.label}</strong><span>{e.total} {e.type==='preference'?'event'+(e.total===1?'':'s'):'click'+(e.total===1?'':'s')}</span></div><div className="sr-manual-button-times"><span>First: <b>{fmt(e.first)}</b></span><span>Last: <b>{fmt(e.last)}</b></span></div><div className="sr-manual-button-outcome">{e.outcome}</div>{e.confirmedAt&&<div className="sr-manual-button-times"><span>Confirmed: <b>{fmt(e.confirmedAt)}</b></span></div>}{e.times.length>1&&<details><summary>All timestamps ({e.times.length})</summary><ol>{e.times.map((at,j)=><li key={j}>{fmt(at)}</li>)}</ol></details>}</div>):<p className="sr-muted">No verified button activity recorded.</p>}
    {wa&&test?.stage==='4h'&&test?.followup_choice&&<div className="sr-followup-summary"><strong>Yes, I'll Attend · Reminder Preferences</strong><p className="sr-manual-activity-note">The 4h acknowledgement is separate from reminder preferences. A reminder OFF does not cancel the booking.</p>{['2h','1h'].map(stage=>{const f=test.followup_choice;const is2h=stage==='2h';const choice=is2h?f.choice:null;const history=is2h&&Array.isArray(f.history)?f.history:[];const pending=is2h?f.pending_change:null;const confirmed=history.filter(h=>h.event_type==='initial'||h.event_type==='confirmed');const latest=confirmed[confirmed.length-1];return <div className="sr-followup-stage" key={stage}><div className="sr-followup-stage-head"><b>{stage} Reminder</b><span className={'sr-followup-state '+(choice==='yes'?'on':choice==='no'?'off':'unknown')}>{choice==='yes'?'YES · Confirmed':choice==='no'?'NO · Confirmed':'Awaiting verified response'}</span></div><small>Last verified confirmation: {fmt(latest?.occurred_at|| (is2h?f.choice_clicked_at:null))}</small>{pending&&<div className="sr-followup-pending">Pending change: <b>{String(pending.requested_choice||'').toUpperCase()}</b> · {fmt(pending.created_at)}. Current confirmed preference remains unchanged.</div>}{is2h&&history.length>0&&<details><summary>Expand verified response history ({history.length})</summary><ol>{history.map((h,i)=><li key={i}>{h.event_type==='requested'?'Change requested':h.event_type==='confirmed'?'Change confirmed':h.event_type==='initial'?'Initial confirmation':'Previous choice retained'} · {String(h.requested_choice||'').toUpperCase()} · {fmt(h.occurred_at)}</li>)}</ol></details>}{!is2h&&<small>Independent 1h confirmation and final-lock events are not supplied by the current backend. No status is inferred.</small>}</div>})}<p className="sr-manual-activity-note">Final stage lock: not verified by the current backend. Confirmation and locking must not be inferred from a click.</p></div>}
   </details>
   {clicks>0&&<div className="sr-manual-premium-click-meta">First click: <b>{fmt(firstClick)}</b> · Last click: <b>{fmt(lastClick)}</b> · Total: <b>{clicks}</b></div>}
