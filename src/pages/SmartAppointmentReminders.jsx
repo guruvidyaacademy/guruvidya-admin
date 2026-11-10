@@ -51,44 +51,51 @@ function Donut({items,total,center}){const palette=['#0fbf84','#1685f8','#8343e9
 function Trend({rows}){const width=550,height=130,keys=['scheduled','sent','delivered','confirmed'],colors=['#1479f5','#0aba86','#58a8fa','#8245eb'];const max=Math.max(1,...rows.flatMap(x=>keys.map(k=>x[k]||0)));const pts=k=>rows.map((r,i)=>`${12+i*(width-24)/Math.max(1,rows.length-1)},${height-14-(r[k]||0)*(height-28)/max}`).join(' ');return <div className="sr-trend"><svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label="Reminder performance trend">{[0,1,2,3].map(i=><line key={i} x1="0" x2={width} y1={15+i*32} y2={15+i*32} stroke="#e4edf9"/>)}{keys.map((k,i)=><polyline key={k} points={pts(k)} fill="none" stroke={colors[i]} strokeWidth="2.5" strokeLinejoin="round"/> )}</svg><div className="sr-legend">{keys.map((k,i)=><span key={k}><i style={{background:colors[i]}}/>{k}</span>)}</div></div>}
 const statusOf=r=>String(r.status||'scheduled').toLowerCase();
 function WindowPanel({recipient,booking}){return <div className="sr-panel sr-window sr-window-designed"><div className="sr-panel-heading">24h WhatsApp Window Timeline ({recipient==='student'?'Student':'Parent / Guardian'})</div><div className="sr-window-timeline"><div className="sr-window-event sr-window-event-unavailable"><span className="sr-timeline-dot"><TrackingIcon name="clock" size={16}/></span><div className="sr-window-event-copy"><strong>Window history not connected</strong><small>Verified inbound replies, opening and expiry times, and extension attempts will appear here when recipient-level event data becomes available.</small></div><span className="sr-status-pill sr-pill-neutral">Not available</span></div></div><div className="sr-window-note"><TrackingIcon name="info" size={19}/><div><strong>Note:</strong><p>Only a valid inbound Student/Parent WhatsApp reply reopens the 24h window.</p><p>Maximum 2 extension attempts per recipient; no outgoing message or website click extends the window.</p></div></div></div>}
+const MANUAL_BUTTON_LABELS={yes_attend:"Yes, I'll Attend",yes_attend_open:"Yes, I'll Attend",reschedule:'Reschedule',cancel:'Cancel'};
+function manualButtonEvents(test,channel){
+ const clicks=(Array.isArray(test?.manual_clicks)?test.manual_clicks:[]).map(row=>{
+  const key=String(row.button_key||'unknown');
+  const raw=Array.isArray(row.click_history)&&row.click_history.length?row.click_history:[row.clicked_at];
+  const times=raw.map(v=>typeof v==='string'?v:v?.clicked_at||v?.at||v?.occurred_at).filter(Boolean).sort((a,b)=>new Date(a)-new Date(b));
+  const first=row.clicked_at||times[0],last=row.last_clicked_at||times[times.length-1]||first;
+  const outcome=key==='yes_attend'?'Attendance confirmation recorded':key==='yes_attend_open'?'Confirmation page opened':key==='reschedule'?'Reschedule page opened — not completed':key==='cancel'?'Cancellation page opened — not completed':'Button response recorded';
+  return {channel,key,label:MANUAL_BUTTON_LABELS[key]||key.replaceAll('_',' '),first,last,total:Math.max(Number(row.click_count)||0,times.length,1),times,outcome,type:'click'};
+ });
+ // The existing 4h preference audit is authoritative for follow-up Yes/No.
+ // These are preference events, not additional clicks in the provider's click count.
+ if(channel==='whatsapp'&&test?.stage==='4h'&&test?.followup_choice){
+  const f=test.followup_choice,history=Array.isArray(f.history)?f.history:[];
+  const byChoice={yes:[],no:[]};
+  history.forEach(h=>{if((h.event_type==='initial'||h.event_type==='confirmed')&&byChoice[h.requested_choice]&&h.occurred_at)byChoice[h.requested_choice].push(h.occurred_at)});
+  if(!history.length&&['yes','no'].includes(f.choice)&&f.choice_clicked_at)byChoice[f.choice].push(f.choice_clicked_at);
+  Object.entries(byChoice).forEach(([choice,times])=>{if(!times.length)return;times.sort((a,b)=>new Date(a)-new Date(b));clicks.push({channel,key:'followup_'+choice,label:'2h Reminder Follow-up — '+(choice==='yes'?'Yes':'No'),first:times[0],last:times[times.length-1],total:times.length,times,outcome:'Preference '+(choice==='yes'?'enabled':'disabled')+' (confirmed)',type:'preference'});});
+  history.filter(h=>h.event_type==='requested'&&h.occurred_at).forEach(h=>clicks.push({channel,key:'followup_request_'+h.occurred_at,label:'Follow-up change requested — '+String(h.requested_choice).toUpperCase(),first:h.occurred_at,last:h.occurred_at,total:1,times:[h.occurred_at],outcome:'Awaiting separate confirmation; current preference unchanged',type:'preference'}));
+ }
+ return clicks;
+}
 function ManualTrackingCard({test,channel}){
- const wa=channel==='whatsapp';
- const events=wa?['Sent','Delivered','Read','Clicked']:['Sent','Delivered','Opened','Clicked'];
- const iconNames=['send','check','info','ref'];
- const accepted=test?.status==='accepted';
- const clickRows=Array.isArray(test?.manual_clicks)?test.manual_clicks:[];
- const clicks=clickRows.reduce((n,c)=>n+(Number(c.click_count)||1),0);
- const firstClick=clickRows.length?clickRows.map(c=>c.clicked_at).filter(Boolean).sort()[0]:null;
- const lastClick=clickRows.length?clickRows.map(c=>c.last_clicked_at||c.clicked_at).filter(Boolean).sort().slice(-1)[0]:null;
+ const wa=channel==='whatsapp',events=wa?['Sent','Delivered','Read','Clicked']:['Sent','Delivered','Opened','Clicked'];
+ const iconNames=['send','check','info','ref'],accepted=test?.status==='accepted';
+ const entries=manualButtonEvents(test,channel),clickEntries=entries.filter(e=>e.type==='click');
+ const clicks=clickEntries.reduce((n,e)=>n+e.total,0);
+ const firstClick=clickEntries.map(e=>e.first).filter(Boolean).sort()[0];
+ const lastClick=clickEntries.map(e=>e.last).filter(Boolean).sort().slice(-1)[0];
  const timestamps=[accepted?(test.completed_at||test.created_at):null,test?.delivered_at||null,wa?(test?.read_at||null):(test?.opened_at||null),firstClick];
  return <section className={'sr-manual-premium-card sr-manual-premium-'+channel} aria-label={'Manual '+channel+' tracking'}>
   <div className="sr-manual-premium-heading"><span className="sr-manual-premium-logo"><TrackingIcon name={wa?'whatsapp':'mail'} size={21}/></span><span><b>{wa?'WhatsApp':'Email'}</b><small>{wa?'BotSailor':'Resend'} · Manual Test</small></span><span className="sr-manual-premium-badge">{test?(accepted?'Provider accepted':test.status):'Not tested'}</span></div>
-  <div className="sr-manual-premium-events">{events.map((name,i)=>{const at=timestamps[i];const observed=i===0?accepted:i===3?clicks>0:Boolean(at);return <div className="sr-manual-premium-event" key={name}><span className={'sr-manual-premium-event-icon '+(observed?'verified':'')}><TrackingIcon name={iconNames[i]} size={17}/></span><div><b>{name}</b><small>{i===0&&accepted?'Provider accepted send request':observed?(i===3?`${clicks} recorded click${clicks===1?'':'s'}`:'Provider event recorded'):i===0?'No accepted send':'Awaiting verified event'}</small></div><time>{fmt(at)}</time></div>})}</div>
+  <div className="sr-manual-premium-events">{events.map((name,i)=>{const at=timestamps[i],observed=i===0?accepted:i===3?clicks>0:Boolean(at);return <div className="sr-manual-premium-event" key={name}><span className={'sr-manual-premium-event-icon '+(observed?'verified':'')}><TrackingIcon name={iconNames[i]} size={17}/></span><div><b>{name}</b><small>{i===0&&accepted?'Provider accepted send request':observed?(i===3?`${clicks} recorded click${clicks===1?'':'s'}`:'Provider event recorded'):i===0?'No accepted send':'Awaiting verified event'}</small></div><time>{fmt(at)}</time></div>})}</div>
+  <details className="sr-manual-inline-clicks"><summary><TrackingIcon name="ref" size={16}/> Button-wise activity <span>{clicks} clicks{entries.some(e=>e.type==='preference')?' · follow-up recorded':''}</span></summary>
+   {entries.length?entries.map((e,i)=><div className="sr-manual-inline-button" key={e.key+'-'+i}><div className="sr-manual-button-item-head"><strong>{e.label}</strong><span>{e.total} {e.type==='preference'?'event'+(e.total===1?'':'s'):'click'+(e.total===1?'':'s')}</span></div><div className="sr-manual-button-times"><span>First: <b>{fmt(e.first)}</b></span><span>Last: <b>{fmt(e.last)}</b></span></div><div className="sr-manual-button-outcome">{e.outcome}</div>{e.times.length>1&&<details><summary>All timestamps ({e.times.length})</summary><ol>{e.times.map((at,j)=><li key={j}>{fmt(at)}</li>)}</ol></details>}</div>):<p className="sr-muted">No verified button activity recorded.</p>}
+   {wa&&test?.followup_choice?.prompt_sent_at&&<p className="sr-manual-activity-note">2h follow-up prompt sent: {fmt(test.followup_choice.prompt_sent_at)}. Only verified preference changes appear above.</p>}
+  </details>
   {clicks>0&&<div className="sr-manual-premium-click-meta">First click: <b>{fmt(firstClick)}</b> · Last click: <b>{fmt(lastClick)}</b> · Total: <b>{clicks}</b></div>}
-  <div className="sr-manual-premium-foot">{accepted?'Accepted is not proof of delivery.': 'Only verified events are shown.'} {wa?'Read requires a provider receipt.':'Opened requires a provider event.'}</div>
- </section>
-}
-const MANUAL_BUTTON_LABELS={yes_attend:"Yes, I'll Attend",yes_attend_open:"Yes, I'll Attend",reschedule:'Reschedule',cancel:'Cancel'};
-function ManualButtonActivity({whatsapp,email}){
- const channels=[{test:whatsapp,channel:'whatsapp'},{test:email,channel:'email'}];
- const entries=channels.flatMap(({test,channel})=>(Array.isArray(test?.manual_clicks)?test.manual_clicks:[]).map(row=>{
-  const key=String(row.button_key||'unknown');
-  const history=(Array.isArray(row.click_history)&&row.click_history.length?row.click_history:[row.clicked_at]).filter(Boolean);
-  const times=history.map(v=>typeof v==='string'?v:v?.clicked_at||v?.at||v?.occurred_at).filter(Boolean).sort((a,b)=>new Date(a)-new Date(b));
-  const first=row.clicked_at||times[0],last=row.last_clicked_at||times[times.length-1]||first;
-  const total=Math.max(Number(row.click_count)||0,times.length,1);
-  const label=MANUAL_BUTTON_LABELS[key]||key.replaceAll('_',' ');
-  const outcome=key==='yes_attend'?'Attendance confirmation recorded':key==='yes_attend_open'?'Confirmation page opened':key==='reschedule'?'Reschedule page opened — not completed':key==='cancel'?'Cancellation page opened — not completed':'Button response recorded';
-  return {channel,key,label,first,last,total,times,outcome};
- }));
- if(!entries.length)return <section className="sr-manual-activity"><div className="sr-manual-activity-title"><TrackingIcon name="history" size={19}/><b>Button Activity & Response History</b></div><p className="sr-muted">No individual button activity recorded for these manual tests.</p></section>;
- const timeline=entries.flatMap(e=>e.times.map(at=>({...e,at}))).sort((a,b)=>new Date(b.at)-new Date(a.at));
- return <section className="sr-manual-activity"><div className="sr-manual-activity-title"><TrackingIcon name="history" size={19}/><div><b>Button Activity & Response History</b><small>Recorded button events · IST · Separate from scheduled reminders</small></div></div>
-  <div className="sr-manual-activity-summary">{channels.map(({channel})=><div className={'sr-manual-activity-summary-card '+channel} key={channel}><TrackingIcon name={channel==='whatsapp'?'whatsapp':'mail'} size={19}/><span>{channel==='whatsapp'?'WhatsApp':'Email'}</span><strong>{entries.filter(e=>e.channel===channel).reduce((n,e)=>n+e.total,0)}</strong><small>Recorded clicks</small></div>)}</div>
-  <div className="sr-manual-activity-columns">{channels.map(({channel})=><div className="sr-manual-activity-column" key={channel}><h5><TrackingIcon name={channel==='whatsapp'?'whatsapp':'mail'} size={17}/>{channel==='whatsapp'?'WhatsApp':'Email'} Button Activity</h5>{entries.filter(e=>e.channel===channel).length?entries.filter(e=>e.channel===channel).map(e=><div className="sr-manual-button-item" key={e.key}><div className="sr-manual-button-item-head"><strong>{e.label}</strong><span>{e.total} click{e.total===1?'':'s'}</span></div><div className="sr-manual-button-times"><span>First: <b>{fmt(e.first)}</b></span><span>Last: <b>{fmt(e.last)}</b></span></div><div className="sr-manual-button-outcome">{e.outcome}</div>{e.times.length>1&&<details><summary>View recorded click timestamps ({e.times.length})</summary><ol>{e.times.map((at,i)=><li key={i}>{fmt(at)}</li>)}</ol></details>}</div>):<p className="sr-muted">No individual button clicks recorded.</p>}</div>)}</div>
-  <details className="sr-manual-unified-timeline"><summary><TrackingIcon name="history" size={16}/> Unified Activity Timeline ({timeline.length} recorded events)</summary><ol>{timeline.map((e,i)=><li key={i}><span className={'sr-manual-timeline-channel '+e.channel}>{e.channel==='whatsapp'?'WhatsApp':'Email'}</span><strong>{e.label}</strong><small>{e.outcome}</small><time>{fmt(e.at)}</time></li>)}</ol></details>
-  <p className="sr-manual-activity-note">Repeated clicks are shown as recorded. Page opening does not complete a reschedule or cancellation. Booking action idempotency is enforced by the existing backend workflow; this panel does not change it.</p>
+  <div className="sr-manual-premium-foot">{accepted?'Accepted is not proof of delivery.':'Only verified events are shown.'} {wa?'Read requires a provider receipt.':'Opened requires a provider event.'}</div>
  </section>;
+}
+function ManualButtonActivity({whatsapp,email}){
+ const entries=[...manualButtonEvents(whatsapp,'whatsapp'),...manualButtonEvents(email,'email')];
+ const timeline=entries.flatMap(e=>e.times.map(at=>({...e,at}))).sort((a,b)=>new Date(b.at)-new Date(a.at));
+ return <section className="sr-manual-activity sr-manual-activity-compact"><details className="sr-manual-unified-timeline"><summary><TrackingIcon name="history" size={17}/> Unified Activity Timeline ({timeline.length} verified events) · IST</summary>{timeline.length?<ol>{timeline.map((e,i)=><li key={i}><span className={'sr-manual-timeline-channel '+e.channel}>{e.channel==='whatsapp'?'WhatsApp':'Email'}</span><strong>{e.label}</strong><small>{e.outcome}</small><time>{fmt(e.at)}</time></li>)}</ol>:<p className="sr-muted">No verified button or preference events yet.</p>}</details><p className="sr-manual-activity-note">Follow-up preference events are shown separately from click totals. Opening a reschedule or cancellation page does not complete that booking action.</p></section>;
 }
 function Channel({channel,delivery,onClicks,clicks,loading}){const stages=channel==='whatsapp'?['Sent','Delivered','Read','Clicked']:['Sent','Delivered','Opened','Clicked'];const keyMap={Sent:'sent_at',Delivered:'delivered_at',Read:'read_at',Opened:'opened_at',Clicked:'clicked_at'};const status=delivery?.status||'Not sent';const byButton=Array.isArray(clicks)?Object.values(clicks.reduce((a,c)=>{const key=c.button_key||c.button_name||'Button';(a[key]??={key,times:[]}).times.push(c.clicked_at);return a},{})):null;return <div className={'sr-channel sr-channel-'+channel}><div className="sr-channel-head"><span><span className="sr-channel-icon"><TrackingIcon name={channel==='whatsapp'?'whatsapp':'mail'} size={22}/></span><b>{channel==='whatsapp'?'WhatsApp':'Email'}</b></span><span className={'sr-status-pill '+(delivery?.delivered_at||delivery?.opened_at?'sr-pill-green':'sr-pill-neutral')}>{delivery?.opened_at?'Opened':delivery?.delivered_at?'Delivered':status}</span></div><div className="sr-event-timeline">{stages.map(s=><div className="sr-event" key={s}><span className={delivery?.[keyMap[s]]?'sr-tick':'sr-empty-tick'}>{delivery?.[keyMap[s]]?'✓':'–'}</span><span>{s}</span><time>{fmt(delivery?.[keyMap[s]])}</time></div>)}</div><div className="sr-click-head">{channel==='whatsapp'?'WhatsApp':'Email'} Button Clicks</div>{delivery?.id?<><button type="button" className="sr-click-load" disabled={loading} onClick={()=>onClicks(delivery.id)}>{loading?'Loading click history…':byButton?'Refresh actual click history':'View actual button click history'} <TrackingIcon name="chevron" size={15}/></button>{byButton&&<div className="sr-click-list">{byButton.length?byButton.map(c=><div className="sr-click-row" key={c.key}><span className="sr-click-dot">✓</span><strong>{c.key}</strong><span className="sr-click-count">{c.times.length}</span><small>First: {fmt(c.times[0])} | Last: {fmt(c.times[c.times.length-1])}</small></div>):<p className="sr-muted">No recorded button clicks</p>}</div>}</>:<div className="sr-click-empty">No {channel==='whatsapp'?'WhatsApp':'Email'} reminder delivery or button clicks recorded for this stage.</div>}</div>}
 
