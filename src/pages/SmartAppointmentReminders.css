@@ -337,3 +337,17 @@
 .sr-followup-pending-badge{padding:3px 7px;border-radius:20px;background:#fef0c7;color:#92400e;font-size:10px;font-weight:700}
 .sr-action-followups .sr-followup-pending small{flex-basis:100%}
 @media(max-width:620px){.sr-action-schedule{grid-template-columns:1fr}.sr-action-card{padding:11px 9px}}
+
+/* Premium booking summary row — isolated to Delivery & Tracking. */
+.sr-tracking-page .sr-table-wrap{border-radius:14px;box-shadow:0 5px 18px rgba(14,51,108,.045)}
+.sr-tracking-page .sr-table{min-width:1370px;font-size:11px}
+.sr-tracking-page .sr-table th{background:#eaf4ff;color:#102c58;font-weight:750;padding:15px 12px}
+.sr-tracking-page .sr-table tbody tr:not(.sr-expanded)>td{padding:17px 12px;background:#fff}
+.sr-tracking-page .sr-table tbody tr:not(.sr-expanded):hover>td{background:#f5faff}
+.sr-row-student,.sr-row-activity,.sr-row-mode{display:inline-flex;align-items:center;gap:8px}
+.sr-row-student b{font-size:12px}.sr-row-avatar{display:inline-grid;place-items:center;width:32px;height:32px;border-radius:50%;background:#e7e5ff;color:#2453c4;font-weight:800;font-size:15px}
+.sr-row-mode{border-radius:999px;padding:6px 10px;background:#f3f6fb;color:#29446b;font-weight:650}
+.sr-row-activity{color:#415c83}.sr-row-activity svg,.sr-row-mode svg{color:#216bd2}
+.sr-row-channel-badge{display:inline-flex;align-items:center;gap:5px;padding:7px 10px;border-radius:999px;font-size:10px;white-space:nowrap;font-weight:650}
+.sr-row-green{background:#ddf8e3;color:#087d31}.sr-row-red{background:#ffe5e7;color:#b42337}.sr-row-orange{background:#fff0d7;color:#965900}.sr-row-neutral{background:#eef1f6;color:#607087}
+.sr-tracking-page .sr-table .sr-actor-pill{font-weight:750}.sr-tracking-page .sr-table .sr-actor-parent{background:#f1e8ff;color:#6637ae}
