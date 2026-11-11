@@ -296,3 +296,13 @@
 .sr-followup-stage details{margin-top:8px;font-size:12px}
 .sr-followup-stage summary{cursor:pointer;font-weight:600}
 .sr-followup-stage ol{margin:7px 0 0;padding-left:18px;line-height:1.8}
+
+/* Isolated Delivery & Tracking live refresh and verified action outcomes */
+.sr-live-refresh{display:flex;align-items:center;gap:9px;flex-wrap:wrap;font-size:12px}
+.sr-live-refresh label{display:inline-flex;align-items:center;gap:5px;color:#345577;white-space:nowrap}
+.sr-live-refresh input{accent-color:#1685f8}
+.sr-live-refresh button{border:1px solid #b7d3f2;background:#fff;color:#1769c2;border-radius:7px;padding:7px 10px;font-weight:650;cursor:pointer}
+.sr-live-refresh button:hover{background:#edf6ff}
+.sr-live-refresh small{color:#60758d}
+.sr-manual-action-completed{color:#16733c;font-weight:700}
+.sr-manual-action-proof{background:#edf9f0;border-radius:7px;padding:7px 9px;margin-top:5px}
