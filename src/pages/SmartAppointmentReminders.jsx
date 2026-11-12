@@ -180,9 +180,15 @@ function BookingRowChannel({deliveries,channel,mode,clicks,tests,booking}){
  const isRescheduled=finalOutcome.includes('reschedul');
  const hasYes=outcomes.some(e=>e.key==='yes_attend');
  const hasFinal=isCancelled||isRescheduled;
- const followup=(tests||[]).filter(t=>t.channel==='whatsapp'&&t.stage==='4h').map(t=>t.followup_choice).find(Boolean);
+ const followup=(tests||[]).filter(t=>t.channel==='whatsapp'&&t.stage==='4h'&&t.followup_choice).map(t=>t.followup_choice).sort((a,b)=>new Date(b.choice_clicked_at||0)-new Date(a.choice_clicked_at||0))[0];
  const followupChoice=String(followup?.choice||'').toLowerCase();
  const followupAt=followup?.choice_clicked_at||null;
+ // A requested NO is not final until the explicit confirmation is recorded.
+ const preferenceHistory=Array.isArray(followup?.history)?followup.history:[];
+ const lastConfirmedPreference=preferenceHistory.filter(h=>h.event_type==='confirmed'&&['yes','no'].includes(h.requested_choice)&&h.occurred_at).sort((a,b)=>new Date(b.occurred_at)-new Date(a.occurred_at))[0];
+ const effectiveChoice=lastConfirmedPreference?.requested_choice||followupChoice;
+ const effectiveAt=lastConfirmedPreference?.occurred_at||followupAt;
+ const preferenceButton=effectiveChoice==='no'?(lastConfirmedPreference?'Yes, Turn Off':'NO · Locked'):(lastConfirmedPreference?'Yes, Keep On':'Yes');
  const latestStage=stage=>{
   const rows=relevant.filter(d=>d.stage===stage);
   const events=[];
@@ -193,7 +199,7 @@ function BookingRowChannel({deliveries,channel,mode,clicks,tests,booking}){
    if(read)events.push({label:channel==='email'?'Opened':'Read',at:read,tone:channel==='email'?'blue':'green',icon:'eye'});
    // Only show a button name when a verified click record was actually loaded.
    const recorded=Array.isArray(clicks?.[d.id])?clicks[d.id]:[];
-   recorded.forEach(c=>{if(c.clicked_at)events.push({label:'Clicked '+String(c.button_name||c.button_key||'Button').slice(0,20),at:c.clicked_at,tone:channel==='email'?'blue':'green',icon:'click'});});
+   recorded.forEach(c=>{if(c.clicked_at)events.push({label:String(c.button_name||c.button_key||'Button').slice(0,32),at:c.clicked_at,tone:channel==='email'?'blue':'green',icon:'click'});});
    if(d.status==='failed'&&d.updated_at)events.push({label:'Failed',at:d.updated_at,tone:'red',icon:'info'});
   });
   // Scheduled delivery always takes precedence. A separate manual test is labelled
@@ -209,7 +215,7 @@ function BookingRowChannel({deliveries,channel,mode,clicks,tests,booking}){
      const at=e.completedAt||e.confirmedAt||e.last;
      if(!at)return;
      const done=Boolean(e.completedAt||e.confirmedAt);
-     const label=e.key==='cancel'?(done?'Cancelled':'Clicked Cancel'):e.key==='reschedule'?(done?'Rescheduled':'Clicked Reschedule'):e.key==='yes_attend'?(done?'YES':'Clicked YES'):e.label;
+     const label=e.key==='cancel'?(done?'Cancelled':'Clicked Cancel'):e.key==='reschedule'?(done?'Rescheduled':'Clicked Reschedule'):e.key==='yes_attend'?"Yes, I'll Attend":e.label;
      events.push({label,at,tone:e.key==='cancel'&&done?'red':e.key==='reschedule'?'amber':done?'green':tone,icon:e.key==='cancel'&&done?'close':done?'check':'click'});
     });
     if(!at&&['accepted','sent'].includes(String(t.status||'').toLowerCase()))events.push({label:'Test Accepted',at:t.completed_at||t.created_at,tone:'grey',icon:'clock'});
@@ -220,17 +226,17 @@ function BookingRowChannel({deliveries,channel,mode,clicks,tests,booking}){
   if(stage==='4h'){
    const finalClicks=manual.filter(t=>t.stage==='4h').flatMap(t=>manualButtonEvents(t,channel).filter(e=>e.type==='click'&&(e.confirmedAt||e.completedAt)));
    const relevantFinal=finalClicks.filter(e=>isCancelled?e.key==='cancel':isRescheduled?e.key==='reschedule':e.key==='yes_attend');
-   relevantFinal.forEach(e=>events.push({label:isCancelled?'Cancelled':isRescheduled?'Rescheduled':'YES',at:e.completedAt||e.confirmedAt,tone:isCancelled?'red':isRescheduled?'amber':'green',icon:isCancelled?'close':isRescheduled?'calendar':'check',locked:true}));
+   relevantFinal.forEach(e=>events.push({label:isCancelled?'Cancelled':isRescheduled?'Rescheduled':"Yes, I'll Attend",at:e.completedAt||e.confirmedAt,tone:isCancelled?'red':isRescheduled?'amber':'green',icon:isCancelled?'close':isRescheduled?'calendar':'check',locked:true}));
   }
   // Verified 4h follow-up choice controls ONLY the next (2h) reminder.
   // Attendance confirmation remains independent. 1h is not suppressed by 4h NO.
   // Preserve actual sent/delivered/read/click activity even if a preference changes later.
   const hasRealStageActivity=events.some(e=>!e.label.startsWith('Test')&&!e.locked);
-  if(channel==='whatsapp'&&followupChoice==='no'){
+  if(channel==='whatsapp'&&effectiveChoice==='no'){
    if(stage==='4h'){
     // The 4h attendance YES remains visible in the booking outcome/source line.
     // This badge describes the subsequent 2h reminder preference only.
-    return {label:'NO · Locked',at:followupAt,tone:'red',icon:'lock',locked:true};
+    return {label:preferenceButton,at:effectiveAt,tone:'red',icon:'lock',locked:true};
    }
    if(stage==='2h'&&!hasRealStageActivity){
     return {label:'Skipped · 4h NO',at:null,tone:'grey',icon:'lock'};
@@ -239,8 +245,8 @@ function BookingRowChannel({deliveries,channel,mode,clicks,tests,booking}){
     return {label:'Scheduled',at:null,tone:'blue',icon:'clock'};
    }
   }
-  if(stage==='2h'&&channel==='whatsapp'&&followupChoice==='yes'&&!hasRealStageActivity){
-   events.push({label:'Preference YES',at:followupAt,tone:'green',icon:'check',preference:true});
+  if(stage==='2h'&&channel==='whatsapp'&&effectiveChoice==='yes'&&!hasRealStageActivity){
+   events.push({label:preferenceButton,at:effectiveAt,tone:'green',icon:'check',preference:true});
   }
   if(stage!=='4h'&&hasFinal&&!events.length){
    return {label:isCancelled?'Stopped':'Recalculate',at:null,tone:'grey',icon:'lock'};
