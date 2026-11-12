@@ -471,3 +471,11 @@
 .sr-tracking-page .sr-row-outcome-cancel{color:#b42332}
 .sr-tracking-page .sr-row-outcome-reschedule{color:#9b650e}
 .sr-tracking-page .sr-mini-status-label{overflow-wrap:normal;word-break:normal}
+
+/* Final compact dual-channel confirmations: no response-journey card. */
+.sr-tracking-page .sr-row-outcome-sources{display:flex;flex-direction:column;gap:3px;margin-top:4px;min-width:0}
+.sr-tracking-page .sr-row-locked{display:inline-flex;align-items:center;gap:3px;width:max-content;max-width:100%;border-radius:999px;padding:2px 5px;background:#e2f7e9;color:#176b3c;font-size:9px;font-weight:750}
+.sr-tracking-page .sr-row-outcome-source{margin-top:0;font-size:9px;white-space:nowrap}
+.sr-tracking-page .sr-mini-time{display:flex;justify-content:flex-end;align-items:center;gap:2px;font-variant-numeric:tabular-nums}
+.sr-tracking-page .sr-mini-stage{grid-template-columns:20px minmax(0,1fr) 52px}
+.sr-tracking-page .sr-mini-status{font-size:9px}
