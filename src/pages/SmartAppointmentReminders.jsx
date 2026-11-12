@@ -65,7 +65,7 @@ function manualButtonEvents(test,channel){
   const times=raw.map(v=>typeof v==='string'?v:v?.clicked_at||v?.at||v?.occurred_at).filter(Boolean).sort((a,b)=>new Date(a)-new Date(b));
   const first=row.clicked_at||times[0],last=row.last_clicked_at||times[times.length-1]||first;
   const outcome=key==='yes_attend'?'Attendance confirmation recorded':key==='yes_attend_open'?'Confirmation page opened':key==='reschedule'?'Reschedule page opened — not completed':key==='cancel'?'Cancellation page opened — not completed':'Button response recorded';
-  return {channel,key,label:MANUAL_BUTTON_LABELS[key]||key.replaceAll('_',' '),first,last,total:Math.max(Number(row.click_count)||0,times.length,1),times,outcome,type:'click'};
+  return {channel,key,label:(test?.stage==='2h'&&['yes_attend','yes_attend_open'].includes(key)?"Yes, I'll Be There":MANUAL_BUTTON_LABELS[key]||key.replaceAll('_',' ')),first,last,total:Math.max(Number(row.click_count)||0,times.length,1),times,outcome,type:'click'};
  });
  // A WhatsApp yes_attend entry is recorded only after the incoming button
  // response is received. Use its latest recorded click as the attendance
@@ -84,7 +84,7 @@ function manualButtonEvents(test,channel){
    const opened=clicks[openIndex],confirmed=clicks[confirmIndex];
    const times=[...opened.times].sort((a,b)=>new Date(a)-new Date(b));
    const confirmedTimes=[...confirmed.times].sort((a,b)=>new Date(a)-new Date(b));
-   const merged={...opened,key:'yes_attend',label:"Yes, I'll Attend",total:opened.total,
+   const merged={...opened,key:'yes_attend',label:(test?.stage==='2h'?"Yes, I'll Be There":"Yes, I'll Attend"),total:opened.total,
     first:opened.first,last:opened.last,times,
     confirmedAt:confirmedTimes[0]||confirmed.first,
     confirmationTimes:confirmedTimes,
@@ -222,7 +222,7 @@ function BookingRowChannel({deliveries,channel,mode,clicks,tests,booking}){
      const at=e.completedAt||e.confirmedAt||e.last;
      if(!at)return;
      const done=Boolean(e.completedAt||e.confirmedAt);
-     const label=e.key==='cancel'?(done?'Cancelled':'Clicked Cancel'):e.key==='reschedule'?(done?'Rescheduled':'Clicked Reschedule'):e.key==='yes_attend'?"Yes, I'll Attend":e.label;
+     const label=e.key==='cancel'?(done?'Cancelled':'Clicked Cancel'):e.key==='reschedule'?(done?'Rescheduled':'Clicked Reschedule'):e.key==='yes_attend'?(stage==='2h'?"Yes, I'll Be There":"Yes, I'll Attend"):e.label;
      events.push({label,at,tone:e.key==='cancel'&&done?'red':e.key==='reschedule'?'amber':done?'green':tone,icon:e.key==='cancel'&&done?'close':done?'check':'click'});
     });
     if(!at&&['accepted','sent'].includes(String(t.status||'').toLowerCase()))events.push({label:'Test Accepted',at:t.completed_at||t.created_at,tone:'grey',icon:'clock'});
