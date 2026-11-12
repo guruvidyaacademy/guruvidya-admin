@@ -132,7 +132,7 @@ function BookingRowManualSummary({tests,channel}){
   return {at,label,tone:completed&&e.key==='cancel'?'red':completed?'green':failed?'red':'blue'};
  }).filter(x=>x.at).sort((a,b)=>new Date(b.at)-new Date(a.at));
  const latest=items[0];
- return latest?<div className="sr-mini-footer sr-mini-action" title="Latest verified email button action (manual test)"><span>Latest Email Action:</span><span className={'sr-mini-action-pill sr-mini-action-'+latest.tone}>{latest.tone==='red'?<span className="sr-cancel-circle"><TrackingIcon name="close" size={9}/></span>:<TrackingIcon name={latest.tone==='green'?'check':'info'} size={11}/>} {latest.label}</span><time>{compactTime(latest.at)}</time></div>:null;
+ return latest?<div className="sr-mini-footer sr-mini-action" title="Latest verified email button action (manual test)"><span className="sr-mini-action-heading">Latest Email Action</span><span className={'sr-mini-action-pill sr-mini-action-'+latest.tone}>{latest.tone==='red'?<span className="sr-cancel-circle"><TrackingIcon name="close" size={9}/></span>:<TrackingIcon name={latest.tone==='green'?'check':'info'} size={11}/>} {latest.label}</span><time>{compactTime(latest.at)}</time></div>:null;
 }
 // Collapsed row: latest verified scheduled-delivery milestone per stage.
 // Manual tests are deliberately excluded from this summary.
@@ -140,6 +140,7 @@ const compactTime=value=>value?fmt(value,{day:undefined,month:undefined,year:und
 function BookingRowChannel({deliveries,channel,mode,clicks,tests}){
  const stages=mode==='online'?['4h','2h','1h','5min']:['4h','2h','1h'];
  const relevant=deliveries.filter(d=>d.channel===channel);
+ const manual=Array.isArray(tests)?tests.filter(t=>t.channel===channel):[];
  const latestStage=stage=>{
   const rows=relevant.filter(d=>d.stage===stage);
   const events=[];
@@ -153,6 +154,19 @@ function BookingRowChannel({deliveries,channel,mode,clicks,tests}){
    recorded.forEach(c=>{if(c.clicked_at)events.push({label:'Clicked '+String(c.button_name||c.button_key||'Button').slice(0,20),at:c.clicked_at,tone:channel==='email'?'blue':'green',icon:'check'});});
    if(d.status==='failed'&&d.updated_at)events.push({label:'Failed',at:d.updated_at,tone:'red',icon:'info'});
   });
+  // Scheduled delivery always takes precedence. A separate manual test is labelled
+  // explicitly so its verified receipt is visible without posing as automation.
+  if(!events.length){
+   manual.filter(t=>t.stage===stage).forEach(t=>{
+    const tone=channel==='email'?'blue':'green';
+    const at=t.provider_clicked_at||t.read_at||t.opened_at||t.delivered_at;
+    if(t.delivered_at)events.push({label:'Test Delivered',at:t.delivered_at,tone,icon:'check'});
+    if(t.read_at||t.opened_at)events.push({label:channel==='email'?'Test Opened':'Test Read',at:t.opened_at||t.read_at,tone,icon:channel==='email'?'eye':'check'});
+    if(t.provider_clicked_at)events.push({label:'Test Clicked',at:t.provider_clicked_at,tone,icon:'check'});
+    if(!at&&['accepted','sent'].includes(String(t.status||'').toLowerCase()))events.push({label:'Test Accepted',at:t.completed_at||t.created_at,tone:'grey',icon:'clock'});
+    if(!at&&String(t.status||'').toLowerCase()==='failed')events.push({label:'Test Failed',at:t.completed_at||t.created_at,tone:'red',icon:'info'});
+   });
+  }
   events.sort((x,y)=>new Date(y.at)-new Date(x.at));
   return events[0]||{label:'Not Sent',at:null,tone:'grey',icon:'clock'};
  };

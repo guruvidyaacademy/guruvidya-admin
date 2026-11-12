@@ -434,3 +434,11 @@
 .sr-tracking-page .sr-cancel-circle{display:inline-flex;align-items:center;justify-content:center;border-radius:50%;background:#d92d3c;color:#fff;width:14px;height:14px;flex:none}
 .sr-tracking-page .sr-row-attendance-cancel{display:inline-flex;align-items:center;gap:4px;color:#b42332;background:#ffebed;border:1px solid #ffc7cf;border-radius:999px;padding:3px 6px;font-size:10px;font-weight:700}
 .sr-tracking-page .sr-mini-red .sr-mini-status-icon{background:#d92d3c;color:#fff}
+
+/* 12 Nov: keep latest action and its timestamp readable on narrow MacBook rows. */
+.sr-tracking-page .sr-mini-action{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:5px;row-gap:3px;align-items:center;white-space:normal}
+.sr-tracking-page .sr-mini-action-heading{grid-column:1/-1;font-size:9px;font-weight:750;white-space:normal}
+.sr-tracking-page .sr-mini-action-pill{grid-column:1;max-width:100%;width:max-content;white-space:normal;overflow-wrap:anywhere;line-height:1.25}
+.sr-tracking-page .sr-mini-action time{grid-column:2;justify-self:end;margin-left:0;white-space:nowrap;font-variant-numeric:tabular-nums}
+.sr-tracking-page .sr-mini-status{max-width:100%;overflow:hidden}
+.sr-tracking-page .sr-mini-stage{grid-template-columns:20px minmax(0,1fr) 49px}
