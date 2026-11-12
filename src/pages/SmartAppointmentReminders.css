@@ -420,3 +420,17 @@
 .sr-tracking-page .sr-mini-window{display:flex;flex-direction:column;gap:5px;align-items:flex-start}
 .sr-tracking-page .sr-mini-window-badge{display:inline-flex;align-items:center;gap:3px;border:1px solid #e0e6ed;border-radius:999px;background:#eef2f6;color:#5f7187;font-size:9px;font-weight:750;padding:4px 5px}
 .sr-tracking-page .sr-mini-window small{font-size:9px;color:#68788d}
+
+/* Compact row: independently audited manual test and completed email actions. */
+.sr-tracking-page .sr-mini-footer{display:flex;align-items:center;gap:4px;border-top:1px solid #d9e6f0;margin-top:3px;padding:5px 2px 1px;font-size:9px;font-weight:650;white-space:nowrap;min-width:0}
+.sr-tracking-page .sr-mini-test{color:#17663b}
+.sr-tracking-page .sr-mini-action{color:#2554a0;gap:3px}
+.sr-tracking-page .sr-mini-action>span:first-child{font-size:8px;flex-shrink:0}
+.sr-tracking-page .sr-mini-action time{margin-left:auto;font-size:9px;white-space:nowrap;color:#344b6c}
+.sr-tracking-page .sr-mini-action-pill{display:inline-flex;align-items:center;gap:3px;padding:3px 5px;border-radius:999px;min-width:0;white-space:nowrap;font-size:9px}
+.sr-tracking-page .sr-mini-action-red{background:#ffebed;color:#b42332;border:1px solid #ffc7cf}
+.sr-tracking-page .sr-mini-action-blue{background:#e7f1ff;color:#165bb4;border:1px solid #c9dfff}
+.sr-tracking-page .sr-mini-action-green{background:#e0f6e8;color:#136d39;border:1px solid #bfe9d0}
+.sr-tracking-page .sr-cancel-circle{display:inline-flex;align-items:center;justify-content:center;border-radius:50%;background:#d92d3c;color:#fff;width:14px;height:14px;flex:none}
+.sr-tracking-page .sr-row-attendance-cancel{display:inline-flex;align-items:center;gap:4px;color:#b42332;background:#ffebed;border:1px solid #ffc7cf;border-radius:999px;padding:3px 6px;font-size:10px;font-weight:700}
+.sr-tracking-page .sr-mini-red .sr-mini-status-icon{background:#d92d3c;color:#fff}
