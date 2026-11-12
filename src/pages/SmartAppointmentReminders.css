@@ -520,3 +520,7 @@
 .sr-tracking-page .sr-row-stage-source{display:inline-flex;align-items:center;gap:3px;font-size:9px;font-weight:600;line-height:1.2;white-space:normal}
 .sr-tracking-page .sr-row-stage-source-whatsapp{color:#16834d}
 .sr-tracking-page .sr-row-stage-source-email{color:#2563b5}
+
+/* Upcoming 1h stage: distinguish due time from a verified locked response. */
+.sr-tracking-page .sr-row-stage-scheduled .sr-row-stage-pill{background:#e9f2ff;color:#2563b5}
+.sr-tracking-page .sr-row-stage-scheduled .sr-row-stage-label,.sr-tracking-page .sr-row-stage-scheduled .sr-row-stage-source{color:#2563b5}
