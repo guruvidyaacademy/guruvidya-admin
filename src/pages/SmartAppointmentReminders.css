@@ -428,3 +428,26 @@
 .sr-tracking-page .sr-row-channel-badge.sr-row-neutral{background:#f4f6fa;color:#738198;border:1px solid #dce2eb}
 .sr-tracking-page .sr-row-channel-badge.sr-row-neutral .sr-premium-round{background:#8995a7;color:#8995a7}
 .sr-tracking-page .sr-table th:nth-child(1){width:17%}.sr-tracking-page .sr-table th:nth-child(2){width:14%}.sr-tracking-page .sr-table th:nth-child(3){width:12%}.sr-tracking-page .sr-table th:nth-child(4){width:21%}.sr-tracking-page .sr-table th:nth-child(5){width:23%}.sr-tracking-page .sr-table th:nth-child(6){width:13%}
+
+/* Unified premium badges, verified channel activity and window state */
+.sr-tracking-page .sr-table th:nth-child(1){width:17%}
+.sr-tracking-page .sr-table th:nth-child(2){width:11%}
+.sr-tracking-page .sr-table th:nth-child(3){width:11%}
+.sr-tracking-page .sr-table th:nth-child(4){width:17%}
+.sr-tracking-page .sr-table th:nth-child(5){width:19%}
+.sr-tracking-page .sr-table th:nth-child(6){width:14%}
+.sr-tracking-page .sr-table th:nth-child(7){width:11%}
+.sr-tracking-page .sr-row-delivery{display:flex;flex-direction:column;align-items:flex-start;gap:3px;margin-top:5px;min-width:0}
+.sr-tracking-page .sr-row-delivery small,.sr-tracking-page .sr-row-window-status small{font-size:9px;line-height:1.35;color:#64748b;overflow-wrap:anywhere}
+.sr-tracking-page .sr-row-delivery-pill,.sr-tracking-page .sr-row-window-pill{display:inline-flex;align-items:center;gap:5px;border-radius:9px;padding:4px 6px;border:1px solid;font-weight:750;font-size:10px;line-height:1.3;max-width:100%;white-space:normal}
+.sr-tracking-page .sr-row-delivery-whatsapp .sr-row-delivery-pill{background:#eaf8ee;color:#16803a;border-color:#b9e8c6}
+.sr-tracking-page .sr-row-delivery-email .sr-row-delivery-pill{background:#eaf3ff;color:#1769c2;border-color:#b9d7ff}
+.sr-tracking-page .sr-row-delivery-round,.sr-tracking-page .sr-row-window-round{width:17px;height:17px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex:none}
+.sr-tracking-page .sr-row-delivery-whatsapp .sr-row-delivery-round{background:#16a34a;color:white}
+.sr-tracking-page .sr-row-delivery-email .sr-row-delivery-round{background:#1769c2;color:white}
+.sr-tracking-page .sr-row-delivery .sr-row-delivery-failed{background:#fff0f0;color:#b42318;border-color:#f3b5b5}
+.sr-tracking-page .sr-row-delivery .sr-row-delivery-failed .sr-row-delivery-round{background:#dc2626;color:white}
+.sr-tracking-page .sr-row-window-status{display:flex;flex-direction:column;align-items:flex-start;gap:4px;min-width:0}
+.sr-tracking-page .sr-row-window-pill{background:#f4f6fa;color:#68788e;border-color:#dce2eb}
+.sr-tracking-page .sr-row-window-round{background:#8995a7;color:white}
+@media(max-width:900px){.sr-tracking-page .sr-table th,.sr-tracking-page .sr-table tbody tr:not(.sr-expanded)>td{padding-left:4px;padding-right:4px}.sr-tracking-page .sr-row-delivery-pill,.sr-tracking-page .sr-row-window-pill{font-size:9px;padding:4px}}
