@@ -217,8 +217,24 @@ function BookingRowChannel({deliveries,channel,mode,clicks,tests,booking}){
    const relevantFinal=finalClicks.filter(e=>isCancelled?e.key==='cancel':isRescheduled?e.key==='reschedule':e.key==='yes_attend');
    relevantFinal.forEach(e=>events.push({label:isCancelled?'Cancelled':isRescheduled?'Rescheduled':'YES',at:e.completedAt||e.confirmedAt,tone:isCancelled?'red':isRescheduled?'amber':'green',icon:isCancelled?'close':isRescheduled?'calendar':'check',locked:true}));
   }
-  // The 2h follow-up choice is a preference, not a sent 2h reminder.
-  if(stage==='2h'&&channel==='whatsapp'&&followupChoice==='yes'&&!events.some(e=>!e.label.startsWith('Test'))){
+  // Verified 4h follow-up choice controls ONLY the next (2h) reminder.
+  // Attendance confirmation remains independent. 1h is not suppressed by 4h NO.
+  // Preserve actual sent/delivered/read/click activity even if a preference changes later.
+  const hasRealStageActivity=events.some(e=>!e.label.startsWith('Test')&&!e.locked);
+  if(channel==='whatsapp'&&followupChoice==='no'){
+   if(stage==='4h'){
+    // The 4h attendance YES remains visible in the booking outcome/source line.
+    // This badge describes the subsequent 2h reminder preference only.
+    return {label:'NO · Locked',at:followupAt,tone:'red',icon:'lock',locked:true};
+   }
+   if(stage==='2h'&&!hasRealStageActivity){
+    return {label:'Skipped · 4h NO',at:null,tone:'grey',icon:'lock'};
+   }
+   if(stage==='1h'&&!events.length&&!hasFinal){
+    return {label:'Scheduled',at:null,tone:'blue',icon:'clock'};
+   }
+  }
+  if(stage==='2h'&&channel==='whatsapp'&&followupChoice==='yes'&&!hasRealStageActivity){
    events.push({label:'Preference YES',at:followupAt,tone:'green',icon:'check',preference:true});
   }
   if(stage!=='4h'&&hasFinal&&!events.length){
