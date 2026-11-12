@@ -136,14 +136,19 @@ function BookingOutcomeSource({tests,booking}){
   .map(e=>({...e,channel:t.channel,at:e.completedAt||e.confirmedAt})));
  const key=cancelled?'cancel':rescheduled?'reschedule':'yes_attend';
  const matches=entries.filter(e=>e.key===key).sort((a,b)=>new Date(a.at)-new Date(b.at));
+ // Attendance acknowledgement is independent of reminder follow-up preference.
+ // Show the latest verified attendance action and its actual channel, not a
+ // later WhatsApp "Turn Off" reminder-preference click.
  if(!matches.length)return null;
+ const latest=matches[matches.length-1];
  return <div className="sr-row-outcome-sources">
-  {!cancelled&&!rescheduled&&<span className="sr-row-locked"><TrackingIcon name="lock" size={11}/> 4h YES · Locked</span>}
-  {matches.map((e,i)=><span key={e.channel+'-'+i} className={'sr-row-outcome-source sr-row-outcome-'+(cancelled?'cancel':rescheduled?'reschedule':'confirm')} title={fmt(e.at)}>
-   <TrackingIcon name={e.channel==='email'?'mail':'whatsapp'} size={12}/>
-   {cancelled?'Cancelled':rescheduled?'Rescheduled':'YES'} via {e.channel==='email'?'Email':'WhatsApp'} · {compactTime(e.at)}
-  </span>)}
+  {!cancelled&&!rescheduled&&<span className="sr-row-locked"><TrackingIcon name="lock" size={11}/> Yes, I'll Attend · Locked</span>}
+  <span className={'sr-row-outcome-source sr-row-outcome-'+(cancelled?'cancel':rescheduled?'reschedule':latest.channel==='email'?'email':'confirm')} title={fmt(latest.at)}>
+   <TrackingIcon name={latest.channel==='email'?'mail':'whatsapp'} size={12}/>
+   {cancelled?'Cancelled':rescheduled?'Rescheduled':"Yes, I'll Attend"} via {latest.channel==='email'?'Email':'WhatsApp'} · {compactTime(latest.at)}
+  </span>
  </div>;
+
 }
 function BookingRowManualSummary({tests,channel}){
  const relevant=tests.filter(t=>t.channel===channel);

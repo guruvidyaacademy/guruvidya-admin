@@ -499,3 +499,9 @@
 .sr-tracking-page .sr-booked-person-copy small{font-size:9px;color:#2870c5;font-weight:700}
 .sr-tracking-page .sr-booked-person-parent .sr-booked-person-copy small{color:#c82c42}
 @media(max-width:900px){.sr-tracking-page .sr-premium-th{font-size:9px;gap:3px}.sr-tracking-page .sr-premium-th svg{width:13px;height:13px}.sr-tracking-page .sr-booked-person-icon{width:21px;height:21px;flex-basis:21px}.sr-tracking-page .sr-booked-person{gap:4px}}
+
+/* Latest verified 4h follow-up: attendance remains independently confirmed. */
+.sr-tracking-page .sr-row-locked-no{background:#fff0f0;color:#b42332}
+.sr-tracking-page .sr-row-outcome-email{color:#2563b5}
+.sr-tracking-page .sr-row-outcome-confirm{color:#17814e}
+.sr-tracking-page .sr-row-outcome-source{white-space:normal;overflow-wrap:break-word}
