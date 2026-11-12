@@ -65,7 +65,7 @@ function manualButtonEvents(test,channel){
   const times=raw.map(v=>typeof v==='string'?v:v?.clicked_at||v?.at||v?.occurred_at).filter(Boolean).sort((a,b)=>new Date(a)-new Date(b));
   const first=row.clicked_at||times[0],last=row.last_clicked_at||times[times.length-1]||first;
   const outcome=key==='yes_attend'?'Attendance confirmation recorded':key==='yes_attend_open'?'Confirmation page opened':key==='reschedule'?'Reschedule page opened — not completed':key==='cancel'?'Cancellation page opened — not completed':'Button response recorded';
-  return {channel,key,label:(test?.stage==='2h'&&['yes_attend','yes_attend_open'].includes(key)?"Yes, I'll Be There":MANUAL_BUTTON_LABELS[key]||key.replaceAll('_',' ')),first,last,total:Math.max(Number(row.click_count)||0,times.length,1),times,outcome,type:'click'};
+  return {channel,key,label:MANUAL_BUTTON_LABELS[key]||key.replaceAll('_',' '),first,last,total:Math.max(Number(row.click_count)||0,times.length,1),times,outcome,type:'click'};
  });
  // A WhatsApp yes_attend entry is recorded only after the incoming button
  // response is received. Use its latest recorded click as the attendance
@@ -84,7 +84,7 @@ function manualButtonEvents(test,channel){
    const opened=clicks[openIndex],confirmed=clicks[confirmIndex];
    const times=[...opened.times].sort((a,b)=>new Date(a)-new Date(b));
    const confirmedTimes=[...confirmed.times].sort((a,b)=>new Date(a)-new Date(b));
-   const merged={...opened,key:'yes_attend',label:(test?.stage==='2h'?"Yes, I'll Be There":"Yes, I'll Attend"),total:opened.total,
+   const merged={...opened,key:'yes_attend',label:"Yes, I'll Attend",total:opened.total,
     first:opened.first,last:opened.last,times,
     confirmedAt:confirmedTimes[0]||confirmed.first,
     confirmationTimes:confirmedTimes,
@@ -122,40 +122,39 @@ function manualButtonEvents(test,channel){
  return clicks;
 }
 // Compact booking-row preview: use only verified manual-test outcomes, never inferred clicks.
+// Preserve each stage's verified acknowledgement separately. A provider-accepted
+// send or an opened email link alone is not an attendance confirmation.
+function verifiedBookingAcknowledgements(tests){
+ return (tests||[]).filter(t=>['4h','2h','1h'].includes(t.stage)).flatMap(t=>
+  manualButtonEvents(t,t.channel).filter(e=>e.type==='click'&&e.key==='yes_attend'&&e.confirmedAt)
+   .map(e=>({stage:t.stage,channel:t.channel,at:e.confirmedAt,
+    label:t.stage==='2h'?"Yes, I'll Be There":t.stage==='1h'?"Yes, I'm On My Way":"Yes, I'll Attend"}))
+ ).sort((a,b)=>new Date(a.at)-new Date(b.at));
+}
 function BookingRowStatus({tests,booking}){
  const state=String(booking?.status||'').toLowerCase(),response=String(booking?.customer_response||'').toLowerCase();
  if(state.includes('cancel')||response.includes('cancel')||booking?.cancelled_at)return <span className="sr-row-attendance sr-row-attendance-cancel"><span className="sr-cancel-circle"><TrackingIcon name="close" size={10}/></span> Booking Cancelled</span>;
  if(state.includes('reschedul')||response.includes('reschedul'))return <span className="sr-row-attendance sr-row-attendance-wait"><TrackingIcon name="calendar" size={12}/> Rescheduled</span>;
- const events=tests.filter(t=>t.stage==='4h').flatMap(t=>manualButtonEvents(t,t.channel).filter(e=>e.type==='click').map(e=>({...e,channel:t.channel})));
- const confirmed=events.filter(e=>e.key==='yes_attend'&&e.confirmedAt).sort((a,b)=>new Date(b.confirmedAt)-new Date(a.confirmedAt));
- return confirmed.length?<span className="sr-row-attendance sr-row-attendance-yes" title={'Confirmed via '+(confirmed[0].channel==='email'?'Email':'WhatsApp')}><TrackingIcon name="check" size={12}/> Attendance Confirmed</span>:<span className="sr-row-attendance sr-row-attendance-wait"><TrackingIcon name="clock" size={12}/> Awaiting Confirmation</span>;
+ const confirmed=verifiedBookingAcknowledgements(tests);
+ return confirmed.length?<span className="sr-row-attendance sr-row-attendance-yes" title={'Latest confirmed via '+(confirmed[confirmed.length-1].channel==='email'?'Email':'WhatsApp')}><TrackingIcon name="check" size={12}/> Attendance Confirmed</span>:<span className="sr-row-attendance sr-row-attendance-wait"><TrackingIcon name="clock" size={12}/> Awaiting Confirmation</span>;
 }
-// A single source line replaces the narrow Response Journey card.
-// Only confirmed action events are eligible; an opened link is not a confirmation.
-// Independently display each verified channel; the first YES confirms attendance,
-// subsequent YES responses remain visible without creating a second booking outcome.
 function BookingOutcomeSource({tests,booking}){
  const state=String(booking?.status||'').toLowerCase();
- const cancelled=state.includes('cancel')||Boolean(booking?.cancelled_at);
- const rescheduled=state.includes('reschedul');
- const entries=(tests||[]).filter(t=>t.stage==='4h').flatMap(t=>manualButtonEvents(t,t.channel)
-  .filter(e=>e.type==='click'&&(e.confirmedAt||e.completedAt))
-  .map(e=>({...e,channel:t.channel,at:e.completedAt||e.confirmedAt})));
- const key=cancelled?'cancel':rescheduled?'reschedule':'yes_attend';
- const matches=entries.filter(e=>e.key===key).sort((a,b)=>new Date(a.at)-new Date(b.at));
- // Attendance acknowledgement is independent of reminder follow-up preference.
- // Show the latest verified attendance action and its actual channel, not a
- // later WhatsApp "Turn Off" reminder-preference click.
- if(!matches.length)return null;
- const latest=matches[matches.length-1];
+ if(state.includes('cancel')||state.includes('reschedul')||booking?.cancelled_at)return null;
+ const confirmed=verifiedBookingAcknowledgements(tests);
+ if(!confirmed.length)return null;
+ const latest=confirmed[confirmed.length-1];
+ const stages=['4h','2h','1h'];
  return <div className="sr-row-outcome-sources">
-  {!cancelled&&!rescheduled&&<span className="sr-row-locked"><TrackingIcon name="lock" size={11}/> Yes, I'll Attend · Locked</span>}
-  <span className={'sr-row-outcome-source sr-row-outcome-'+(cancelled?'cancel':rescheduled?'reschedule':latest.channel==='email'?'email':'confirm')} title={fmt(latest.at)}>
+  <div className="sr-row-locked-list">{stages.map(stage=>{
+   const item=[...confirmed].reverse().find(e=>e.stage===stage);
+   return item?<span key={stage} className="sr-row-locked" title={`${item.label} · ${item.channel==='email'?'Email':'WhatsApp'} · ${fmt(item.at)}`}><TrackingIcon name="lock" size={11}/>{stage} · {item.label} · Locked</span>:null;
+  })}</div>
+  <span className={'sr-row-outcome-source sr-row-outcome-'+(latest.channel==='email'?'email':'confirm')} title={fmt(latest.at)}>
    <TrackingIcon name={latest.channel==='email'?'mail':'whatsapp'} size={12}/>
-   {cancelled?'Cancelled':rescheduled?'Rescheduled':"Yes, I'll Attend"} via {latest.channel==='email'?'Email':'WhatsApp'} · {compactTime(latest.at)}
+   {latest.stage} confirmed via {latest.channel==='email'?'Email':'WhatsApp'} · {compactTime(latest.at)}
   </span>
  </div>;
-
 }
 function BookingRowManualSummary({tests,channel}){
  const relevant=tests.filter(t=>t.channel===channel);
@@ -222,7 +221,7 @@ function BookingRowChannel({deliveries,channel,mode,clicks,tests,booking}){
      const at=e.completedAt||e.confirmedAt||e.last;
      if(!at)return;
      const done=Boolean(e.completedAt||e.confirmedAt);
-     const label=e.key==='cancel'?(done?'Cancelled':'Clicked Cancel'):e.key==='reschedule'?(done?'Rescheduled':'Clicked Reschedule'):e.key==='yes_attend'?(stage==='2h'?"Yes, I'll Be There":"Yes, I'll Attend"):e.label;
+     const label=e.key==='cancel'?(done?'Cancelled':'Clicked Cancel'):e.key==='reschedule'?(done?'Rescheduled':'Clicked Reschedule'):e.key==='yes_attend'?"Yes, I'll Attend":e.label;
      events.push({label,at,tone:e.key==='cancel'&&done?'red':e.key==='reschedule'?'amber':done?'green':tone,icon:e.key==='cancel'&&done?'close':done?'check':'click'});
     });
     if(!at&&['accepted','sent'].includes(String(t.status||'').toLowerCase()))events.push({label:'Test Accepted',at:t.completed_at||t.created_at,tone:'grey',icon:'clock'});

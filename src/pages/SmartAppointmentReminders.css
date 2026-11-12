@@ -505,3 +505,7 @@
 .sr-tracking-page .sr-row-outcome-email{color:#2563b5}
 .sr-tracking-page .sr-row-outcome-confirm{color:#17814e}
 .sr-tracking-page .sr-row-outcome-source{white-space:normal;overflow-wrap:break-word}
+
+/* Compact, independent locked stage acknowledgements in collapsed Date & Time cell. */
+.sr-tracking-page .sr-row-locked-list{display:flex;flex-wrap:wrap;gap:3px;min-width:0}
+.sr-tracking-page .sr-row-locked-list .sr-row-locked{width:auto;max-width:100%;white-space:normal;line-height:1.25}
