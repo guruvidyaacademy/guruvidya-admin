@@ -124,36 +124,42 @@ function manualButtonEvents(test,channel){
 // Compact booking-row preview: use only verified manual-test outcomes, never inferred clicks.
 // Preserve each stage's verified acknowledgement separately. A provider-accepted
 // send or an opened email link alone is not an attendance confirmation.
-function verifiedBookingAcknowledgements(tests){
+function verifiedBookingAcknowledgements(tests,booking){
  return (tests||[]).filter(t=>['4h','2h','1h'].includes(t.stage)).flatMap(t=>
   manualButtonEvents(t,t.channel).filter(e=>e.type==='click'&&e.key==='yes_attend'&&e.confirmedAt)
    .map(e=>({stage:t.stage,channel:t.channel,at:e.confirmedAt,
-    label:t.stage==='2h'?"Yes, I'll Be There":t.stage==='1h'?"Yes, I'm On My Way":"Yes, I'll Attend"}))
+    label:t.stage==='2h'?"Yes, I'll Be There":t.stage==='1h'?(String(booking?.mode||'').toLowerCase()==='online'?"I'll Be Ready":"Yes, I'm On My Way"):"Yes, I'll Attend"}))
  ).sort((a,b)=>new Date(a.at)-new Date(b.at));
 }
 function BookingRowStatus({tests,booking}){
  const state=String(booking?.status||'').toLowerCase(),response=String(booking?.customer_response||'').toLowerCase();
  if(state.includes('cancel')||response.includes('cancel')||booking?.cancelled_at)return <span className="sr-row-attendance sr-row-attendance-cancel"><span className="sr-cancel-circle"><TrackingIcon name="close" size={10}/></span> Booking Cancelled</span>;
  if(state.includes('reschedul')||response.includes('reschedul'))return <span className="sr-row-attendance sr-row-attendance-wait"><TrackingIcon name="calendar" size={12}/> Rescheduled</span>;
- const confirmed=verifiedBookingAcknowledgements(tests);
+ const confirmed=verifiedBookingAcknowledgements(tests,booking);
  return confirmed.length?<span className="sr-row-attendance sr-row-attendance-yes" title={'Latest confirmed via '+(confirmed[confirmed.length-1].channel==='email'?'Email':'WhatsApp')}><TrackingIcon name="check" size={12}/> Attendance Confirmed</span>:<span className="sr-row-attendance sr-row-attendance-wait"><TrackingIcon name="clock" size={12}/> Awaiting Confirmation</span>;
 }
 function BookingOutcomeSource({tests,booking}){
  const state=String(booking?.status||'').toLowerCase();
  if(state.includes('cancel')||state.includes('reschedul')||booking?.cancelled_at)return null;
- const confirmed=verifiedBookingAcknowledgements(tests);
+ const confirmed=verifiedBookingAcknowledgements(tests,booking);
  if(!confirmed.length)return null;
- const latest=confirmed[confirmed.length-1];
  const stages=['4h','2h','1h'];
- return <div className="sr-row-outcome-sources">
-  <div className="sr-row-locked-list">{stages.map(stage=>{
-   const item=[...confirmed].reverse().find(e=>e.stage===stage);
-   return item?<span key={stage} className="sr-row-locked" title={`${item.label} · ${item.channel==='email'?'Email':'WhatsApp'} · ${fmt(item.at)}`}><TrackingIcon name="lock" size={11}/>{stage} · {item.label} · Locked</span>:null;
-  })}</div>
-  <span className={'sr-row-outcome-source sr-row-outcome-'+(latest.channel==='email'?'email':'confirm')} title={fmt(latest.at)}>
-   <TrackingIcon name={latest.channel==='email'?'mail':'whatsapp'} size={12}/>
-   {latest.stage} confirmed via {latest.channel==='email'?'Email':'WhatsApp'} · {compactTime(latest.at)}
-  </span>
+ return <div className="sr-row-outcome-sources sr-row-stage-confirmations" aria-label="Verified reminder confirmations">
+  {stages.map(stage=>{
+   const item=confirmed.find(e=>e.stage===stage);
+   if(!item)return null;
+   const channelName=item.channel==='email'?'Email':'WhatsApp';
+   return <div key={stage} className="sr-row-stage-confirmation" title={`${stage} · ${item.label} · Via ${channelName} · ${fmt(item.at)}`}>
+    <span className="sr-row-stage-pill"><TrackingIcon name="lock" size={10}/>{stage}</span>
+    <span className="sr-row-stage-detail">
+     <span className="sr-row-stage-label">{item.label} <span className="sr-row-stage-locked">· Locked</span></span>
+     <span className={'sr-row-stage-source sr-row-stage-source-'+item.channel}>
+      <TrackingIcon name={item.channel==='email'?'mail':'whatsapp'} size={11}/>
+      Via {channelName} · {compactTime(item.at)}
+     </span>
+    </span>
+   </div>;
+  })}
  </div>;
 }
 function BookingRowManualSummary({tests,channel}){

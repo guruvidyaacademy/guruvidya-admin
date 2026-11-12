@@ -509,3 +509,14 @@
 /* Compact, independent locked stage acknowledgements in collapsed Date & Time cell. */
 .sr-tracking-page .sr-row-locked-list{display:flex;flex-wrap:wrap;gap:3px;min-width:0}
 .sr-tracking-page .sr-row-locked-list .sr-row-locked{width:auto;max-width:100%;white-space:normal;line-height:1.25}
+
+/* Independent 4h / 2h / 1h confirmations: each with its own verified channel and time. */
+.sr-tracking-page .sr-row-stage-confirmations{display:flex;flex-direction:column;align-items:flex-start;gap:4px;min-width:0;margin-top:4px}
+.sr-tracking-page .sr-row-stage-confirmation{display:flex;align-items:flex-start;gap:5px;min-width:0;max-width:100%}
+.sr-tracking-page .sr-row-stage-pill{display:inline-flex;align-items:center;justify-content:center;gap:2px;flex:0 0 30px;padding:3px 2px;border-radius:5px;background:#e3f7e9;color:#166c3e;font-size:9px;font-weight:800;line-height:1.2}
+.sr-tracking-page .sr-row-stage-detail{display:flex;flex-direction:column;gap:2px;min-width:0}
+.sr-tracking-page .sr-row-stage-label{color:#166c3e;font-size:9px;font-weight:750;line-height:1.25;overflow-wrap:anywhere}
+.sr-tracking-page .sr-row-stage-locked{white-space:nowrap}
+.sr-tracking-page .sr-row-stage-source{display:inline-flex;align-items:center;gap:3px;font-size:9px;font-weight:600;line-height:1.2;white-space:normal}
+.sr-tracking-page .sr-row-stage-source-whatsapp{color:#16834d}
+.sr-tracking-page .sr-row-stage-source-email{color:#2563b5}
