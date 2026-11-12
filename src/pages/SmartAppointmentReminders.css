@@ -450,3 +450,16 @@
 .sr-tracking-page .sr-mini-grey .sr-mini-status-icon{color:#697b92}
 .sr-tracking-page .sr-mini-red .sr-mini-status-icon{background:#d92d3c;color:#fff}
 .sr-tracking-page .sr-mini-stage{min-height:26px}
+
+/* Compact verified response journey — scoped to collapsed booking date cell. */
+.sr-response-journey{margin-top:7px;padding:7px 8px;border:1px solid #dce6f4;border-radius:9px;background:#f7faff;max-width:100%;min-width:0;box-sizing:border-box}
+.sr-response-heading{display:flex;align-items:center;gap:4px;color:#2357a3;font-size:10px;font-weight:750;margin-bottom:5px}
+.sr-response-stages{display:flex;align-items:center;justify-content:space-between;gap:2px;min-width:0}
+.sr-response-step{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0;flex:1}
+.sr-response-stage{font-size:10px;font-weight:800;color:#53637b}
+.sr-response-arrow{flex:none;color:#8795ab;margin-top:12px}
+.sr-response-pill{display:inline-flex;align-items:center;justify-content:center;gap:2px;padding:3px 4px;border-radius:999px;font-size:9px;font-weight:750;line-height:1.2;text-align:center;max-width:100%;overflow-wrap:anywhere}
+.sr-response-green{background:#dcfce7;color:#166534}.sr-response-red{background:#fee2e2;color:#b91c1c}.sr-response-amber{background:#fff1cf;color:#995c06}.sr-response-blue{background:#dbeafe;color:#1d4ed8}.sr-response-neutral{background:#edf1f5;color:#64748b}
+.sr-response-final{display:flex;align-items:center;justify-content:center;gap:4px;margin-top:6px;border-radius:6px;padding:5px 3px;font-size:10px;font-weight:800;text-align:center}
+.sr-response-final-green{background:#dcfce7;color:#166534}.sr-response-final-red{background:#fee2e2;color:#b91c1c}.sr-response-final-amber{background:#fff1cf;color:#995c06}
+.sr-response-source{display:flex;align-items:center;justify-content:center;gap:4px;margin-top:4px;color:#52647e;font-size:9px;white-space:normal}
