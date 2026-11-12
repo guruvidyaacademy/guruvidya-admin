@@ -23,6 +23,11 @@ const TRACK_PATHS={
  clock:<><circle cx="12" cy="12" r="9"/><path d="M12 7v5l4 2"/></>,
  whatsapp:<><path d="M20 11.5a8 8 0 0 1-11.5 7L4 20l1.5-4.5A8 8 0 1 1 20 11.5Z"/><path d="M9 9c1 3 3 5 6 6l1-2-2-1-1 1-2-2 1-1-1-2z"/></>,
  mail:<><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 7 9-7"/></>,
+ send:<><path d="m21 3-7.8 18-3.3-7.9L2 9.8 21 3Z"/><path d="M21 3 9.9 13.1"/></>,
+ delivered:<><path d="m2 12 4 4 7-8M10 12l4 4 8-9"/></>,
+ eye:<><path d="M2 12s3.6-6 10-6 10 6 10 6-3.6 6-10 6S2 12 2 12Z"/><circle cx="12" cy="12" r="2.5"/></>,
+ click:<><path d="m5 3 12 9-6 1-2 6-4-16Z"/><path d="m15 16 4 4M18 5v3M21 10h-3M12 2v3"/></>,
+ close:<><circle cx="12" cy="12" r="9"/><path d="m9 9 6 6m0-6-6 6"/></>,
  check:<><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></>,
  info:<><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7h.01"/></>,
  chevron:<path d="m9 6 6 6-6 6"/>,
@@ -146,12 +151,12 @@ function BookingRowChannel({deliveries,channel,mode,clicks,tests}){
   const events=[];
   rows.forEach(d=>{
    if(d.sent_at)events.push({label:'Sent',at:d.sent_at,tone:channel==='email'?'blue':'green',icon:'send'});
-   if(d.delivered_at)events.push({label:'Delivered',at:d.delivered_at,tone:channel==='email'?'blue':'green',icon:'check'});
+   if(d.delivered_at)events.push({label:'Delivered',at:d.delivered_at,tone:channel==='email'?'blue':'green',icon:'delivered'});
    const read=channel==='email'?d.opened_at:d.read_at;
-   if(read)events.push({label:channel==='email'?'Opened':'Read',at:read,tone:channel==='email'?'blue':'green',icon:channel==='email'?'eye':'check'});
+   if(read)events.push({label:channel==='email'?'Opened':'Read',at:read,tone:channel==='email'?'blue':'green',icon:'eye'});
    // Only show a button name when a verified click record was actually loaded.
    const recorded=Array.isArray(clicks?.[d.id])?clicks[d.id]:[];
-   recorded.forEach(c=>{if(c.clicked_at)events.push({label:'Clicked '+String(c.button_name||c.button_key||'Button').slice(0,20),at:c.clicked_at,tone:channel==='email'?'blue':'green',icon:'check'});});
+   recorded.forEach(c=>{if(c.clicked_at)events.push({label:'Clicked '+String(c.button_name||c.button_key||'Button').slice(0,20),at:c.clicked_at,tone:channel==='email'?'blue':'green',icon:'click'});});
    if(d.status==='failed'&&d.updated_at)events.push({label:'Failed',at:d.updated_at,tone:'red',icon:'info'});
   });
   // Scheduled delivery always takes precedence. A separate manual test is labelled
@@ -160,9 +165,9 @@ function BookingRowChannel({deliveries,channel,mode,clicks,tests}){
    manual.filter(t=>t.stage===stage).forEach(t=>{
     const tone=channel==='email'?'blue':'green';
     const at=t.provider_clicked_at||t.read_at||t.opened_at||t.delivered_at;
-    if(t.delivered_at)events.push({label:'Test Delivered',at:t.delivered_at,tone,icon:'check'});
-    if(t.read_at||t.opened_at)events.push({label:channel==='email'?'Test Opened':'Test Read',at:t.opened_at||t.read_at,tone,icon:channel==='email'?'eye':'check'});
-    if(t.provider_clicked_at)events.push({label:'Test Clicked',at:t.provider_clicked_at,tone,icon:'check'});
+    if(t.delivered_at)events.push({label:'Test Delivered',at:t.delivered_at,tone,icon:'delivered'});
+    if(t.read_at||t.opened_at)events.push({label:channel==='email'?'Test Opened':'Test Read',at:t.opened_at||t.read_at,tone,icon:'eye'});
+    if(t.provider_clicked_at)events.push({label:'Test Clicked',at:t.provider_clicked_at,tone,icon:'delivered'});
     if(!at&&['accepted','sent'].includes(String(t.status||'').toLowerCase()))events.push({label:'Test Accepted',at:t.completed_at||t.created_at,tone:'grey',icon:'clock'});
     if(!at&&String(t.status||'').toLowerCase()==='failed')events.push({label:'Test Failed',at:t.completed_at||t.created_at,tone:'red',icon:'info'});
    });

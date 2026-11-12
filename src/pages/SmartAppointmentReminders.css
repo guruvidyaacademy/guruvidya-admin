@@ -442,3 +442,11 @@
 .sr-tracking-page .sr-mini-action time{grid-column:2;justify-self:end;margin-left:0;white-space:nowrap;font-variant-numeric:tabular-nums}
 .sr-tracking-page .sr-mini-status{max-width:100%;overflow:hidden}
 .sr-tracking-page .sr-mini-stage{grid-template-columns:20px minmax(0,1fr) 49px}
+
+/* Distinct audited event glyphs: plane / double-check / eye / click. */
+.sr-tracking-page .sr-mini-green .sr-mini-status-icon{background:transparent;color:#168243}
+.sr-tracking-page .sr-mini-green .sr-mini-status-icon:has(.sr-track-svg){width:15px;height:15px}
+.sr-tracking-page .sr-mini-blue .sr-mini-status-icon{color:#1269c8}
+.sr-tracking-page .sr-mini-grey .sr-mini-status-icon{color:#697b92}
+.sr-tracking-page .sr-mini-red .sr-mini-status-icon{background:#d92d3c;color:#fff}
+.sr-tracking-page .sr-mini-stage{min-height:26px}
