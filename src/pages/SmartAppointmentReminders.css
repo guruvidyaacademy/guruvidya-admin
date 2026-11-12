@@ -479,3 +479,23 @@
 .sr-tracking-page .sr-mini-time{display:flex;justify-content:flex-end;align-items:center;gap:2px;font-variant-numeric:tabular-nums}
 .sr-tracking-page .sr-mini-stage{grid-template-columns:20px minmax(0,1fr) 52px}
 .sr-tracking-page .sr-mini-status{font-size:9px}
+
+/* Six-column premium collapsed tracking: original blue header icons restored. */
+.sr-tracking-page .sr-table{table-layout:fixed;width:100%;min-width:0!important}
+.sr-tracking-page .sr-table th:nth-child(1){width:14%}
+.sr-tracking-page .sr-table th:nth-child(2){width:14%}
+.sr-tracking-page .sr-table th:nth-child(3){width:19%}
+.sr-tracking-page .sr-table th:nth-child(4){width:22%}
+.sr-tracking-page .sr-table th:nth-child(5){width:22%}
+.sr-tracking-page .sr-table th:nth-child(6){width:9%}
+.sr-tracking-page .sr-premium-th{display:inline-flex;align-items:center;gap:5px;color:#164a91;white-space:nowrap;font-size:10px;font-weight:800}
+.sr-tracking-page .sr-premium-th svg{flex:none;color:#2474ca}
+.sr-tracking-page .sr-premium-th-whatsapp svg{color:#16834b}
+.sr-tracking-page .sr-booked-person{display:flex;align-items:center;gap:6px;min-width:0}
+.sr-tracking-page .sr-booked-person-icon{width:26px;height:26px;flex:0 0 26px;display:grid;place-items:center;border-radius:50%;background:#e8f2ff;color:#1769c1}
+.sr-tracking-page .sr-booked-person-parent .sr-booked-person-icon{background:#fff0f0;color:#c82c42}
+.sr-tracking-page .sr-booked-person-copy{display:flex;flex-direction:column;gap:3px;min-width:0}
+.sr-tracking-page .sr-booked-person-copy b{font-size:11px;color:#1c3457;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+.sr-tracking-page .sr-booked-person-copy small{font-size:9px;color:#2870c5;font-weight:700}
+.sr-tracking-page .sr-booked-person-parent .sr-booked-person-copy small{color:#c82c42}
+@media(max-width:900px){.sr-tracking-page .sr-premium-th{font-size:9px;gap:3px}.sr-tracking-page .sr-premium-th svg{width:13px;height:13px}.sr-tracking-page .sr-booked-person-icon{width:21px;height:21px;flex-basis:21px}.sr-tracking-page .sr-booked-person{gap:4px}}
