@@ -67,6 +67,13 @@ function manualButtonEvents(test,channel){
   const outcome=key==='yes_attend'?'Attendance confirmation recorded':key==='yes_attend_open'?'Confirmation page opened':key==='reschedule'?'Reschedule page opened — not completed':key==='cancel'?'Cancellation page opened — not completed':'Button response recorded';
   return {channel,key,label:MANUAL_BUTTON_LABELS[key]||key.replaceAll('_',' '),first,last,total:Math.max(Number(row.click_count)||0,times.length,1),times,outcome,type:'click'};
  });
+ // A WhatsApp yes_attend entry is recorded only after the incoming button
+ // response is received. Use its latest recorded click as the attendance
+ // acknowledgement, independently of later reminder-preference responses.
+ if(channel==='whatsapp'){
+  const confirmation=clicks.find(e=>e.key==='yes_attend');
+  if(confirmation)confirmation.confirmedAt=confirmation.last;
+ }
  // Email YES link opening and attendance confirmation are two stages of the same
  // button action. Preserve their separate audit timestamps, but render one row
  // and do not count the successful confirmation as a second button click.
