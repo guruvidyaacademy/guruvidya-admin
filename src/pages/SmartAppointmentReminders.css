@@ -1240,3 +1240,45 @@
   margin-right:5px!important;
   gap:5px!important;
 }
+
+
+/* Channel-aware Design A: preserve existing timeline and tracking logic. */
+.sr-tracking-page .sr-premium-date-card
+.sr-row-stage-confirmation:not(.sr-row-stage-scheduled) {
+  gap: 18px !important; /* breathing room between lock and response */
+}
+.sr-tracking-page .sr-premium-date-card
+.sr-row-stage-confirmation:not(.sr-row-stage-scheduled) .sr-row-stage-pill::after {
+  left: calc(100% + 5px) !important;
+}
+.sr-tracking-page .sr-premium-date-card
+.sr-row-stage-confirmation:not(.sr-row-stage-scheduled) .sr-row-stage-label {
+  display: inline-block !important;
+  width: fit-content !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  padding-inline: 5px !important;
+}
+.sr-tracking-page .sr-premium-date-card
+.sr-row-stage-confirmation:has(.sr-row-stage-source-email):not(.sr-row-stage-scheduled) .sr-row-stage-pill {
+  background: #dbeafe !important;
+  color: #1d4ed8 !important;
+}
+.sr-tracking-page .sr-premium-date-card
+.sr-row-stage-confirmation:has(.sr-row-stage-source-email):not(.sr-row-stage-scheduled) .sr-row-stage-pill::after {
+  content: '🔒';
+  filter: grayscale(1) sepia(1) saturate(6) hue-rotate(175deg);
+}
+.sr-tracking-page .sr-premium-date-card
+.sr-row-stage-confirmation:has(.sr-row-stage-source-email):not(.sr-row-stage-scheduled) .sr-row-stage-label {
+  background: #1557c0 !important;
+  color: #fff !important;
+}
+.sr-tracking-page .sr-premium-date-card
+.sr-row-stage-confirmation:has(.sr-row-stage-source-email):not(.sr-row-stage-scheduled) .sr-row-stage-source {
+  color: #1557c0 !important;
+}
+.sr-tracking-page .sr-premium-date-card
+.sr-row-stage-confirmation:has(.sr-row-stage-source-whatsapp):not(.sr-row-stage-scheduled) .sr-row-stage-source {
+  color: #087d35 !important;
+}
