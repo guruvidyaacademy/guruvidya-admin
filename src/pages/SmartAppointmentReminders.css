@@ -595,3 +595,123 @@
 .sr-tracking-page .sr-table th:nth-child(5){width:18%}
 .sr-tracking-page .sr-table th:nth-child(6){width:8%}
 @media(max-width:1100px){.sr-tracking-page .sr-table th:nth-child(1){width:16%}.sr-tracking-page .sr-table th:nth-child(2){width:12%}.sr-tracking-page .sr-table th:nth-child(3){width:28%}.sr-tracking-page .sr-table th:nth-child(4){width:18%}.sr-tracking-page .sr-table th:nth-child(5){width:18%}.sr-tracking-page .sr-table th:nth-child(6){width:8%}}
+
+
+/* Approved Design B — Compact Executive, collapsed booking rows only.
+   Scope deliberately excludes expanded details, overview and settings. */
+.sr-tracking-page .sr-table {
+  border-spacing: 0 7px!important;
+}
+.sr-tracking-page .sr-table thead th {
+  padding: 11px 8px!important;
+  font-size: 10px;
+}
+.sr-tracking-page .sr-table tbody tr.sr-premium-booking-row {
+  filter: drop-shadow(0 2px 5px #17385e0c);
+}
+.sr-tracking-page .sr-table tbody tr.sr-premium-booking-row>td {
+  padding: 9px 7px!important;
+  vertical-align: middle!important;
+  border-color: #e5edf7!important;
+}
+.sr-tracking-page .sr-table tbody tr.sr-premium-booking-row>td:first-child {
+  padding-left: 9px!important;
+  border-radius: 11px 0 0 11px;
+}
+.sr-tracking-page .sr-table tbody tr.sr-premium-booking-row>td:last-child {
+  border-radius: 0 11px 11px 0;
+}
+.sr-tracking-page .sr-premium-date-card {
+  background: #f8fbff;
+  border: 1px solid #e5edf8;
+  border-radius: 9px;
+  padding: 7px 8px;
+}
+.sr-tracking-page .sr-premium-date-card .sr-date-cell {
+  font-size: 10px;
+  line-height: 1.35;
+}
+.sr-tracking-page .sr-premium-date-card>.sr-row-attendance {
+  margin-top: 3px;
+}
+.sr-tracking-page .sr-premium-date-card .sr-row-stage-confirmations {
+  margin-top: 5px;
+  gap: 3px;
+}
+.sr-tracking-page .sr-premium-date-card .sr-row-stage-confirmation {
+  gap: 5px;
+}
+.sr-tracking-page .sr-premium-date-card .sr-row-stage-pill {
+  flex-basis: 27px;
+  padding: 2px;
+  border-radius: 6px;
+}
+.sr-tracking-page .sr-premium-date-card .sr-row-stage-label {
+  font-size: 10px;
+  line-height: 1.22;
+}
+.sr-tracking-page .sr-premium-date-card .sr-row-stage-source {
+  font-size: 9px;
+  line-height: 1.2;
+}
+.sr-tracking-page .sr-mini-stage {
+  grid-template-columns: 19px minmax(0,1fr) 49px!important;
+  grid-template-rows: auto!important;
+  column-gap: 4px;
+  row-gap: 0;
+  align-items: center;
+  min-height: 30px;
+  padding: 3px 0;
+  border-color: #edf2f8;
+}
+.sr-tracking-page .sr-mini-stage-name {
+  grid-column: 1;
+  grid-row: 1;
+  padding: 0;
+  align-self: center;
+}
+.sr-tracking-page .sr-mini-stage .sr-mini-status {
+  grid-column: 2;
+  grid-row: 1;
+  align-items: center;
+  padding: 4px 5px;
+  border-radius: 7px;
+  min-width: 0;
+}
+.sr-tracking-page .sr-mini-stage .sr-mini-status-label {
+  font-size: 9.5px;
+  line-height: 1.3;
+  white-space: normal;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+.sr-tracking-page .sr-mini-stage .sr-mini-time {
+  grid-column: 3;
+  grid-row: 1;
+  align-self: center;
+  justify-self: end;
+  text-align: right;
+  padding: 0;
+  font-size: 9px;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+.sr-tracking-page .sr-row-channel-badge {
+  padding: 3px 5px;
+  border-radius: 7px;
+}
+.sr-tracking-page .sr-premium-course {
+  margin-top: 4px;
+  padding: 2px 7px;
+}
+.sr-tracking-page .sr-table th:nth-child(1){width:16%}
+.sr-tracking-page .sr-table th:nth-child(2){width:12%}
+.sr-tracking-page .sr-table th:nth-child(3){width:28%}
+.sr-tracking-page .sr-table th:nth-child(4){width:18%}
+.sr-tracking-page .sr-table th:nth-child(5){width:18%}
+.sr-tracking-page .sr-table th:nth-child(6){width:8%}
+@media(max-width:1100px){
+  .sr-tracking-page .sr-table tbody tr.sr-premium-booking-row>td {padding: 8px 4px!important}
+  .sr-tracking-page .sr-mini-stage {grid-template-columns: 17px minmax(0,1fr)!important;grid-template-rows:auto auto!important}
+  .sr-tracking-page .sr-mini-stage .sr-mini-time {grid-column:2;grid-row:2;justify-self:start;text-align:left;padding-left:3px}
+}
