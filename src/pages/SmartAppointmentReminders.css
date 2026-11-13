@@ -1430,31 +1430,22 @@
   }
 }
 
-/* 13 Nov final approved Design A: spacing and column-width polish only.
-   No changes to stage content, timeline behavior, or tracking logic. */
-.sr-tracking-page .sr-table th:nth-child(3){width:25%!important}
-.sr-tracking-page .sr-table th:nth-child(4){width:22.5%!important}
-.sr-tracking-page .sr-table th:nth-child(5){width:20.5%!important}
-.sr-tracking-page .sr-premium-date-card .sr-designb-timeline{
-  margin-right:10px!important;
+
+/* 13 Nov approved width-only refinement: preserve Design A styling and behaviour.
+   Reclaim unused space from Date & Time; distribute to both message channels. */
+.sr-tracking-page .sr-table th:nth-child(1){width:15%!important}
+.sr-tracking-page .sr-table th:nth-child(2){width:11%!important}
+.sr-tracking-page .sr-table th:nth-child(3){width:22%!important}
+.sr-tracking-page .sr-table th:nth-child(4){width:24%!important}
+.sr-tracking-page .sr-table th:nth-child(5){width:22%!important}
+.sr-tracking-page .sr-table th:nth-child(6){width:6%!important}
+/* Rounded pale-green rows should end before the date card's right edge. */
+.sr-tracking-page .sr-premium-booking-row .sr-premium-date-card .sr-designb-timeline{
+  margin-right:8px!important;
 }
 .sr-tracking-page .sr-premium-date-card .sr-designb-timeline .sr-premium-stage{
-  width:calc(100% - 5px)!important;
-  max-width:calc(100% - 5px)!important;
-  margin-right:5px!important;
+  width:calc(100% - 2px)!important;
+  max-width:100%!important;
   border-radius:9px!important;
   overflow:visible!important;
-  box-sizing:border-box!important;
-}
-.sr-tracking-page .sr-premium-date-card .sr-designb-timeline .sr-premium-stage .sr-row-stage-label{
-  width:106px!important;
-  max-width:100%!important;
-  justify-content:flex-start!important;
-  box-sizing:border-box!important;
-}
-@media(max-width:1150px){
-  .sr-tracking-page .sr-premium-date-card .sr-designb-timeline .sr-premium-stage .sr-row-stage-label{
-    width:100px!important;
-    max-width:100%!important;
-  }
 }
