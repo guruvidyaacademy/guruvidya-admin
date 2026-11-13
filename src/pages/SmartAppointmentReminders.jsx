@@ -168,7 +168,7 @@ function BookingOutcomeSource({tests,booking,settings}){
      <span className="sr-row-stage-label">{item.label}</span>
      <span className={'sr-row-stage-source sr-row-stage-source-'+item.channel}>
       <TrackingIcon name={item.channel==='email'?'mail':'whatsapp'} size={11}/>
-      Via {channelName} · {compactTime(item.at)}
+      {compactTime(item.at)}
      </span>
     </span>
    </div>;
