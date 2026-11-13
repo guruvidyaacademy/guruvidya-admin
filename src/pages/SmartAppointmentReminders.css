@@ -1065,3 +1065,21 @@
   width:31px;
   flex-basis:31px;
 }
+
+/* 13 Nov — compact Date & Time; give longer Booked By names breathing room.
+   Six columns total 100%; no changes to event or tracking logic. */
+.sr-tracking-page .sr-table th:nth-child(1){width:14%!important}
+.sr-tracking-page .sr-table th:nth-child(2){width:14%!important}
+.sr-tracking-page .sr-table th:nth-child(3){width:15%!important}
+.sr-tracking-page .sr-table th:nth-child(4){width:23%!important}
+.sr-tracking-page .sr-table th:nth-child(5){width:22%!important}
+.sr-tracking-page .sr-table th:nth-child(6){width:12%!important}
+.sr-tracking-page .sr-table tbody tr.sr-premium-booking-row>td:nth-child(2){overflow-wrap:anywhere;word-break:normal}
+.sr-tracking-page .sr-premium-booking-row .sr-premium-date-card .sr-designb-timeline{margin-top:5px!important;gap:2px!important;padding-left:10px!important;margin-left:4px!important;margin-right:4px!important}
+.sr-tracking-page .sr-premium-date-card .sr-row-stage-confirmations{gap:2px!important;margin-top:4px!important}
+.sr-tracking-page .sr-premium-booking-row .sr-premium-date-card .sr-row-stage-confirmation{padding:2px 2px!important;gap:3px!important}
+.sr-tracking-page .sr-premium-date-card .sr-row-stage-confirmation:not(.sr-row-stage-scheduled){grid-template-columns:25px minmax(0,1fr)!important;gap:3px!important}
+.sr-tracking-page .sr-premium-date-card .sr-row-stage-confirmation:not(.sr-row-stage-scheduled) .sr-row-stage-pill{width:25px!important;flex-basis:25px!important}
+.sr-tracking-page .sr-premium-date-card .sr-row-stage-confirmation:not(.sr-row-stage-scheduled) .sr-row-stage-detail{padding:3px 4px!important;line-height:1.25!important}
+.sr-tracking-page .sr-premium-booking-row .sr-premium-date-card > .sr-date-cell{padding-left:6px!important;padding-right:4px!important;font-size:11px!important}
+.sr-tracking-page .sr-premium-booking-row .sr-premium-date-card > .sr-row-attendance{margin-top:4px!important}
