@@ -1283,28 +1283,149 @@
   color: #087d35 !important;
 }
 
-/* 13 Nov — Date & Time only: keep the channel icon and click time
-   on their own second line below the response button. No column,
-   tracking, stage, or other card styles are changed. */
-.sr-tracking-page .sr-premium-date-card .sr-designb-timeline
-.sr-row-stage-confirmation:not(.sr-row-stage-scheduled) .sr-row-stage-detail{
-  display:flex!important;
-  flex-direction:column!important;
-  align-items:flex-start!important;
-  justify-content:flex-start!important;
-  gap:3px!important;
-  min-width:0!important;
+/* 13 Nov 8 PM premium reference: exact order stage / lock / response / channel+time.
+   Scope: confirmed Date & Time stages only; no delivery or click logic changes. */
+.sr-tracking-page .sr-table th:nth-child(1){width:15%!important}
+.sr-tracking-page .sr-table th:nth-child(2){width:12%!important}
+.sr-tracking-page .sr-table th:nth-child(3){width:29%!important}
+.sr-tracking-page .sr-table th:nth-child(4){width:20%!important}
+.sr-tracking-page .sr-table th:nth-child(5){width:18%!important}
+.sr-tracking-page .sr-table th:nth-child(6){width:6%!important}
+.sr-tracking-page .sr-premium-date-card .sr-designb-timeline{padding-left:15px!important;margin:8px 7px 0 8px!important;gap:6px!important}
+.sr-tracking-page .sr-premium-date-card .sr-designb-timeline:before{left:5px!important;top:14px!important;bottom:15px!important}
+.sr-tracking-page .sr-premium-date-card .sr-designb-timeline .sr-premium-stage{
+ display:grid!important;grid-template-columns:30px 14px minmax(0,1fr) auto!important;
+ align-items:center!important;column-gap:6px!important;min-height:32px!important;
+ padding:5px 7px!important;background:#e5f8e8!important;
+ border:1px solid #d5eedb!important;border-radius:9px!important;
+ box-sizing:border-box!important;min-width:0!important;
 }
-.sr-tracking-page .sr-premium-date-card .sr-designb-timeline
-.sr-row-stage-confirmation:not(.sr-row-stage-scheduled) .sr-row-stage-source{
-  display:inline-flex!important;
-  flex-direction:row!important;
-  align-items:center!important;
-  justify-content:flex-start!important;
-  gap:3px!important;
-  align-self:flex-start!important;
-  width:auto!important;
-  margin:0!important;
-  padding:0 2px!important;
-  white-space:nowrap!important;
+.sr-tracking-page .sr-premium-date-card .sr-designb-timeline .sr-premium-stage:before{left:-15px!important;top:11px!important}
+.sr-tracking-page .sr-premium-date-card .sr-designb-timeline .sr-premium-stage .sr-row-stage-pill{
+ display:flex!important;align-items:center!important;justify-content:center!important;
+ width:30px!important;min-width:0!important;height:23px!important;flex-basis:auto!important;
+ background:#087b29!important;color:#fff!important;font-size:11px!important;font-weight:800!important;
+ border-radius:7px!important;padding:0!important;
+}
+.sr-tracking-page .sr-premium-date-card .sr-designb-timeline .sr-premium-stage .sr-row-stage-pill:after{content:none!important}
+.sr-tracking-page .sr-premium-date-card .sr-designb-timeline .sr-premium-stage .sr-premium-stage-lock{
+ display:flex;align-items:center;justify-content:center;color:#098b2c;min-width:14px;
+}
+.sr-tracking-page .sr-premium-date-card .sr-designb-timeline .sr-premium-stage .sr-row-stage-detail{
+ display:block!important;min-width:0!important;width:auto!important;padding:0!important;
+ background:transparent!important;border:0!important;
+}
+.sr-tracking-page .sr-premium-date-card .sr-designb-timeline .sr-premium-stage .sr-row-stage-label{
+ display:inline-flex!important;align-items:center!important;gap:3px!important;
+ width:max-content!important;max-width:100%!important;box-sizing:border-box!important;
+ padding:5px 6px!important;border-radius:7px!important;
+ background:#087b29!important;color:#fff!important;font-size:9px!important;
+ font-weight:750!important;letter-spacing:-.15px!important;white-space:nowrap!important;
+ line-height:1.15!important;overflow:hidden!important;text-overflow:ellipsis!important;
+}
+.sr-tracking-page .sr-premium-date-card .sr-designb-timeline .sr-premium-stage .sr-row-stage-label svg{flex-shrink:0;width:11px;height:11px}
+.sr-tracking-page .sr-premium-date-card .sr-designb-timeline .sr-premium-stage .sr-row-stage-source{
+ display:inline-flex!important;align-items:center!important;gap:3px!important;
+ white-space:nowrap!important;font-size:9px!important;font-weight:750!important;
+ padding:0!important;margin:0!important;color:#087b29!important;
+}
+.sr-tracking-page .sr-premium-date-card .sr-designb-timeline .sr-premium-stage .sr-row-stage-source svg{width:13px!important;height:13px!important;color:currentColor!important}
+.sr-tracking-page .sr-premium-date-card .sr-designb-timeline .sr-premium-stage-email .sr-row-stage-pill,
+.sr-tracking-page .sr-premium-date-card .sr-designb-timeline .sr-premium-stage-email .sr-row-stage-label{background:#0755d7!important;color:white!important}
+.sr-tracking-page .sr-premium-date-card .sr-designb-timeline .sr-premium-stage-email .sr-premium-stage-lock,
+.sr-tracking-page .sr-premium-date-card .sr-designb-timeline .sr-premium-stage-email .sr-row-stage-source{color:#0755d7!important}
+@media(max-width:1150px){
+ .sr-tracking-page .sr-premium-date-card .sr-designb-timeline .sr-premium-stage{grid-template-columns:25px 12px minmax(0,1fr) auto!important;column-gap:4px!important;padding:5px 4px!important}
+ .sr-tracking-page .sr-premium-date-card .sr-designb-timeline .sr-premium-stage .sr-row-stage-pill{width:25px!important;font-size:10px!important}
+ .sr-tracking-page .sr-premium-date-card .sr-designb-timeline .sr-premium-stage .sr-row-stage-label{font-size:8px!important;padding:5px 3px!important}
+ .sr-tracking-page .sr-premium-date-card .sr-designb-timeline .sr-premium-stage .sr-row-stage-source{font-size:8px!important}
+}
+
+/* 13 Nov: compact premium stage rows — equal response widths and closer channel times.
+   Visual-only overrides; the JSX data, click tracking and statuses remain untouched. */
+.sr-tracking-page .sr-table th:nth-child(2){width:14%!important}
+.sr-tracking-page .sr-table th:nth-child(3){width:27%!important}
+.sr-tracking-page .sr-premium-date-card .sr-designb-timeline .sr-premium-stage{
+ grid-template-columns:30px 14px minmax(0,118px) max-content!important;
+ justify-content:start!important;
+ column-gap:4px!important;
+ padding:5px 5px!important;
+}
+.sr-tracking-page .sr-premium-date-card .sr-designb-timeline .sr-premium-stage .sr-row-stage-detail{
+ width:118px!important;min-width:0!important;
+}
+.sr-tracking-page .sr-premium-date-card .sr-designb-timeline .sr-premium-stage .sr-row-stage-label{
+ width:118px!important;max-width:118px!important;justify-content:flex-start!important;
+ padding:5px 4px!important;letter-spacing:-.22px!important;
+}
+.sr-tracking-page .sr-premium-date-card .sr-designb-timeline .sr-premium-stage .sr-row-stage-source{
+ gap:2px!important;margin-left:0!important;font-size:8.5px!important;
+}
+@media(max-width:1150px){
+ .sr-tracking-page .sr-premium-date-card .sr-designb-timeline .sr-premium-stage{
+  grid-template-columns:25px 12px minmax(0,106px) max-content!important;column-gap:3px!important;padding:5px 3px!important;
+ }
+ .sr-tracking-page .sr-premium-date-card .sr-designb-timeline .sr-premium-stage .sr-row-stage-detail,
+ .sr-tracking-page .sr-premium-date-card .sr-designb-timeline .sr-premium-stage .sr-row-stage-label{
+  width:106px!important;max-width:106px!important;
+ }
+}
+
+/* 13 Nov: column allocation only. Preserve approved compact equal-button Design A.
+   Reclaim 3 percentage points from Booked By for WhatsApp and Email. */
+.sr-tracking-page .sr-table th:nth-child(1){width:15%!important}
+.sr-tracking-page .sr-table th:nth-child(2){width:11%!important}
+.sr-tracking-page .sr-table th:nth-child(3){width:27%!important}
+.sr-tracking-page .sr-table th:nth-child(4){width:21.5%!important}
+.sr-tracking-page .sr-table th:nth-child(5){width:19.5%!important}
+.sr-tracking-page .sr-table th:nth-child(6){width:6%!important}
+.sr-tracking-page .sr-table tbody tr.sr-premium-booking-row > td:nth-child(2){overflow-wrap:anywhere;word-break:normal}
+
+/* 13 Nov 8:32 PM: Design A repair. Keep stage, lock and response on one line;
+   channel icon and time are directly under response, never a fourth grid column. */
+.sr-tracking-page .sr-premium-date-card .sr-designb-timeline .sr-premium-stage {
+  grid-template-columns: 30px 14px minmax(0, 1fr) !important;
+  column-gap: 5px !important;
+  align-items: start !important;
+  padding: 5px 6px !important;
+  min-height: 39px !important;
+}
+.sr-tracking-page .sr-premium-date-card .sr-designb-timeline .sr-premium-stage .sr-row-stage-detail {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 3px !important;
+  width: 100% !important;
+  min-width: 0 !important;
+}
+.sr-tracking-page .sr-premium-date-card .sr-designb-timeline .sr-premium-stage .sr-row-stage-label {
+  display: inline-flex !important;
+  width: max-content !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  padding: 5px 6px !important;
+  white-space: nowrap !important;
+}
+.sr-tracking-page .sr-premium-date-card .sr-designb-timeline .sr-premium-stage .sr-row-stage-source {
+  display: inline-flex !important;
+  margin: 0 !important;
+  padding: 0 2px !important;
+  line-height: 1.2 !important;
+  white-space: nowrap !important;
+}
+.sr-tracking-page .sr-premium-date-card .sr-designb-timeline .sr-premium-stage .sr-premium-stage-lock {
+  align-self: start !important;
+  margin-top: 5px !important;
+}
+@media(max-width:1150px) {
+  .sr-tracking-page .sr-premium-date-card .sr-designb-timeline .sr-premium-stage {
+    grid-template-columns: 25px 12px minmax(0, 1fr) !important;
+    column-gap: 4px !important;
+    padding: 5px 4px !important;
+  }
+  .sr-tracking-page .sr-premium-date-card .sr-designb-timeline .sr-premium-stage .sr-row-stage-label {
+    width: max-content !important;
+    max-width: 100% !important;
+    font-size: 8px !important;
+  }
 }

@@ -165,10 +165,7 @@ function BookingOutcomeSource({tests,booking,settings}){
    return <div key={stage} className={"sr-row-stage-confirmation sr-premium-stage sr-premium-stage-"+item.channel} title={`${stage} · ${item.label} · Via ${channelName} · ${fmt(item.at)}`}>
     <span className="sr-row-stage-pill">{stage}</span>
     <span className="sr-premium-stage-lock" aria-label="Confirmed stage locked"><TrackingIcon name="lock" size={13}/></span>
-    <span className="sr-row-stage-detail"><span className="sr-row-stage-label"><TrackingIcon name="check" size={12}/>{item.label}</span></span>
-    <span className={'sr-row-stage-source sr-row-stage-source-'+item.channel}>
-     <TrackingIcon name={item.channel==='email'?'mail':'whatsapp'} size={13}/>{compactTime(item.at)}
-    </span>
+    <span className="sr-row-stage-detail"><span className="sr-row-stage-label"><TrackingIcon name="check" size={12}/>{item.label}</span><span className={'sr-row-stage-source sr-row-stage-source-'+item.channel}><TrackingIcon name={item.channel==='email'?'mail':'whatsapp'} size={13}/>{compactTime(item.at)}</span></span>
    </div>;
   })}
  </div>;
