@@ -991,3 +991,27 @@
   .sr-tracking-page .sr-premium-booking-row .sr-premium-date-card::before {padding:6px 7px;font-size:10px}
   .sr-tracking-page .sr-premium-booking-row .sr-premium-date-card > .sr-date-cell {padding:0 6px!important;font-size:11px!important}
 }
+
+/* Final approved: matching blue calendar and balanced three-card presentation.
+   Scope is strictly the collapsed Delivery & Tracking rows. */
+.sr-tracking-page .sr-premium-booking-row > td:nth-child(3),
+.sr-tracking-page .sr-premium-booking-row > td:nth-child(4),
+.sr-tracking-page .sr-premium-booking-row > td:nth-child(5){vertical-align:top!important}
+.sr-tracking-page .sr-premium-booking-row .sr-premium-date-card,
+.sr-tracking-page .sr-premium-booking-row .sr-designb-channel{
+  min-height:184px!important;
+  height:100%!important;
+  box-sizing:border-box!important;
+}
+.sr-tracking-page .sr-premium-booking-row .sr-premium-date-card::before{
+  content:"Date & Time"!important;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%230b61e8' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='5' width='18' height='16' rx='2'/%3E%3Cpath d='M16 3v4M8 3v4M3 10h18M8 14h.01M12 14h.01M16 14h.01'/%3E%3C/svg%3E"),linear-gradient(90deg,#e8f1ff,#dceaff)!important;
+  background-repeat:no-repeat,no-repeat!important;
+  background-position:9px center,center!important;
+  background-size:16px 16px,cover!important;
+  padding-left:31px!important;
+  color:#075cdb!important;
+}
+@media(max-width:1100px){
+  .sr-tracking-page .sr-premium-booking-row .sr-premium-date-card::before{background-position:6px center,center!important;padding-left:27px!important}
+}
