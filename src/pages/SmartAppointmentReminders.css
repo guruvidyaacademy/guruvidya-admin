@@ -1340,3 +1340,33 @@
  .sr-tracking-page .sr-premium-date-card .sr-designb-timeline .sr-premium-stage .sr-row-stage-label{font-size:8px!important;padding:5px 3px!important}
  .sr-tracking-page .sr-premium-date-card .sr-designb-timeline .sr-premium-stage .sr-row-stage-source{font-size:8px!important}
 }
+
+/* 13 Nov: compact premium stage rows — equal response widths and closer channel times.
+   Visual-only overrides; the JSX data, click tracking and statuses remain untouched. */
+.sr-tracking-page .sr-table th:nth-child(2){width:14%!important}
+.sr-tracking-page .sr-table th:nth-child(3){width:27%!important}
+.sr-tracking-page .sr-premium-date-card .sr-designb-timeline .sr-premium-stage{
+ grid-template-columns:30px 14px minmax(0,118px) max-content!important;
+ justify-content:start!important;
+ column-gap:4px!important;
+ padding:5px 5px!important;
+}
+.sr-tracking-page .sr-premium-date-card .sr-designb-timeline .sr-premium-stage .sr-row-stage-detail{
+ width:118px!important;min-width:0!important;
+}
+.sr-tracking-page .sr-premium-date-card .sr-designb-timeline .sr-premium-stage .sr-row-stage-label{
+ width:118px!important;max-width:118px!important;justify-content:flex-start!important;
+ padding:5px 4px!important;letter-spacing:-.22px!important;
+}
+.sr-tracking-page .sr-premium-date-card .sr-designb-timeline .sr-premium-stage .sr-row-stage-source{
+ gap:2px!important;margin-left:0!important;font-size:8.5px!important;
+}
+@media(max-width:1150px){
+ .sr-tracking-page .sr-premium-date-card .sr-designb-timeline .sr-premium-stage{
+  grid-template-columns:25px 12px minmax(0,106px) max-content!important;column-gap:3px!important;padding:5px 3px!important;
+ }
+ .sr-tracking-page .sr-premium-date-card .sr-designb-timeline .sr-premium-stage .sr-row-stage-detail,
+ .sr-tracking-page .sr-premium-date-card .sr-designb-timeline .sr-premium-stage .sr-row-stage-label{
+  width:106px!important;max-width:106px!important;
+ }
+}
