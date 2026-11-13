@@ -1451,3 +1451,34 @@
   border-radius:9px!important;
   overflow:visible!important;
 }
+
+
+/* 13 Nov 9:06 PM baseline — approved six-column fit only.
+   Preserve existing Design A, stage rows, buttons and tracking behavior. */
+.sr-tracking-page .sr-table th:nth-child(1){width:14%!important}
+.sr-tracking-page .sr-table th:nth-child(2){width:10%!important}
+.sr-tracking-page .sr-table th:nth-child(3){width:22%!important}
+.sr-tracking-page .sr-table th:nth-child(4){width:24%!important}
+.sr-tracking-page .sr-table th:nth-child(5){width:22%!important}
+.sr-tracking-page .sr-table th:nth-child(6){width:8%!important}
+/* Keep full stage text readable without modifying the existing card design. */
+.sr-tracking-page .sr-premium-booking-row .sr-designb-channel .sr-mini-stage{
+  grid-template-columns:17px minmax(0,1fr) 43px!important;
+  column-gap:2px!important;
+  padding-left:2px!important;
+  padding-right:2px!important;
+}
+.sr-tracking-page .sr-premium-booking-row .sr-designb-channel .sr-mini-stage .sr-mini-status{
+  padding-left:3px!important;
+  padding-right:3px!important;
+  gap:2px!important;
+}
+.sr-tracking-page .sr-premium-booking-row .sr-designb-channel .sr-mini-stage .sr-mini-status-label{
+  font-size:9px!important;
+  overflow-wrap:normal!important;
+  word-break:normal!important;
+}
+.sr-tracking-page .sr-premium-booking-row>td:nth-child(6){
+  padding-left:3px!important;
+  padding-right:3px!important;
+}
