@@ -1083,3 +1083,70 @@
 .sr-tracking-page .sr-premium-date-card .sr-row-stage-confirmation:not(.sr-row-stage-scheduled) .sr-row-stage-detail{padding:3px 4px!important;line-height:1.25!important}
 .sr-tracking-page .sr-premium-booking-row .sr-premium-date-card > .sr-date-cell{padding-left:6px!important;padding-right:4px!important;font-size:11px!important}
 .sr-tracking-page .sr-premium-booking-row .sr-premium-date-card > .sr-row-attendance{margin-top:4px!important}
+
+
+/* 13 Nov final visual rebalance: readable stage labels, separated timeline and pills.
+   Scoped to Delivery & Tracking premium booking rows only. */
+.sr-tracking-page .sr-table th:nth-child(1){width:14%!important}
+.sr-tracking-page .sr-table th:nth-child(2){width:11%!important}
+.sr-tracking-page .sr-table th:nth-child(3){width:18%!important}
+.sr-tracking-page .sr-table th:nth-child(4){width:23%!important}
+.sr-tracking-page .sr-table th:nth-child(5){width:22%!important}
+.sr-tracking-page .sr-table th:nth-child(6){width:12%!important}
+.sr-tracking-page .sr-premium-booking-row .sr-premium-date-card .sr-designb-timeline{
+  margin:7px 7px 0 7px!important;
+  padding-left:15px!important;
+  padding-right:2px!important;
+  gap:6px!important;
+}
+.sr-tracking-page .sr-premium-date-card .sr-row-stage-confirmations{
+  gap:6px!important;
+  margin-top:6px!important;
+  width:100%!important;
+}
+.sr-tracking-page .sr-premium-date-card .sr-row-stage-confirmation:not(.sr-row-stage-scheduled){
+  display:grid!important;
+  grid-template-columns:25px minmax(0,1fr)!important;
+  column-gap:8px!important;
+  align-items:center!important;
+  padding:0!important;
+  background:transparent!important;
+  width:100%!important;
+  overflow:visible!important;
+}
+.sr-tracking-page .sr-premium-date-card .sr-row-stage-confirmation:not(.sr-row-stage-scheduled) .sr-row-stage-pill{
+  width:25px!important;
+  min-width:25px!important;
+  flex-basis:25px!important;
+  padding:3px 2px!important;
+  white-space:nowrap!important;
+  font-size:9px!important;
+  background:transparent!important;
+}
+.sr-tracking-page .sr-premium-date-card .sr-row-stage-confirmation:not(.sr-row-stage-scheduled) .sr-row-stage-detail{
+  display:flex!important;
+  flex-direction:column!important;
+  gap:2px!important;
+  min-width:0!important;
+  width:100%!important;
+  box-sizing:border-box!important;
+  padding:5px 6px!important;
+  background:#e2f8e9!important;
+  border:1px solid #d1f0db!important;
+  border-radius:9px!important;
+  line-height:1.25!important;
+}
+.sr-tracking-page .sr-premium-date-card .sr-row-stage-confirmation:not(.sr-row-stage-scheduled) .sr-row-stage-label{
+  white-space:nowrap!important;
+  font-size:9px!important;
+  line-height:1.3!important;
+  letter-spacing:-.15px!important;
+}
+.sr-tracking-page .sr-premium-date-card .sr-row-stage-confirmation:not(.sr-row-stage-scheduled) .sr-row-stage-source{
+  white-space:nowrap!important;
+  font-size:9px!important;
+  line-height:1.2!important;
+}
+.sr-tracking-page .sr-premium-booking-row .sr-premium-date-card > .sr-row-attendance{
+  margin-top:5px!important;
+}
