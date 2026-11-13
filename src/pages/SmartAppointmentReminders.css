@@ -1035,3 +1035,33 @@
   box-sizing: border-box !important;
   margin: 0 !important;
 }
+
+
+/* Date & Time: equal-width, soft green confirmation backgrounds (4h / 2h / 1h). */
+.sr-tracking-page .sr-premium-date-card .sr-row-stage-confirmations{
+  align-items:stretch;
+  width:100%;
+}
+.sr-tracking-page .sr-premium-date-card .sr-row-stage-confirmation:not(.sr-row-stage-scheduled){
+  display:grid;
+  grid-template-columns:31px minmax(0,1fr);
+  align-items:start;
+  gap:5px;
+  width:100%;
+  max-width:100%;
+  min-width:0;
+}
+.sr-tracking-page .sr-premium-date-card .sr-row-stage-confirmation:not(.sr-row-stage-scheduled) .sr-row-stage-detail{
+  box-sizing:border-box;
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  padding:5px 6px;
+  border-radius:8px;
+  background:#e2f8e9;
+}
+.sr-tracking-page .sr-premium-date-card .sr-row-stage-confirmation:not(.sr-row-stage-scheduled) .sr-row-stage-pill{
+  box-sizing:border-box;
+  width:31px;
+  flex-basis:31px;
+}
