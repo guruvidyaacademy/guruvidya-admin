@@ -885,3 +885,28 @@
   .sr-tracking-page .sr-designb-channel .sr-mini-stage .sr-mini-status-label{font-size:9px!important}
   .sr-tracking-page .sr-designb-channel .sr-mini-stage .sr-mini-time{font-size:8.5px!important}
 }
+
+/* Design B approved column balance: keep Date & Time compact; give channels room. */
+.sr-tracking-page .sr-table{width:100%!important;table-layout:fixed!important}
+.sr-tracking-page .sr-table th:nth-child(1){width:13%!important}
+.sr-tracking-page .sr-table th:nth-child(2){width:10%!important}
+.sr-tracking-page .sr-table th:nth-child(3){width:25%!important}
+.sr-tracking-page .sr-table th:nth-child(4){width:23%!important}
+.sr-tracking-page .sr-table th:nth-child(5){width:21%!important}
+.sr-tracking-page .sr-table th:nth-child(6){width:8%!important}
+.sr-tracking-page .sr-premium-date-card{width:100%!important;max-width:100%!important;min-width:0!important;box-sizing:border-box!important;padding:2px 0!important}
+.sr-tracking-page .sr-premium-date-card>.sr-row-attendance.sr-row-attendance-yes{width:fit-content!important;max-width:100%!important;min-width:0!important;padding:5px 9px!important;margin:5px 0 0!important}
+.sr-tracking-page .sr-designb-timeline{padding-left:13px!important;gap:4px!important;margin-top:6px!important}
+.sr-tracking-page .sr-designb-timeline .sr-row-stage-confirmation{padding:5px 6px!important;gap:5px!important}
+.sr-tracking-page .sr-designb-timeline .sr-row-stage-label{font-size:10px!important;line-height:1.2!important}
+.sr-tracking-page .sr-designb-timeline .sr-row-stage-source{font-size:9.5px!important;line-height:1.2!important}
+.sr-tracking-page .sr-designb-channel{width:100%!important;min-width:0!important;max-width:100%!important;box-sizing:border-box!important}
+.sr-tracking-page .sr-designb-channel .sr-mini-stage{grid-template-columns:20px minmax(0,1fr) 51px!important;min-width:0!important}
+.sr-tracking-page .sr-designb-channel .sr-mini-stage .sr-mini-status{min-width:0!important;max-width:100%!important;box-sizing:border-box!important}
+.sr-tracking-page .sr-designb-channel .sr-mini-stage .sr-mini-status-label{white-space:normal!important;overflow:visible!important;word-break:normal!important;line-height:1.2!important}
+.sr-tracking-page .sr-table tbody tr.sr-premium-booking-row>td{min-width:0!important;box-sizing:border-box!important}
+@media(max-width:1100px){
+ .sr-tracking-page .sr-designb-channel .sr-mini-stage{grid-template-columns:17px minmax(0,1fr) 42px!important;gap:2px!important}
+ .sr-tracking-page .sr-designb-channel .sr-mini-stage .sr-mini-status-label{font-size:9px!important}
+ .sr-tracking-page .sr-designb-channel .sr-mini-stage .sr-mini-time{font-size:8.5px!important}
+}
