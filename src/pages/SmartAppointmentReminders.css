@@ -1439,13 +1439,15 @@
 .sr-tracking-page .sr-table th:nth-child(4){width:24%!important}
 .sr-tracking-page .sr-table th:nth-child(5){width:22%!important}
 .sr-tracking-page .sr-table th:nth-child(6){width:6%!important}
-/* Rounded pale-green rows should end before the date card's right edge. */
+/* 13 Nov 9 PM: compact only the pale-green Date & Time stage backgrounds.
+   Keep the timeline, buttons, column widths and event rendering unchanged. */
 .sr-tracking-page .sr-premium-booking-row .sr-premium-date-card .sr-designb-timeline{
   margin-right:8px!important;
 }
 .sr-tracking-page .sr-premium-date-card .sr-designb-timeline .sr-premium-stage{
-  width:calc(100% - 2px)!important;
-  max-width:100%!important;
+  box-sizing:border-box!important;
+  width:calc(100% - 12px)!important;
+  max-width:calc(100% - 12px)!important;
   border-radius:9px!important;
   overflow:visible!important;
 }
