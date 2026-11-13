@@ -162,14 +162,12 @@ function BookingOutcomeSource({tests,booking,settings}){
     return <div key={stage} className="sr-row-stage-confirmation sr-row-stage-scheduled" title={'1h reminder due '+fmt(oneHourAt)+(settings?.master_enabled?'':' · Automation OFF')}><span className="sr-row-stage-pill"><TrackingIcon name="clock" size={10}/>1h</span><span className="sr-row-stage-detail"><span className="sr-row-stage-label">Planned · {compactTime(oneHourAt)}</span><span className="sr-row-stage-source sr-designb-automation">{settings?.master_enabled?'Scheduled':'Automation OFF'}</span></span></div>;
    }
    const channelName=item.channel==='email'?'Email':'WhatsApp';
-   return <div key={stage} className="sr-row-stage-confirmation" title={`${stage} · ${item.label} · Via ${channelName} · ${fmt(item.at)}`}>
-    <span className="sr-row-stage-pill"><TrackingIcon name="lock" size={10}/>{stage}</span>
-    <span className="sr-row-stage-detail">
-     <span className="sr-row-stage-label">{item.label}</span>
-     <span className={'sr-row-stage-source sr-row-stage-source-'+item.channel}>
-      <TrackingIcon name={item.channel==='email'?'mail':'whatsapp'} size={11}/>
-      {compactTime(item.at)}
-     </span>
+   return <div key={stage} className={"sr-row-stage-confirmation sr-premium-stage sr-premium-stage-"+item.channel} title={`${stage} · ${item.label} · Via ${channelName} · ${fmt(item.at)}`}>
+    <span className="sr-row-stage-pill">{stage}</span>
+    <span className="sr-premium-stage-lock" aria-label="Confirmed stage locked"><TrackingIcon name="lock" size={13}/></span>
+    <span className="sr-row-stage-detail"><span className="sr-row-stage-label"><TrackingIcon name="check" size={12}/>{item.label}</span></span>
+    <span className={'sr-row-stage-source sr-row-stage-source-'+item.channel}>
+     <TrackingIcon name={item.channel==='email'?'mail':'whatsapp'} size={13}/>{compactTime(item.at)}
     </span>
    </div>;
   })}
