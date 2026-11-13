@@ -57,7 +57,7 @@ function Donut({items,total,center}){const palette=['#0fbf84','#1685f8','#8343e9
 function Trend({rows}){const width=550,height=130,keys=['scheduled','sent','delivered','confirmed'],colors=['#1479f5','#0aba86','#58a8fa','#8245eb'];const max=Math.max(1,...rows.flatMap(x=>keys.map(k=>x[k]||0)));const pts=k=>rows.map((r,i)=>`${12+i*(width-24)/Math.max(1,rows.length-1)},${height-14-(r[k]||0)*(height-28)/max}`).join(' ');return <div className="sr-trend"><svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label="Reminder performance trend">{[0,1,2,3].map(i=><line key={i} x1="0" x2={width} y1={15+i*32} y2={15+i*32} stroke="#e4edf9"/>)}{keys.map((k,i)=><polyline key={k} points={pts(k)} fill="none" stroke={colors[i]} strokeWidth="2.5" strokeLinejoin="round"/> )}</svg><div className="sr-legend">{keys.map((k,i)=><span key={k}><i style={{background:colors[i]}}/>{k}</span>)}</div></div>}
 const statusOf=r=>String(r.status||'scheduled').toLowerCase();
 function WindowPanel({recipient,booking}){return <div className="sr-panel sr-window sr-window-designed"><div className="sr-panel-heading">24h WhatsApp Window Timeline ({recipient==='student'?'Student':'Parent / Guardian'})</div><div className="sr-window-timeline"><div className="sr-window-event sr-window-event-unavailable"><span className="sr-timeline-dot"><TrackingIcon name="clock" size={16}/></span><div className="sr-window-event-copy"><strong>Window history not connected</strong><small>Verified inbound replies, opening and expiry times, and extension attempts will appear here when recipient-level event data becomes available.</small></div><span className="sr-status-pill sr-pill-neutral">Not available</span></div></div><div className="sr-window-note"><TrackingIcon name="info" size={19}/><div><strong>Note:</strong><p>Only a valid inbound Student/Parent WhatsApp reply reopens the 24h window.</p><p>Maximum 2 extension attempts per recipient; no outgoing message or website click extends the window.</p></div></div></div>}
-const MANUAL_BUTTON_LABELS={on_my_way:"Yes, I'm On My Way",im_ready:"Yes, I'm Ready",yes_attend:"Yes, I'll Attend",yes_attend_open:"Yes, I'll Attend",reschedule:'Reschedule',cancel:'Cancel'};
+const MANUAL_BUTTON_LABELS={on_my_way:"Yes, I'm On My Way",im_ready:"Yes, I'm Ready",yes_attend:"Yes, I'll Attend",yes_attend_open:"Yes, I'll Attend",reschedule:'Reschedule',cancel:'Cancel',join_meeting:'Join Online Meeting',join:'Join Online Meeting'};
 function manualButtonEvents(test,channel,mode){
  const oneHourLabel=String(mode||test?.mode||'').toLowerCase()==='online'?"Yes, I'm Ready":"Yes, I'm On My Way";
  const stageLabel=test?.stage==='1h'?oneHourLabel:test?.stage==='2h'?"Yes, I'll Be There":"Yes, I'll Attend";
@@ -219,7 +219,7 @@ function BookingRowChannel({deliveries,channel,mode,clicks,tests,booking,setting
    if(read)events.push({label:channel==='email'?'Opened':'Read',at:read,tone:channel==='email'?'blue':'green',icon:'eye'});
    // Only show a button name when a verified click record was actually loaded.
    const recorded=Array.isArray(clicks?.[d.id])?clicks[d.id]:[];
-   recorded.forEach(c=>{if(c.clicked_at){const key=String(c.button_key||'').toLowerCase();const label=stage==='5min'&&key==='join_meeting'?(channel==='email'?'Join Online Meeting':'Join Meeting'):String(c.button_name||c.button_key||'Button').slice(0,32);events.push({label,at:c.clicked_at,tone:channel==='email'?'blue':'green',icon:'click'});}});
+   recorded.forEach(c=>{if(c.clicked_at){const key=String(c.button_key||'').toLowerCase();const label=stage==='5min'&&['join_meeting','join'].includes(key)?'Join Online Meeting':String(c.button_name||c.button_key||'Button').slice(0,32);events.push({label,at:c.clicked_at,tone:channel==='email'?'blue':'green',icon:'click'});}});
    if(d.status==='failed'&&d.updated_at)events.push({label:'Failed',at:d.updated_at,tone:'red',icon:'info'});
   });
   // Scheduled delivery always takes precedence. A separate manual test is labelled
@@ -235,7 +235,7 @@ function BookingRowChannel({deliveries,channel,mode,clicks,tests,booking,setting
      const at=e.completedAt||e.confirmedAt||e.last;
      if(!at)return;
      const done=Boolean(e.completedAt||e.confirmedAt);
-     const label=e.key==='cancel'?(done?'Cancelled':'Clicked Cancel'):e.key==='reschedule'?(done?'Rescheduled':'Clicked Reschedule'):e.key==='join_meeting'&&stage==='5min'?(channel==='email'?'Join Online Meeting':'Join Meeting'):e.key==='yes_attend'?(stage==='2h'?"Yes, I'll Be There":stage==='1h'?(String(booking?.mode||'').toLowerCase()==='online'?"Yes, I'm Ready":"Yes, I'm On My Way"):"Yes, I'll Attend"):e.label;
+     const label=e.key==='cancel'?(done?'Cancelled':'Clicked Cancel'):e.key==='reschedule'?(done?'Rescheduled':'Clicked Reschedule'):['join_meeting','join'].includes(e.key)&&stage==='5min'?'Join Online Meeting':e.key==='yes_attend'?(stage==='2h'?"Yes, I'll Be There":stage==='1h'?(String(booking?.mode||'').toLowerCase()==='online'?"Yes, I'm Ready":"Yes, I'm On My Way"):"Yes, I'll Attend"):e.label;
      events.push({label,at,tone:e.key==='cancel'&&done?'red':e.key==='reschedule'?'amber':done?'green':tone,icon:e.key==='cancel'&&done?'close':done?'check':'click'});
     });
     if(!at&&['accepted','sent'].includes(String(t.status||'').toLowerCase()))events.push({label:'Test Accepted',at:t.completed_at||t.created_at,tone:'grey',icon:'clock'});
