@@ -910,3 +910,15 @@
  .sr-tracking-page .sr-designb-channel .sr-mini-stage .sr-mini-status-label{font-size:9px!important}
  .sr-tracking-page .sr-designb-channel .sr-mini-stage .sr-mini-time{font-size:8.5px!important}
 }
+
+/* Design B final: reclaim unused Date & Time whitespace for full 24h Window visibility. */
+.sr-tracking-page .sr-table{width:100%!important;table-layout:fixed!important}
+.sr-tracking-page .sr-table th:nth-child(1){width:12%!important}
+.sr-tracking-page .sr-table th:nth-child(2){width:9%!important}
+.sr-tracking-page .sr-table th:nth-child(3){width:22%!important}
+.sr-tracking-page .sr-table th:nth-child(4){width:23%!important}
+.sr-tracking-page .sr-table th:nth-child(5){width:22%!important}
+.sr-tracking-page .sr-table th:nth-child(6){width:12%!important}
+.sr-tracking-page .sr-table tbody tr.sr-premium-booking-row>td:nth-child(3){padding-left:4px!important;padding-right:4px!important}
+.sr-tracking-page .sr-table tbody tr.sr-premium-booking-row>td:nth-child(6){padding-left:5px!important;padding-right:5px!important;overflow-wrap:normal!important;word-break:normal!important}
+.sr-tracking-page .sr-table th:nth-child(6){white-space:nowrap!important}
