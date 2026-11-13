@@ -922,3 +922,11 @@
 .sr-tracking-page .sr-table tbody tr.sr-premium-booking-row>td:nth-child(3){padding-left:4px!important;padding-right:4px!important}
 .sr-tracking-page .sr-table tbody tr.sr-premium-booking-row>td:nth-child(6){padding-left:5px!important;padding-right:5px!important;overflow-wrap:normal!important;word-break:normal!important}
 .sr-tracking-page .sr-table th:nth-child(6){white-space:nowrap!important}
+
+/* Final approved width balance: booking reference +2%, date/time -2%. */
+.sr-tracking-page .sr-table th:nth-child(1){width:14%!important}
+.sr-tracking-page .sr-table th:nth-child(2){width:9%!important}
+.sr-tracking-page .sr-table th:nth-child(3){width:20%!important}
+.sr-tracking-page .sr-table th:nth-child(4){width:23%!important}
+.sr-tracking-page .sr-table th:nth-child(5){width:22%!important}
+.sr-tracking-page .sr-table th:nth-child(6){width:12%!important}
