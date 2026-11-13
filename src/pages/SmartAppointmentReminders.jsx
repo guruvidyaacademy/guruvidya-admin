@@ -219,7 +219,7 @@ function BookingRowChannel({deliveries,channel,mode,clicks,tests,booking,setting
    if(read)events.push({label:channel==='email'?'Opened':'Read',at:read,tone:channel==='email'?'blue':'green',icon:'eye'});
    // Only show a button name when a verified click record was actually loaded.
    const recorded=Array.isArray(clicks?.[d.id])?clicks[d.id]:[];
-   recorded.forEach(c=>{if(c.clicked_at)events.push({label:String(c.button_name||c.button_key||'Button').slice(0,32),at:c.clicked_at,tone:channel==='email'?'blue':'green',icon:'click'});});
+   recorded.forEach(c=>{if(c.clicked_at){const key=String(c.button_key||'').toLowerCase();const label=stage==='5min'&&key==='join_meeting'?(channel==='email'?'Join Online Meeting':'Join Meeting'):String(c.button_name||c.button_key||'Button').slice(0,32);events.push({label,at:c.clicked_at,tone:channel==='email'?'blue':'green',icon:'click'});}});
    if(d.status==='failed'&&d.updated_at)events.push({label:'Failed',at:d.updated_at,tone:'red',icon:'info'});
   });
   // Scheduled delivery always takes precedence. A separate manual test is labelled
@@ -235,7 +235,7 @@ function BookingRowChannel({deliveries,channel,mode,clicks,tests,booking,setting
      const at=e.completedAt||e.confirmedAt||e.last;
      if(!at)return;
      const done=Boolean(e.completedAt||e.confirmedAt);
-     const label=e.key==='cancel'?(done?'Cancelled':'Clicked Cancel'):e.key==='reschedule'?(done?'Rescheduled':'Clicked Reschedule'):e.key==='yes_attend'?(stage==='2h'?"Yes, I'll Be There":stage==='1h'?(String(booking?.mode||'').toLowerCase()==='online'?"Yes, I'm Ready":"Yes, I'm On My Way"):"Yes, I'll Attend"):e.label;
+     const label=e.key==='cancel'?(done?'Cancelled':'Clicked Cancel'):e.key==='reschedule'?(done?'Rescheduled':'Clicked Reschedule'):e.key==='join_meeting'&&stage==='5min'?(channel==='email'?'Join Online Meeting':'Join Meeting'):e.key==='yes_attend'?(stage==='2h'?"Yes, I'll Be There":stage==='1h'?(String(booking?.mode||'').toLowerCase()==='online'?"Yes, I'm Ready":"Yes, I'm On My Way"):"Yes, I'll Attend"):e.label;
      events.push({label,at,tone:e.key==='cancel'&&done?'red':e.key==='reschedule'?'amber':done?'green':tone,icon:e.key==='cancel'&&done?'close':done?'check':'click'});
     });
     if(!at&&['accepted','sent'].includes(String(t.status||'').toLowerCase()))events.push({label:'Test Accepted',at:t.completed_at||t.created_at,tone:'grey',icon:'clock'});
