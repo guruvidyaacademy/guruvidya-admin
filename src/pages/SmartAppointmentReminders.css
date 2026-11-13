@@ -1015,3 +1015,23 @@
 @media(max-width:1100px){
   .sr-tracking-page .sr-premium-booking-row .sr-premium-date-card::before{background-position:6px center,center!important;padding-left:27px!important}
 }
+
+/* 13 Nov — Design B: equal-height cards within each individual booking row.
+   A percentage height on a child of an auto-height table cell is not resolved
+   consistently by Chromium. Giving the three table cells a 1px height basis
+   allows their 100%-height children to stretch to the computed row height.
+   The tallest card still determines the row height; content is never clipped. */
+.sr-tracking-page .sr-table tbody tr.sr-premium-booking-row > td:nth-child(3),
+.sr-tracking-page .sr-table tbody tr.sr-premium-booking-row > td:nth-child(4),
+.sr-tracking-page .sr-table tbody tr.sr-premium-booking-row > td:nth-child(5) {
+  height: 1px !important;
+  vertical-align: top !important;
+}
+.sr-tracking-page .sr-table tbody tr.sr-premium-booking-row > td:nth-child(3) > .sr-premium-date-card,
+.sr-tracking-page .sr-table tbody tr.sr-premium-booking-row > td:nth-child(4) > .sr-designb-channel,
+.sr-tracking-page .sr-table tbody tr.sr-premium-booking-row > td:nth-child(5) > .sr-designb-channel {
+  height: 100% !important;
+  min-height: 184px !important;
+  box-sizing: border-box !important;
+  margin: 0 !important;
+}
