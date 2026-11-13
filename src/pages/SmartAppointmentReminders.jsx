@@ -235,7 +235,7 @@ function BookingRowChannel({deliveries,channel,mode,clicks,tests,booking,setting
      const at=e.completedAt||e.confirmedAt||e.last;
      if(!at)return;
      const done=Boolean(e.completedAt||e.confirmedAt);
-     const label=e.key==='cancel'?(done?'Cancelled':'Clicked Cancel'):e.key==='reschedule'?(done?'Rescheduled':'Clicked Reschedule'):e.key==='yes_attend'?(stage==='2h'?"Yes, I'll Be There":stage==='1h'?(String(booking?.mode||'').toLowerCase()==='online'?"I'm Ready":"On My Way"):"Yes, I'll Attend"):e.label;
+     const label=e.key==='cancel'?(done?'Cancelled':'Clicked Cancel'):e.key==='reschedule'?(done?'Rescheduled':'Clicked Reschedule'):e.key==='yes_attend'?(stage==='2h'?"Yes, I'll Be There":stage==='1h'?(String(booking?.mode||'').toLowerCase()==='online'?"Yes, I'm Ready":"Yes, I'm On My Way"):"Yes, I'll Attend"):e.label;
      events.push({label,at,tone:e.key==='cancel'&&done?'red':e.key==='reschedule'?'amber':done?'green':tone,icon:e.key==='cancel'&&done?'close':done?'check':'click'});
     });
     if(!at&&['accepted','sent'].includes(String(t.status||'').toLowerCase()))events.push({label:'Test Accepted',at:t.completed_at||t.created_at,tone:'grey',icon:'clock'});
