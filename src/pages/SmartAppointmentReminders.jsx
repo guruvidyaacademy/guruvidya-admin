@@ -73,8 +73,9 @@ function manualButtonEvents(test,channel,mode){
  // response is received. Use its latest recorded click as the attendance
  // acknowledgement, independently of later reminder-preference responses.
  if(channel==='whatsapp'){
-  const confirmation=clicks.find(e=>e.key==='yes_attend');
-  if(confirmation)confirmation.confirmedAt=confirmation.last;
+  // 1h uses a single acknowledgement button rather than the 4h/2h YES key.
+  const confirmationKeys=test?.stage==='1h'?['on_my_way','im_ready','yes_attend']:['yes_attend'];
+  clicks.filter(e=>confirmationKeys.includes(e.key)).forEach(e=>{e.confirmedAt=e.last;});
  }
  // Email YES link opening and attendance confirmation are two stages of the same
  // button action. Preserve their separate audit timestamps, but render one row
@@ -128,9 +129,11 @@ function manualButtonEvents(test,channel,mode){
 // send or an opened email link alone is not an attendance confirmation.
 function verifiedBookingAcknowledgements(tests,booking){
  return (tests||[]).filter(t=>['4h','2h','1h'].includes(t.stage)).flatMap(t=>
-  manualButtonEvents(t,t.channel,booking?.mode).filter(e=>e.type==='click'&&e.key==='yes_attend'&&e.confirmedAt)
+  manualButtonEvents(t,t.channel,booking?.mode).filter(e=>e.type==='click'&&e.confirmedAt&&(
+   t.stage==='1h'?['on_my_way','im_ready','yes_attend'].includes(e.key):e.key==='yes_attend'))
    .map(e=>({stage:t.stage,channel:t.channel,at:e.confirmedAt,
-    label:t.stage==='2h'?"Yes, I'll Be There":t.stage==='1h'?(String(booking?.mode||'').toLowerCase()==='online'?"I'm Ready":"On My Way"):"Yes, I'll Attend"}))
+    label:t.stage==='1h'?(String(booking?.mode||'').toLowerCase()==='online'?"Yes, I'm Ready":"Yes, I'm On My Way"):
+     t.stage==='2h'?"Yes, I'll Be There":"Yes, I'll Attend"}))
  ).sort((a,b)=>new Date(a.at)-new Date(b.at));
 }
 function BookingRowStatus({tests,booking}){
