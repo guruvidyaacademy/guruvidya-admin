@@ -149,12 +149,12 @@ function BookingOutcomeSource({tests,booking,settings}){
  const oneHourAt=Number.isFinite(startsAt.getTime())?new Date(startsAt.getTime()-oneHourMinutes*60000):null;
  const oneHourEnabled=Boolean(settings?.[booking?.mode]?.['1h']?.whatsapp||settings?.[booking?.mode]?.['1h']?.email);
  const showOneHourSchedule=oneHourEnabled&&oneHourAt&&oneHourAt.getTime()>Date.now();
- return <div className="sr-row-outcome-sources sr-row-stage-confirmations" aria-label="Verified reminder confirmations">
+ return <div className="sr-row-outcome-sources sr-row-stage-confirmations sr-designb-timeline" aria-label="Verified reminder confirmations">
   {stages.map(stage=>{
    const item=[...confirmed].reverse().find(e=>e.stage===stage);
    if(!item){
     if(stage!=='1h'||!showOneHourSchedule)return null;
-    return <div key={stage} className="sr-row-stage-confirmation sr-row-stage-scheduled" title={'1h reminder due '+fmt(oneHourAt)+(settings?.master_enabled?'':' · Automation OFF')}><span className="sr-row-stage-pill"><TrackingIcon name="clock" size={10}/>1h</span><span className="sr-row-stage-detail"><span className="sr-row-stage-label">Scheduled</span><span className="sr-row-stage-source"><TrackingIcon name="clock" size={11}/>{fmt(oneHourAt)}{settings?.master_enabled?'':' · Automation OFF'}</span></span></div>;
+    return <div key={stage} className="sr-row-stage-confirmation sr-row-stage-scheduled" title={'1h reminder due '+fmt(oneHourAt)+(settings?.master_enabled?'':' · Automation OFF')}><span className="sr-row-stage-pill"><TrackingIcon name="clock" size={10}/>1h</span><span className="sr-row-stage-detail"><span className="sr-row-stage-label">Planned · {compactTime(oneHourAt)}</span><span className="sr-row-stage-source sr-designb-automation">{settings?.master_enabled?'Scheduled':'Automation OFF'}</span></span></div>;
    }
    const channelName=item.channel==='email'?'Email':'WhatsApp';
    return <div key={stage} className="sr-row-stage-confirmation" title={`${stage} · ${item.label} · Via ${channelName} · ${fmt(item.at)}`}>
@@ -275,11 +275,11 @@ function BookingRowChannel({deliveries,channel,mode,clicks,tests,booking}){
   const finalEvent=events.filter(e=>e.locked).sort((x,y)=>new Date(y.at)-new Date(x.at))[0];
   return finalEvent||events[0]||{label:'Not Sent',at:null,tone:'grey',icon:'clock'};
  };
- return <div className={'sr-mini-channel sr-mini-'+channel}>
+ return <div className={'sr-mini-channel sr-mini-'+channel+' sr-designb-channel'}><div className="sr-designb-channel-title"><TrackingIcon name={channel==='whatsapp'?'whatsapp':'mail'} size={18}/><b>{channel==='whatsapp'?'WhatsApp':'Email'}</b></div>
   {stages.map(stage=>{const event=latestStage(stage);return <div className="sr-mini-stage" key={stage} title={stage+' reminder: '+event.label+(event.at?' at '+fmt(event.at):'')}>
    <span className="sr-mini-stage-name">{stage}</span>
    <span className={'sr-mini-status sr-mini-'+event.tone}><span className="sr-mini-status-icon"><TrackingIcon name={event.icon} size={10}/></span><span className="sr-mini-status-label">{event.label}</span></span>
-   <time className="sr-mini-time">{event.locked&&<TrackingIcon name="lock" size={10}/>} {compactTime(event.at)}</time>
+   <time className="sr-mini-time">{compactTime(event.at)}</time>
   </div>})}
   {channel==='whatsapp'&&<BookingRowManualSummary tests={tests||[]} channel={channel}/>}
  </div>;
