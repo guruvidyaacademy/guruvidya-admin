@@ -191,6 +191,49 @@ function BookingRowManualSummary({tests,channel}){
 // Collapsed row: latest verified scheduled-delivery milestone per stage.
 // Manual tests are deliberately excluded from this summary.
 const compactTime=value=>value?fmt(value,{day:undefined,month:undefined,year:undefined}):'—';
+// Verified 4h click journey: manual button events and preference audit are separate
+// sources. Show only persisted events, in chronological order; never infer intent.
+function FourHourClickJourney({tests,channel,mode}){
+ const relevant=(tests||[]).filter(t=>t.channel===channel&&t.stage==='4h');
+ const journey=[];
+ relevant.forEach(t=>{
+  manualButtonEvents(t,channel,mode).filter(e=>e.type==='click').forEach(e=>{
+   const times=e.times?.length?e.times:[e.last||e.first];
+   times.filter(Boolean).forEach(at=>journey.push({at,label:e.label,kind:'button'}));
+  });
+  if(channel==='whatsapp'&&t.followup_choice){
+   const f=t.followup_choice;
+   const history=Array.isArray(f.history)?f.history:[];
+   if(history.length){
+    history.forEach(h=>{
+     if(!h.occurred_at)return;
+     const choice=String(h.requested_choice||'').toLowerCase();
+     if(h.event_type==='initial')journey.push({at:h.occurred_at,label:choice==='yes'?'Yes · 2h Reminder':'No · 2h Reminder',kind:'choice'});
+     if(h.event_type==='requested')journey.push({at:h.occurred_at,label:choice==='no'?'No · Change Requested':'Yes · Change Requested',kind:'pending'});
+     if(h.event_type==='confirmed')journey.push({at:h.occurred_at,label:choice==='no'?'Yes, Turn Off':'Keep On',kind:choice==='no'?'off':'choice'});
+    });
+   }else if(f.choice_clicked_at&&['yes','no'].includes(String(f.choice||'').toLowerCase())){
+    journey.push({at:f.choice_clicked_at,label:f.choice==='yes'?'Yes · 2h Reminder':'No · 2h Reminder',kind:'choice'});
+   }
+  }
+ });
+ const uniqueJourney=[...new Map(journey.map(e=>[`${e.at}|${e.label}|${e.kind}`,e])).values()];
+ uniqueJourney.sort((a,b)=>new Date(a.at)-new Date(b.at));
+ if(!uniqueJourney.length)return null;
+ const followups=relevant.map(t=>t.followup_choice).filter(Boolean);
+ const latestFollowup=followups.sort((a,b)=>new Date(b.choice_clicked_at||0)-new Date(a.choice_clicked_at||0))[0];
+ const pending=Boolean(latestFollowup?.pending_change);
+ const lastConfirmed=(Array.isArray(latestFollowup?.history)?latestFollowup.history:[]).filter(h=>h.event_type==='confirmed').sort((a,b)=>new Date(b.occurred_at)-new Date(a.occurred_at))[0];
+ const finalChoice=lastConfirmed?.requested_choice||latestFollowup?.choice;
+ return <details className="sr-four-hour-journey" onClick={e=>e.stopPropagation()} onKeyDown={e=>e.stopPropagation()}>
+  <summary aria-label={'View 4h '+channel+' click history'}><TrackingIcon name="history" size={11}/>{uniqueJourney.length} events <TrackingIcon name="chevron" size={10}/></summary>
+  <div className="sr-four-hour-journey-panel"><b>4h Button Click Journey</b>
+   <ol>{uniqueJourney.map((item,i)=><li key={i} className={'sr-four-hour-event sr-four-hour-'+item.kind}><span>{item.label}</span><time>{compactTime(item.at)}</time></li>)}</ol>
+   {channel==='whatsapp'&&latestFollowup&&<div className="sr-four-hour-final">2h preference: <strong>{pending?'Change pending · current choice retained':finalChoice==='no'?'OFF · Confirmed':finalChoice==='yes'?'ON · Confirmed':'Awaiting confirmation'}</strong></div>}
+   <small>Recorded actions only · booking status is tracked separately</small>
+  </div>
+ </details>;
+}
 function BookingRowChannel({deliveries,channel,mode,clicks,tests,booking,settings}){
  const stages=mode==='online'?['4h','2h','1h','5min']:['4h','2h','1h'];
  const relevant=deliveries.filter(d=>d.channel===channel);
@@ -296,6 +339,7 @@ function BookingRowChannel({deliveries,channel,mode,clicks,tests,booking,setting
    <span className="sr-mini-stage-name">{stage}</span>
    <span className={'sr-mini-status sr-mini-'+event.tone}><span className="sr-mini-status-icon"><TrackingIcon name={event.icon} size={10}/></span><span className="sr-mini-status-label">{event.label}</span></span>
    <time className="sr-mini-time">{compactTime(event.at)}</time>
+  {stage==='4h'&&<FourHourClickJourney tests={tests} channel={channel} mode={mode}/>}
   </div>})}
   {channel==='whatsapp'&&<BookingRowManualSummary tests={tests||[]} channel={channel}/>}
  </div>;
