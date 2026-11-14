@@ -175,14 +175,22 @@ function PreviousAppointmentHistory({events,tests,deliveries,booking,clicks={},s
      <span className={'sr-previous-outcome '+(e.action==='cancel'?'sr-previous-cancel':'sr-previous-reschedule')}>{e.action==='cancel'?'Cancellation Confirmed':approvalPending?'Reschedule Submitted · Approval Pending':'Reschedule Confirmed'}</span>
      <time>{fmt(e.created_at)} IST</time>
     </div>
-    <div className="sr-previous-date-transition">
-     <div><small>Previous date &amp; time</small><strong className="sr-previous-old-date">{fmt(oldDate)}</strong></div>
-     <TrackingIcon name="chevron" size={18}/>
-     <div><small>{e.action==='cancel'?'Booking cancelled':'Rescheduled date & time'}</small><strong className="sr-previous-new-date">{e.action==='cancel'?'Cancelled':fmt(newDate)}</strong></div>
-    </div>
-    <div className="sr-previous-channel-grid">
-     {['whatsapp','email'].map(channel=><BookingRowChannel key={channel} deliveries={oldDeliveries} channel={channel} mode={mode} clicks={historicalClicks} tests={oldTests} booking={previousBooking} settings={settings} history={confirmedHistory}/>)}
-    </div>
+    <div className="sr-previous-table-scroll"><table className="sr-table sr-previous-table">
+     <thead><tr><th>Booking Ref</th><th>Booked By</th><th>Date &amp; Time</th><th>WhatsApp</th><th>Email</th><th>24h Window</th></tr></thead>
+     <tbody><tr className="sr-premium-booking-row">
+      <td><b>{booking?.booking_ref}</b>{(booking?.course_name||booking?.course_title||booking?.course)&&<span className="sr-premium-course">{booking.course_name||booking.course_title||booking.course}</span>}</td>
+      <td><span className="sr-booked-person-copy"><b>{booking?.student_name||booking?.booked_by_name||'—'}</b><small>{booking?.booked_by||'Student'}</small></span></td>
+      <td><div className="sr-premium-date-card sr-previous-compact-date">
+       <small>Previous date &amp; time</small><span className="sr-previous-old-date">{fmt(oldDate)}</span>
+       {e.action==='reschedule'&&<><small>Rescheduled to</small><strong className="sr-previous-new-date">{fmt(newDate)}</strong></>}
+       {e.action==='cancel'&&<span className="sr-row-attendance sr-row-attendance-cancel">Booking Cancelled</span>}
+       {e.action==='reschedule'&&<span className="sr-previous-compact-confirmed">{approvalPending?'Approval Pending':'Reschedule Confirmed'}</span>}
+      </div></td>
+      <td><BookingRowChannel deliveries={oldDeliveries} channel="whatsapp" mode={mode} clicks={historicalClicks} tests={oldTests} booking={previousBooking} settings={settings} history={confirmedHistory}/></td>
+      <td><BookingRowChannel deliveries={oldDeliveries} channel="email" mode={mode} clicks={historicalClicks} tests={oldTests} booking={previousBooking} settings={settings} history={confirmedHistory}/></td>
+      <td><BookingRowWindow/></td>
+     </tr></tbody>
+    </table></div>
     <div className="sr-previous-appointment-foot">
      <span>{origin?`Confirmed via ${origin.channel==='email'?'Email':'WhatsApp'} · ${origin.stage} reminder`:`Source stage not verified · ${e.actor||'Booking system'}`}</span>
      <span>{oldTests.length} tests · {oldDeliveries.length} scheduled deliveries</span>

@@ -1585,3 +1585,20 @@
 .sr-previous-event-line:last-child{border-bottom:0}
 .sr-previous-event-line time{white-space:nowrap;color:#8290a4}
 @media(max-width:720px){.sr-previous-channel-grid{grid-template-columns:1fr}.sr-previous-date-transition{gap:8px;padding:9px}.sr-previous-date-transition strong{font-size:11px}.sr-previous-event-line{flex-wrap:wrap}}
+
+/* Previous revisions use the original six-column tracking layout, not stacked full-width cards. */
+.sr-tracking-page .sr-previous-appointment-item{display:block;min-width:0}
+.sr-tracking-page .sr-previous-table-scroll{overflow-x:auto;max-width:100%}
+.sr-tracking-page .sr-previous-table{width:100%;table-layout:fixed;min-width:760px}
+.sr-tracking-page .sr-previous-table th:nth-child(1){width:14%!important}
+.sr-tracking-page .sr-previous-table th:nth-child(2){width:10%!important}
+.sr-tracking-page .sr-previous-table th:nth-child(3){width:22%!important}
+.sr-tracking-page .sr-previous-table th:nth-child(4){width:22%!important}
+.sr-tracking-page .sr-previous-table th:nth-child(5){width:20%!important}
+.sr-tracking-page .sr-previous-table th:nth-child(6){width:12%!important}
+.sr-tracking-page .sr-previous-table .sr-premium-booking-row{cursor:default}
+.sr-tracking-page .sr-previous-compact-date{display:flex;flex-direction:column;align-items:flex-start;gap:5px;min-width:0}
+.sr-tracking-page .sr-previous-compact-date small{font-size:10px;color:#718198}
+.sr-tracking-page .sr-previous-compact-date .sr-previous-old-date{font-size:11px;color:#7c8a9e;text-decoration:line-through;text-decoration-color:#b5bdc9;text-decoration-thickness:1px;overflow-wrap:anywhere}
+.sr-tracking-page .sr-previous-compact-date .sr-previous-new-date{font-size:12px;color:#15714d;overflow-wrap:anywhere}
+.sr-tracking-page .sr-previous-compact-confirmed{font-size:10px;font-weight:750;color:#b65e0c;background:#fff5e8;border:1px solid #f3d4aa;border-radius:6px;padding:4px 6px}
