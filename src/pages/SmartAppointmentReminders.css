@@ -1682,3 +1682,14 @@
 .sr-tracking-page .sr-previous-table .sr-previous-compact-date .sr-current-reschedule-confirmed{
  border-radius:999px;white-space:normal;text-align:center;
 }
+
+/* 14 Nov: Compact, accessible appointment-details disclosure above previous history. */
+.sr-tracking-page .sr-appointment-info-collapsible{padding:0;margin:0 0 8px;background:#fbfdff;border:1px solid #dce9f8;border-radius:9px;overflow:hidden}
+.sr-tracking-page .sr-appointment-info-collapsible>summary{display:flex;align-items:center;gap:9px;padding:12px 14px;cursor:pointer;list-style:none;color:#143b77;font-size:12px;font-weight:750;min-height:42px}
+.sr-tracking-page .sr-appointment-info-collapsible>summary::-webkit-details-marker{display:none}
+.sr-tracking-page .sr-appointment-info-collapsible>summary svg:first-child{color:#1978dc;flex-shrink:0}
+.sr-tracking-page .sr-appointment-info-collapsible>summary .sr-appointment-view-label{margin-left:auto;color:#59749b;font-size:11px;font-weight:550}
+.sr-tracking-page .sr-appointment-info-collapsible>summary svg:last-child{color:#59749b;transition:transform .15s ease}
+.sr-tracking-page .sr-appointment-info-collapsible[open]>summary svg:last-child{transform:rotate(180deg)}
+.sr-tracking-page .sr-appointment-info-collapsible>div{padding:12px 14px;border-top:1px solid #e5edf8}
+.sr-tracking-page .sr-appointment-info-collapsible>summary:focus-visible{outline:2px solid #297ef0;outline-offset:-3px}
