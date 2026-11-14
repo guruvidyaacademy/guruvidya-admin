@@ -148,7 +148,7 @@ function BookingOutcomeSource({tests,booking,settings}){
  if(state.includes('cancel')||state.includes('reschedul')||booking?.cancelled_at)return null;
  const confirmed=verifiedBookingAcknowledgements(tests,booking);
  const stages=String(booking?.mode||'').toLowerCase()==='online'?['4h','2h','1h','5min']:['4h','2h','1h'];
- const fiveMinClicks=(tests||[]).filter(t=>t.stage==='5min').flatMap(t=>manualButtonEvents(t,t.channel,booking?.mode).filter(e=>e.type==='click'&&['join_meeting','join','reschedule','cancel'].includes(e.key)&&e.last).map(e=>({stage:'5min',channel:t.channel,at:e.last,label:e.key==='join_meeting'||e.key==='join'?'Join Online Meeting':e.key==='reschedule'?'Reschedule':'Cancel'}))).sort((a,b)=>new Date(a.at)-new Date(b.at));
+ const fiveMinClicks=(tests||[]).filter(t=>t.stage==='5min').flatMap(t=>manualButtonEvents(t,t.channel,booking?.mode).filter(e=>e.type==='click'&&['join_meeting','join'].includes(e.key)&&e.last).map(e=>({stage:'5min',channel:t.channel,at:e.last,label:'Join Online Meeting'}))).sort((a,b)=>new Date(a.at)-new Date(b.at));
  if(!confirmed.length&&!fiveMinClicks.length)return null;
  const oneHourMinutes=Number(settings?.stage_minutes?.[booking?.mode]?.['1h']??DEFAULT.stage_minutes[booking?.mode]?.['1h']??60);
  const startsAt=new Date(booking?.starts_at);
@@ -165,7 +165,7 @@ function BookingOutcomeSource({tests,booking,settings}){
    const channelName=item.channel==='email'?'Email':'WhatsApp';
    return <div key={stage} className={"sr-row-stage-confirmation sr-premium-stage sr-premium-stage-"+item.channel} title={`${stage} · ${item.label} · Via ${channelName} · ${fmt(item.at)}`}>
     <span className="sr-row-stage-pill">{stage}</span>
-    <span className="sr-premium-stage-lock" aria-label={stage==='5min'?'Recorded click locked':'Confirmed stage locked'}><TrackingIcon name="lock" size={13}/></span>
+    <span className="sr-premium-stage-lock" aria-label={stage==='5min'?'Verified join click recorded':'Confirmed stage locked'}><TrackingIcon name="lock" size={13}/></span>
     <span className="sr-row-stage-detail"><span className="sr-row-stage-label"><TrackingIcon name={stage==='5min'?'video':'check'} size={12}/>{item.label}</span><span className={'sr-row-stage-source sr-row-stage-source-'+item.channel}><TrackingIcon name={item.channel==='email'?'mail':'whatsapp'} size={13}/>{compactTime(item.at)}</span></span>
    </div>;
   })}
