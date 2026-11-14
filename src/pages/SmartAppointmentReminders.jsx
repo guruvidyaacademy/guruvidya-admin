@@ -176,7 +176,7 @@ function BookingRowManualSummary({tests,channel}){
  if(channel==='whatsapp'){
   const accepted=relevant.filter(t=>['accepted','sent','delivered','read'].includes(String(t.status||'').toLowerCase()));
   const latest=[...accepted].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at))[0];
-  return latest?<div className="sr-mini-footer sr-mini-test" title="Manual test, not a scheduled reminder"><TrackingIcon name="whatsapp" size={12}/> Test: Provider Accepted · {compactTime(latest.created_at)}</div>:null;
+  return latest?<div className="sr-mini-footer sr-mini-test" title="Manual test, not a scheduled reminder"><TrackingIcon name="whatsapp" size={12}/> {String(latest.status||'').toLowerCase()==='sent'?'Sent':'Provider Accepted'} · {compactTime(latest.created_at)}</div>:null;
  }
  const actions=relevant.flatMap(t=>manualButtonEvents(t,'email').filter(e=>e.type==='click').map(e=>({...e,stage:t.stage})));
  const items=actions.map(e=>{
@@ -193,6 +193,14 @@ function BookingRowManualSummary({tests,channel}){
 const compactTime=value=>value?fmt(value,{day:undefined,month:undefined,year:undefined}):'—';
 // Verified 4h click journey: manual button events and preference audit are separate
 // sources. Show only persisted events, in chronological order; never infer intent.
+// Display the full 4h preference decision while retaining the original provider button in the audit.
+function fourHourPreferenceLabel(h){
+ const choice=String(h?.requested_choice||'').toLowerCase();
+ const previous=String(h?.previous_choice||'').toLowerCase();
+ if(h?.event_type==='confirmed')return choice==='yes'?'No, Turn On':choice==='no'?'Yes, Turn Off':null;
+ if(h?.event_type==='kept')return previous==='no'?'No, Keep Off':previous==='yes'?'Yes, Keep On':null;
+ return null;
+}
 function FourHourClickJourney({tests,channel,mode}){
  const relevant=(tests||[]).filter(t=>t.channel===channel&&t.stage==='4h');
  const journey=[];
@@ -210,8 +218,8 @@ function FourHourClickJourney({tests,channel,mode}){
      const choice=String(h.requested_choice||'').toLowerCase();
      if(h.event_type==='initial')journey.push({at:h.occurred_at,label:choice==='yes'?'Yes · 2h Reminder':'No · 2h Reminder',kind:'choice'});
      if(h.event_type==='requested')journey.push({at:h.occurred_at,label:choice==='no'?'No · Change Requested':'Yes · Change Requested',kind:'pending'});
-     if(h.event_type==='confirmed')journey.push({at:h.occurred_at,label:choice==='no'?'Yes, Turn Off':'Keep On',kind:choice==='no'?'off':'choice'});
-     if(h.event_type==='kept')journey.push({at:h.occurred_at,label:'Keep On',kind:'choice'});
+     if(h.event_type==='confirmed')journey.push({at:h.occurred_at,label:fourHourPreferenceLabel(h)||'Preference Confirmed',kind:choice==='no'?'off':'choice'});
+     if(h.event_type==='kept')journey.push({at:h.occurred_at,label:fourHourPreferenceLabel(h)||'Preference Kept',kind:'choice'});
     });
    }else if(f.choice_clicked_at&&['yes','no'].includes(String(f.choice||'').toLowerCase())){
     journey.push({at:f.choice_clicked_at,label:f.choice==='yes'?'Yes · 2h Reminder':'No · 2h Reminder',kind:'choice'});
@@ -283,7 +291,7 @@ function BookingRowChannel({deliveries,channel,mode,clicks,tests,booking,setting
      const label=e.key==='cancel'?(done?'Cancelled':'Clicked Cancel'):e.key==='reschedule'?(done?'Rescheduled':'Clicked Reschedule'):['join_meeting','join'].includes(e.key)&&stage==='5min'?'Join Online Meeting':e.key==='yes_attend'?(stage==='2h'?"Yes, I'll Be There":stage==='1h'?(String(booking?.mode||'').toLowerCase()==='online'?"Yes, I'm Ready":"Yes, I'm On My Way"):"Yes, I'll Attend"):e.label;
      events.push({label,at,tone:e.key==='cancel'&&done?'red':e.key==='reschedule'?'amber':done?'green':tone,icon:e.key==='cancel'&&done?'close':done?'check':'click'});
     });
-    if(!at&&['accepted','sent'].includes(String(t.status||'').toLowerCase()))events.push({label:'Test Accepted',at:t.completed_at||t.created_at,tone:'grey',icon:'clock'});
+    if(!at&&['accepted','sent'].includes(String(t.status||'').toLowerCase()))events.push({label:String(t.status).toLowerCase()==='sent'?'Sent':'Awaiting Sent',at:t.completed_at||t.created_at,tone:'grey',icon:'clock'});
     if(!at&&String(t.status||'').toLowerCase()==='failed')events.push({label:'Test Failed',at:t.completed_at||t.created_at,tone:'red',icon:'info'});
    });
   }
@@ -302,7 +310,7 @@ function BookingRowChannel({deliveries,channel,mode,clicks,tests,booking,setting
      history.forEach(h=>{
       if(!h.occurred_at)return;
       const choice=String(h.requested_choice||'').toLowerCase();
-      const label=h.event_type==='initial'?(choice==='yes'?'Yes · 2h Reminder':'No · 2h Reminder'):h.event_type==='requested'?(choice==='no'?'No · Change Requested':'Yes · Change Requested'):h.event_type==='confirmed'?(choice==='no'?'Yes, Turn Off':'Keep On'):h.event_type==='kept'?'Keep On':null;
+      const label=h.event_type==='initial'?(choice==='yes'?'Yes · 2h Reminder':'No · 2h Reminder'):h.event_type==='requested'?(choice==='no'?'No · Change Requested':'Yes · Change Requested'):h.event_type==='confirmed'||h.event_type==='kept'?fourHourPreferenceLabel(h):null;
       if(label)events.push({label,at:h.occurred_at,tone:h.event_type==='confirmed'&&choice==='no'?'red':h.event_type==='requested'?'amber':'green',icon:'click',actualClick:true,priority:h.event_type==='kept'||h.event_type==='confirmed'?2:1});
      });
      if(!history.length&&f.choice_clicked_at&&['yes','no'].includes(String(f.choice||'').toLowerCase()))events.push({label:f.choice==='yes'?'Yes · 2h Reminder':'No · 2h Reminder',at:f.choice_clicked_at,tone:'green',icon:'click',actualClick:true});
@@ -371,10 +379,10 @@ function ManualTrackingCard({test,channel,mode}){
  const clicks=clickEntries.reduce((n,e)=>n+e.total,0);
  const firstClick=clickEntries.map(e=>e.first).filter(Boolean).sort()[0];
  const lastClick=clickEntries.map(e=>e.last).filter(Boolean).sort().slice(-1)[0];
- const timestamps=[accepted?(test.completed_at||test.created_at):null,test?.delivered_at||null,wa?(test?.read_at||null):(test?.opened_at||null),firstClick];
+ const timestamps=[(test?.sent_at||(['sent','delivered','read'].includes(String(test?.status||'').toLowerCase())?(test.completed_at||test.created_at):null)),test?.delivered_at||null,wa?(test?.read_at||null):(test?.opened_at||null),firstClick];
  return <section className={'sr-manual-premium-card sr-manual-premium-'+channel} aria-label={'Manual '+channel+' tracking'}>
   <div className="sr-manual-premium-heading"><span className="sr-manual-premium-logo"><TrackingIcon name={wa?'whatsapp':'mail'} size={21}/></span><span><b>{wa?'WhatsApp':'Email'}</b><small>{wa?'BotSailor':'Resend'} · Manual Test</small></span><span className="sr-manual-premium-badge">{test?(accepted?'Provider accepted':test.status):'Not tested'}</span></div>
-  <div className="sr-manual-premium-events">{events.map((name,i)=>{const at=timestamps[i],observed=i===0?accepted:i===3?clicks>0:Boolean(at);return <div className="sr-manual-premium-event" key={name}><span className={'sr-manual-premium-event-icon '+(observed?'verified':'')}><TrackingIcon name={iconNames[i]} size={17}/></span><div><b>{name}</b><small>{i===0&&accepted?'Provider accepted send request':observed?(i===3?`${clicks} recorded click${clicks===1?'':'s'}`:'Provider event recorded'):i===0?'No accepted send':'Awaiting verified event'}</small></div><time>{fmt(at)}</time></div>})}</div>
+  <div className="sr-manual-premium-events">{events.map((name,i)=>{const at=timestamps[i],observed=i===3?clicks>0:Boolean(at);return <div className="sr-manual-premium-event" key={name}><span className={'sr-manual-premium-event-icon '+(observed?'verified':'')}><TrackingIcon name={iconNames[i]} size={17}/></span><div><b>{name}</b><small>{i===0&&observed?'Provider send confirmed':observed?(i===3?`${clicks} recorded click${clicks===1?'':'s'}`:'Provider event recorded'):i===0?(accepted?'Provider accepted · awaiting send confirmation':'Awaiting send confirmation'):'Awaiting verified event'}</small></div><time>{fmt(at)}</time></div>})}</div>
   <details className="sr-manual-inline-clicks"><summary><TrackingIcon name="ref" size={16}/> Button-wise activity <span>{clicks} clicks{entries.some(e=>e.type==='preference')?' · follow-up recorded':''}</span></summary>
    {entries.length?entries.filter(e=>!wa||e.type!=='preference').map((e,i)=>{const completed=Boolean(e.completedAt),failed=Boolean(e.failedAt),pending=/not completed|opened|awaiting/i.test(e.outcome||'')&&!completed;const icon=e.key==='reschedule'?'calendar':e.key==='cancel'?'close':'check';return <div className={'sr-action-card sr-action-'+(wa?'wa':'email')} key={e.key+'-'+i}>
     <div className="sr-action-top"><span className="sr-action-icon"><TrackingIcon name={icon} size={17}/></span><div className="sr-action-title"><strong>{e.label}</strong><small>{e.key==='reschedule'?'Schedule change':e.key==='cancel'?'Cancellation action':test?.stage==='1h'?'1h acknowledgement':test?.stage==='2h'?'2h attendance acknowledgement':wa?'4h attendance acknowledgement':'Attendance response'}</small></div><span className="sr-action-count">{e.total} click{e.total===1?'':'s'}</span></div>
