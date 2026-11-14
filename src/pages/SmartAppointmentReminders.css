@@ -1634,57 +1634,31 @@
 .sr-tracking-page .sr-previous-event-list{background:#fff}
 @media(max-width:720px){.sr-tracking-page .sr-previous-appointment-item{padding:9px}.sr-tracking-page .sr-previous-appointment-list{padding:9px}.sr-tracking-page .sr-previous-appointment-foot{padding:7px;gap:5px}}
 
-/* 14 Nov approved history corrections — preserve the existing six-column layout. */
-.sr-tracking-page .sr-previous-appointment-heading{justify-content:center;align-items:center;border-bottom:0;padding:2px 3px 12px}
-.sr-tracking-page .sr-previous-appointment-heading .sr-previous-outcome{display:inline-flex;align-items:center;gap:8px;padding:8px 13px;border-radius:999px;white-space:normal}
-.sr-tracking-page .sr-previous-appointment-heading .sr-previous-outcome>span{display:flex;flex-direction:column;gap:3px;align-items:flex-start}
-.sr-tracking-page .sr-previous-appointment-heading .sr-previous-outcome time{display:block;font-size:9px;font-weight:550;color:#8a6243}
-.sr-tracking-page .sr-previous-table thead th .sr-premium-th{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
-.sr-tracking-page .sr-previous-table thead th .sr-premium-th-whatsapp{color:#228365}
-.sr-tracking-page .sr-previous-table thead th .sr-premium-th-mail{color:#3175b6}
-.sr-tracking-page .sr-previous-compact-date{width:100%;min-width:0;align-items:flex-start;gap:5px;padding:10px 8px;overflow:visible}
-.sr-tracking-page .sr-previous-compact-date .sr-previous-date-line{display:flex;align-items:flex-start;gap:5px;width:100%;min-width:0;line-height:1.45}
-.sr-tracking-page .sr-previous-compact-date .sr-previous-date-line .sr-track-svg{flex:0 0 14px;margin-top:1px}
-.sr-tracking-page .sr-previous-compact-date .sr-previous-old-line{color:#3c4c62}
-.sr-tracking-page .sr-previous-compact-date .sr-previous-old-date{display:block;min-width:0;white-space:normal;overflow-wrap:normal;word-break:normal;font-size:10.5px;color:#44546b}
-.sr-tracking-page .sr-previous-compact-date .sr-previous-date-arrow{display:flex;align-items:center;color:#758aa7;margin:1px 0 1px 4px}
-.sr-tracking-page .sr-previous-compact-date .sr-previous-new-line{color:#168252}
-.sr-tracking-page .sr-previous-compact-date .sr-previous-new-date{display:block;min-width:0;white-space:normal;overflow-wrap:normal;word-break:normal;font-size:11px;color:#14754d}
-.sr-tracking-page .sr-previous-compact-date .sr-previous-old-date+small:before{content:none}
-.sr-tracking-page .sr-previous-compact-confirmed{display:inline-flex;align-items:center;gap:5px;max-width:100%;border-radius:999px;padding:5px 7px;font-size:9px;white-space:normal}
-.sr-tracking-page .sr-previous-confirm-tick{display:inline-flex;align-items:center;justify-content:center;flex:0 0 16px;width:16px;height:16px;border-radius:50%;background:#c26417;color:#fff}
-.sr-tracking-page .sr-previous-table .sr-premium-booking-row>td:nth-child(3){overflow:visible}
-
-/* 14 Nov follow-up: match approved centered Date & Time reference in history only.
-   Do not affect current appointment rows or any tracking functionality. */
-.sr-tracking-page .sr-previous-table .sr-premium-booking-row>td:nth-child(3){text-align:center}
-.sr-tracking-page .sr-previous-table .sr-previous-compact-date{
-  box-sizing:border-box;
-  width:100%;
-  min-height:145px;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-  gap:8px;
-  padding:12px 7px;
+/* Current booking: show the last confirmed date transition in the existing Date & Time column only. */
+.sr-tracking-page .sr-premium-booking-row .sr-premium-date-card.sr-current-reschedule-date{
+ display:flex!important;align-items:center!important;justify-content:center!important;
+ text-align:center!important;
 }
-.sr-tracking-page .sr-previous-table .sr-previous-compact-date .sr-previous-date-line{
-  width:100%;
-  justify-content:center;
-  align-items:center;
-  text-align:center;
-  gap:5px;
+.sr-tracking-page .sr-current-reschedule-flow{
+ display:flex;flex-direction:column;align-items:center;justify-content:center;
+ gap:5px;width:100%;min-width:0;padding:5px 7px 8px;box-sizing:border-box;
 }
-.sr-tracking-page .sr-previous-table .sr-previous-compact-date .sr-previous-date-line .sr-track-svg{margin-top:0}
-.sr-tracking-page .sr-previous-table .sr-previous-compact-date .sr-previous-date-arrow{
-  justify-content:center;
-  align-self:center;
-  margin:0;
+.sr-tracking-page .sr-current-reschedule-flow .sr-current-reschedule-old,
+.sr-tracking-page .sr-current-reschedule-flow .sr-current-reschedule-new{
+ display:flex;justify-content:center;align-items:center;gap:5px;flex-wrap:wrap;
+ font-size:10px;line-height:1.35;max-width:100%;overflow-wrap:anywhere;
 }
-.sr-tracking-page .sr-previous-table .sr-previous-compact-date .sr-previous-compact-confirmed{
-  align-self:center;
-  justify-content:center;
-  text-align:center;
+.sr-tracking-page .sr-current-reschedule-old{color:#64748b;text-decoration:line-through}
+.sr-tracking-page .sr-current-reschedule-new{color:#15803d}
+.sr-tracking-page .sr-current-reschedule-new strong{font-weight:800}
+.sr-tracking-page .sr-current-reschedule-flow>small{font-size:9px;color:#64748b;line-height:1.3}
+.sr-tracking-page .sr-current-reschedule-flow>svg{color:#94a3b8}
+.sr-tracking-page .sr-current-reschedule-confirmed{
+ display:inline-flex;align-items:center;justify-content:center;gap:5px;
+ border-radius:999px;padding:4px 8px;background:#fff3e7;color:#a74b10;
+ border:1px solid #f4d4b7;font-size:10px;font-weight:750;max-width:100%;box-sizing:border-box;
+}
+.sr-tracking-page .sr-current-reschedule-tick{
+ display:inline-flex;align-items:center;justify-content:center;flex:none;
+ width:15px;height:15px;border-radius:50%;background:#c66b20;color:#fff;
 }
