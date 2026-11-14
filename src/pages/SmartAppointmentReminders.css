@@ -1662,3 +1662,23 @@
  display:inline-flex;align-items:center;justify-content:center;flex:none;
  width:15px;height:15px;border-radius:50%;background:#c66b20;color:#fff;
 }
+
+/* Previous History Date & Time: match approved current-booking transition exactly. */
+.sr-tracking-page .sr-previous-table .sr-premium-date-card.sr-previous-compact-date{
+ display:flex!important;align-items:center!important;justify-content:center!important;
+ text-align:center!important;min-width:0;
+}
+.sr-tracking-page .sr-previous-table .sr-previous-compact-date .sr-current-reschedule-flow{
+ width:100%;min-width:0;align-items:center;justify-content:center;gap:5px;
+}
+.sr-tracking-page .sr-previous-table .sr-previous-compact-date .sr-current-reschedule-old,
+.sr-tracking-page .sr-previous-table .sr-previous-compact-date .sr-current-reschedule-new{
+ display:flex;align-items:center;justify-content:center;gap:5px;flex-wrap:wrap;
+ max-width:100%;overflow-wrap:anywhere;
+}
+.sr-tracking-page .sr-previous-table .sr-previous-compact-date .sr-current-reschedule-flow>small{
+ font-size:9px;color:#64748b;font-weight:400;line-height:1.3;
+}
+.sr-tracking-page .sr-previous-table .sr-previous-compact-date .sr-current-reschedule-confirmed{
+ border-radius:999px;white-space:normal;text-align:center;
+}

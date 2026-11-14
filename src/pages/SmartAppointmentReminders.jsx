@@ -181,10 +181,17 @@ function PreviousAppointmentHistory({events,tests,deliveries,booking,clicks={},s
       <td><b>{booking?.booking_ref}</b>{(booking?.course_name||booking?.course_title||booking?.course)&&<span className="sr-premium-course">{booking.course_name||booking.course_title||booking.course}</span>}</td>
       <td><span className="sr-booked-person-copy"><b>{booking?.student_name||booking?.booked_by_name||'—'}</b><small>{booking?.booked_by||'Student'}</small></span></td>
       <td><div className="sr-premium-date-card sr-previous-compact-date">
-       <small>Previous date &amp; time</small><span className="sr-previous-old-date">{fmt(oldDate)}</span>
-       {e.action==='reschedule'&&<><small>Rescheduled to</small><strong className="sr-previous-new-date">{fmt(newDate)}</strong></>}
-       {e.action==='cancel'&&<span className="sr-row-attendance sr-row-attendance-cancel">Booking Cancelled</span>}
-       {e.action==='reschedule'&&<span className="sr-previous-compact-confirmed">{approvalPending?'Approval Pending':'Reschedule Confirmed'}</span>}
+       <div className="sr-current-reschedule-flow" aria-label="Previous appointment date and outcome">
+        <div className="sr-current-reschedule-old"><TrackingIcon name="calendar" size={13}/><span>{fmt(oldDate)}</span></div>
+        <small>Previous date &amp; time</small>
+        {e.action==='reschedule'&&<>
+         <span className="sr-current-reschedule-arrow" aria-hidden="true">↓</span>
+         <div className="sr-current-reschedule-new"><TrackingIcon name="calendar" size={13}/><strong>{fmt(newDate)}</strong></div>
+         <small>Rescheduled to</small>
+         {approvalPending?<span className="sr-previous-compact-confirmed">Approval Pending</span>:<span className="sr-current-reschedule-confirmed"><span className="sr-current-reschedule-tick"><TrackingIcon name="check" size={10}/></span>Reschedule Confirmed</span>}
+        </>}
+        {e.action==='cancel'&&<span className="sr-row-attendance sr-row-attendance-cancel">Booking Cancelled</span>}
+       </div>
       </div></td>
       <td><BookingRowChannel deliveries={oldDeliveries} channel="whatsapp" mode={mode} clicks={historicalClicks} tests={oldTests} booking={previousBooking} settings={settings} history={confirmedHistory}/></td>
       <td><BookingRowChannel deliveries={oldDeliveries} channel="email" mode={mode} clicks={historicalClicks} tests={oldTests} booking={previousBooking} settings={settings} history={confirmedHistory}/></td>
