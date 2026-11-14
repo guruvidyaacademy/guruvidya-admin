@@ -211,6 +211,7 @@ function FourHourClickJourney({tests,channel,mode}){
      if(h.event_type==='initial')journey.push({at:h.occurred_at,label:choice==='yes'?'Yes · 2h Reminder':'No · 2h Reminder',kind:'choice'});
      if(h.event_type==='requested')journey.push({at:h.occurred_at,label:choice==='no'?'No · Change Requested':'Yes · Change Requested',kind:'pending'});
      if(h.event_type==='confirmed')journey.push({at:h.occurred_at,label:choice==='no'?'Yes, Turn Off':'Keep On',kind:choice==='no'?'off':'choice'});
+     if(h.event_type==='kept')journey.push({at:h.occurred_at,label:'Keep On',kind:'choice'});
     });
    }else if(f.choice_clicked_at&&['yes','no'].includes(String(f.choice||'').toLowerCase())){
     journey.push({at:f.choice_clicked_at,label:f.choice==='yes'?'Yes · 2h Reminder':'No · 2h Reminder',kind:'choice'});
@@ -301,8 +302,8 @@ function BookingRowChannel({deliveries,channel,mode,clicks,tests,booking,setting
      history.forEach(h=>{
       if(!h.occurred_at)return;
       const choice=String(h.requested_choice||'').toLowerCase();
-      const label=h.event_type==='initial'?(choice==='yes'?'Yes · 2h Reminder':'No · 2h Reminder'):h.event_type==='requested'?(choice==='no'?'No · Change Requested':'Yes · Change Requested'):h.event_type==='confirmed'?(choice==='no'?'Yes, Turn Off':'Keep On'):null;
-      if(label)events.push({label,at:h.occurred_at,tone:h.event_type==='confirmed'&&choice==='no'?'red':h.event_type==='requested'?'amber':'green',icon:'click',actualClick:true});
+      const label=h.event_type==='initial'?(choice==='yes'?'Yes · 2h Reminder':'No · 2h Reminder'):h.event_type==='requested'?(choice==='no'?'No · Change Requested':'Yes · Change Requested'):h.event_type==='confirmed'?(choice==='no'?'Yes, Turn Off':'Keep On'):h.event_type==='kept'?'Keep On':null;
+      if(label)events.push({label,at:h.occurred_at,tone:h.event_type==='confirmed'&&choice==='no'?'red':h.event_type==='requested'?'amber':'green',icon:'click',actualClick:true,priority:h.event_type==='kept'||h.event_type==='confirmed'?2:1});
      });
      if(!history.length&&f.choice_clicked_at&&['yes','no'].includes(String(f.choice||'').toLowerCase()))events.push({label:f.choice==='yes'?'Yes · 2h Reminder':'No · 2h Reminder',at:f.choice_clicked_at,tone:'green',icon:'click',actualClick:true});
     }
@@ -348,7 +349,7 @@ function BookingRowChannel({deliveries,channel,mode,clicks,tests,booking,setting
   // mask a later verified button action from a repeat manual test. Show the
   // chronologically latest event in the stage row; booking completion remains
   // independently verified and is never inferred from opening a link.
-  const latestVerifiedClick=stage==='4h'?events.filter(e=>e.actualClick).sort((a,b)=>new Date(b.at)-new Date(a.at))[0]:null;
+  const latestVerifiedClick=stage==='4h'?events.filter(e=>e.actualClick).sort((a,b)=>new Date(b.at)-new Date(a.at)||(b.priority||0)-(a.priority||0))[0]:null;
   const newestEvent=latestVerifiedClick||events[0];
   return newestEvent||finalEvent||{label:'Not Sent',at:null,tone:'grey',icon:'clock'};
  };
