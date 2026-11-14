@@ -284,7 +284,12 @@ function BookingRowChannel({deliveries,channel,mode,clicks,tests,booking,setting
     return {label:channel==='email'?'Fallback Scheduled':'Scheduled',at:due,tone:'blue',icon:'clock',scheduled:true};
    }
   }
-  return finalEvent||events[0]||{label:'Not Sent',at:null,tone:'grey',icon:'clock'};
+  // The 4h attendance acknowledgement is preserved in history, but must not
+  // mask a later verified button action from a repeat manual test. Show the
+  // chronologically latest event in the stage row; booking completion remains
+  // independently verified and is never inferred from opening a link.
+  const newestEvent=events[0];
+  return newestEvent||finalEvent||{label:'Not Sent',at:null,tone:'grey',icon:'clock'};
  };
  return <div className={'sr-mini-channel sr-mini-'+channel+' sr-designb-channel'}><div className="sr-designb-channel-title"><TrackingIcon name={channel==='whatsapp'?'whatsapp':'mail'} size={18}/><b>{channel==='whatsapp'?'WhatsApp':'Email'}</b></div>
   {stages.map(stage=>{const event=latestStage(stage);return <div className="sr-mini-stage" key={stage} title={stage+' reminder: '+event.label+(event.at?' at '+fmt(event.at):'')}>
