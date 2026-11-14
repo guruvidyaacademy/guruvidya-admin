@@ -197,7 +197,7 @@ const compactTime=value=>value?fmt(value,{day:undefined,month:undefined,year:und
 function fourHourPreferenceLabel(h){
  const choice=String(h?.requested_choice||'').toLowerCase();
  const previous=String(h?.previous_choice||'').toLowerCase();
- if(h?.event_type==='confirmed')return choice==='yes'?'No, Turn On':choice==='no'?'Yes, Turn Off':null;
+ if(h?.event_type==='confirmed')return choice==='yes'?'Yes, Keep On':choice==='no'?'No, Keep Off':null;
  if(h?.event_type==='kept')return previous==='no'?'No, Keep Off':previous==='yes'?'Yes, Keep On':null;
  return null;
 }
@@ -275,7 +275,7 @@ function BookingRowChannel({deliveries,channel,mode,clicks,tests,booking,setting
  const lastConfirmedPreference=preferenceHistory.filter(h=>h.event_type==='confirmed'&&['yes','no'].includes(h.requested_choice)&&h.occurred_at).sort((a,b)=>new Date(b.occurred_at)-new Date(a.occurred_at))[0];
  const effectiveChoice=lastConfirmedPreference?.requested_choice||followupChoice;
  const effectiveAt=lastConfirmedPreference?.occurred_at||followupAt;
- const preferenceButton=effectiveChoice==='no'?(lastConfirmedPreference?'Yes, Turn Off':'NO · Locked'):(lastConfirmedPreference?'Yes, Keep On':'Yes');
+ const preferenceButton=effectiveChoice==='no'?'Stopped':(lastConfirmedPreference?'Yes, Keep On':'Yes');
  const latestStage=stage=>{
   const rows=relevant.filter(d=>d.stage===stage);
   const events=[];
@@ -325,9 +325,9 @@ function BookingRowChannel({deliveries,channel,mode,clicks,tests,booking,setting
       if(!h.occurred_at)return;
       const choice=String(h.requested_choice||'').toLowerCase();
       const label=h.event_type==='initial'?(choice==='yes'?'Yes · 2h Reminder':'No · 2h Reminder'):h.event_type==='requested'?(choice==='no'?'No · Change Requested':'Yes · Change Requested'):h.event_type==='confirmed'||h.event_type==='kept'?fourHourPreferenceLabel(h):null;
-      if(label)events.push({label,at:h.occurred_at,tone:h.event_type==='confirmed'&&choice==='no'?'red':h.event_type==='requested'?'amber':'green',icon:'click',actualClick:true,priority:h.event_type==='kept'||h.event_type==='confirmed'?2:1});
+      if(label)events.push({label,at:h.occurred_at,tone:(h.event_type==='confirmed'&&choice==='no')||(h.event_type==='kept'&&h.previous_choice==='no')||(h.event_type==='initial'&&choice==='no')?'red':h.event_type==='requested'?'amber':'green',icon:'click',actualClick:true,priority:h.event_type==='kept'||h.event_type==='confirmed'?2:1});
      });
-     if(!history.length&&f.choice_clicked_at&&['yes','no'].includes(String(f.choice||'').toLowerCase()))events.push({label:f.choice==='yes'?'Yes · 2h Reminder':'No · 2h Reminder',at:f.choice_clicked_at,tone:'green',icon:'click',actualClick:true});
+     if(!history.length&&f.choice_clicked_at&&['yes','no'].includes(String(f.choice||'').toLowerCase()))events.push({label:f.choice==='yes'?'Yes · 2h Reminder':'No · 2h Reminder',at:f.choice_clicked_at,tone:f.choice==='no'?'red':'green',icon:'click',actualClick:true});
     }
    });
   }
@@ -342,8 +342,13 @@ function BookingRowChannel({deliveries,channel,mode,clicks,tests,booking,setting
   // Preserve actual sent/delivered/read/click activity even if a preference changes later.
   const hasRealStageActivity=events.some(e=>!e.label.startsWith('Test')&&!e.locked);
   if(channel==='whatsapp'&&effectiveChoice==='no'){
-   if(stage==='2h'&&!hasRealStageActivity){
-    return {label:'Skipped · 4h NO',at:null,tone:'grey',icon:'lock'};
+   if(stage==='2h'){
+    // Confirmed OFF is a reminder preference, not a cancelled booking.
+    // Do not conceal a later verified 2h event.
+    const latestStageEvent=events.filter(e=>e.at).sort((a,b)=>new Date(b.at)-new Date(a.at))[0];
+    if(!latestStageEvent||(effectiveAt&&new Date(effectiveAt)>=new Date(latestStageEvent.at))){
+     return {label:'Stopped',at:effectiveAt,tone:'red',icon:'lock'};
+    }
    }
    if(stage==='1h'&&!events.length&&!hasFinal){
     return {label:'Scheduled',at:null,tone:'blue',icon:'clock'};
@@ -382,7 +387,7 @@ function BookingRowChannel({deliveries,channel,mode,clicks,tests,booking,setting
     if(channel==='whatsapp'&&currentTest.followup_choice){
      (currentTest.followup_choice.history||[]).forEach(h=>{
       const label=h.event_type==='initial'?(h.requested_choice==='yes'?'Yes · 2h Reminder':'No · 2h Reminder'):h.event_type==='requested'?(h.requested_choice==='no'?'No · Change Requested':'Yes · Change Requested'):fourHourPreferenceLabel(h);
-      if(label&&h.occurred_at)currentClicks.push({label,at:h.occurred_at,tone:h.event_type==='confirmed'&&h.requested_choice==='no'?'red':'green',icon:'click'});
+      if(label&&h.occurred_at)currentClicks.push({label,at:h.occurred_at,tone:(h.event_type==='confirmed'&&h.requested_choice==='no')||(h.event_type==='kept'&&h.previous_choice==='no')||(h.event_type==='initial'&&h.requested_choice==='no')?'red':'green',icon:'click'});
      });
     }
     const latestClick=currentClicks.sort((a,b)=>new Date(b.at)-new Date(a.at))[0];
