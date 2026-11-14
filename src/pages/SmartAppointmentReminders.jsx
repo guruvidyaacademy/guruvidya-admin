@@ -31,6 +31,8 @@ const TRACK_PATHS={
  close:<><circle cx="12" cy="12" r="9"/><path d="m9 9 6 6m0-6-6 6"/></>,
  check:<><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></>,
  info:<><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7h.01"/></>,
+ arrowdown:<path d="M12 4v16m-6-6 6 6 6-6"/>,
+ checkmark:<path d="m5 12 4 4L19 6"/>,
  chevron:<path d="m9 6 6 6-6 6"/>,
  chevronup:<path d="m6 15 6-6 6 6"/>,
  bell:<><path d="M18 8a6 6 0 0 0-12 0c0 7-3 8-3 9h18c0-1-3-2-3-9M10 21h4"/></>
@@ -172,19 +174,19 @@ function PreviousAppointmentHistory({events,tests,deliveries,booking,clicks={},s
    const historicalClicks=Object.fromEntries(Object.entries(clicks||{}).filter(([id])=>oldDeliveries.some(d=>String(d.id)===String(id))));
    return <section key={e.id||i} className="sr-previous-appointment-item">
     <div className="sr-previous-appointment-heading">
-     <span className={'sr-previous-outcome '+(e.action==='cancel'?'sr-previous-cancel':'sr-previous-reschedule')}>{e.action==='cancel'?'Cancellation Confirmed':approvalPending?'Reschedule Submitted · Approval Pending':'Reschedule Confirmed'}</span>
-     <time>{fmt(e.created_at)} IST</time>
+     <span className={'sr-previous-outcome '+(e.action==='cancel'?'sr-previous-cancel':'sr-previous-reschedule')}><TrackingIcon name={e.action==='cancel'?'close':'calendar'} size={15}/><span>{e.action==='cancel'?'Cancellation Confirmed':approvalPending?'Reschedule Submitted · Approval Pending':'Reschedule Confirmed'}<time>{fmt(e.created_at)} IST</time></span></span>
     </div>
     <div className="sr-previous-table-scroll"><table className="sr-table sr-previous-table">
-     <thead><tr><th>Booking Ref</th><th>Booked By</th><th>Date &amp; Time</th><th>WhatsApp</th><th>Email</th><th>24h Window</th></tr></thead>
+     <thead><tr>{[['ref','Booking Ref'],['users','Booked By'],['calendar','Date & Time'],['whatsapp','WhatsApp'],['mail','Email'],['clock','24h Window']].map(([icon,label])=><th key={label}><span className={'sr-premium-th sr-premium-th-'+icon}><TrackingIcon name={icon} size={15}/><span>{label}</span></span></th>)}</tr></thead>
      <tbody><tr className="sr-premium-booking-row">
       <td><b>{booking?.booking_ref}</b>{(booking?.course_name||booking?.course_title||booking?.course)&&<span className="sr-premium-course">{booking.course_name||booking.course_title||booking.course}</span>}</td>
       <td><span className="sr-booked-person-copy"><b>{booking?.student_name||booking?.booked_by_name||'—'}</b><small>{booking?.booked_by||'Student'}</small></span></td>
       <td><div className="sr-premium-date-card sr-previous-compact-date">
-       <small>Previous date &amp; time</small><span className="sr-previous-old-date">{fmt(oldDate)}</span>
-       {e.action==='reschedule'&&<><small>Rescheduled to</small><strong className="sr-previous-new-date">{fmt(newDate)}</strong></>}
+       <span className="sr-previous-date-line sr-previous-old-line"><TrackingIcon name="calendar" size={14}/><span className="sr-previous-old-date">{fmt(oldDate)}</span></span>
+       <small>Previous date &amp; time</small>
+       {e.action==='reschedule'&&<><span className="sr-previous-date-arrow"><TrackingIcon name="arrowdown" size={15}/></span><span className="sr-previous-date-line sr-previous-new-line"><TrackingIcon name="calendar" size={14}/><strong className="sr-previous-new-date">{fmt(newDate)}</strong></span><small>Rescheduled to</small></>}
        {e.action==='cancel'&&<span className="sr-row-attendance sr-row-attendance-cancel">Booking Cancelled</span>}
-       {e.action==='reschedule'&&<span className="sr-previous-compact-confirmed">{approvalPending?'Approval Pending':'Reschedule Confirmed'}</span>}
+       {e.action==='reschedule'&&<span className="sr-previous-compact-confirmed"><span className="sr-previous-confirm-tick"><TrackingIcon name="checkmark" size={11}/></span>{approvalPending?'Approval Pending':'Reschedule Confirmed'}</span>}
       </div></td>
       <td><BookingRowChannel deliveries={oldDeliveries} channel="whatsapp" mode={mode} clicks={historicalClicks} tests={oldTests} booking={previousBooking} settings={settings} history={confirmedHistory}/></td>
       <td><BookingRowChannel deliveries={oldDeliveries} channel="email" mode={mode} clicks={historicalClicks} tests={oldTests} booking={previousBooking} settings={settings} history={confirmedHistory}/></td>
