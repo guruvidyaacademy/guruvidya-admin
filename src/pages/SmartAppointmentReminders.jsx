@@ -201,45 +201,58 @@ function fourHourPreferenceLabel(h){
  if(h?.event_type==='kept')return previous==='no'?'No, Keep Off':previous==='yes'?'Yes, Keep On':null;
  return null;
 }
-function FourHourClickJourney({tests,channel,mode}){
- const relevant=(tests||[]).filter(t=>t.channel===channel&&t.stage==='4h');
+// One audit component for every reminder stage and both channels.
+// Distinguish a click from a completed booking transaction; never infer delivery.
+function reminderActionLabel(key,raw,stage,completed=false,mode=''){
+ const k=String(key||'').toLowerCase();
+ if(k==='reschedule')return completed?'Rescheduled':'Clicked Reschedule';
+ if(k==='cancel')return completed?'Cancelled':'Clicked Cancel';
+ if(['join_meeting','join'].includes(k))return 'Clicked Join Online';
+ if(['yes_attend','yes_attend_open'].includes(k))return stage==='2h'?"Yes, I'll Be There":stage==='1h'?(mode==='online'?"Yes, I'm Ready":"Yes, I'm On My Way"):"Yes, I'll Attend";
+ if(k==='on_my_way')return "Yes, I'm On My Way";
+ if(k==='im_ready')return "Yes, I'm Ready";
+ return raw||'Clicked Button';
+}
+function reminderActionTone(label,channel){
+ if(label==='Cancelled')return 'red';
+ if(label==='Rescheduled')return 'amber';
+ if(label.startsWith('Clicked Reschedule')||label.startsWith('Clicked Cancel')||label.startsWith('Clicked Join'))return 'blue';
+ return channel==='email'?'blue':'green';
+}
+function ReminderStageJourney({tests,deliveries,clicks,channel,mode,stage}){
+ const relevant=(tests||[]).filter(t=>t.channel===channel&&t.stage===stage);
  const journey=[];
+ const add=(at,label,kind='button')=>{if(at&&label)journey.push({at,label,kind})};
+ (deliveries||[]).filter(d=>d.channel===channel&&d.stage===stage).forEach(d=>{
+  add(d.sent_at,'Sent','delivery');add(d.delivered_at,'Delivered','delivery');
+  add(channel==='email'?d.opened_at:d.read_at,channel==='email'?'Opened':'Read','delivery');
+  (Array.isArray(clicks?.[d.id])?clicks[d.id]:[]).forEach(c=>add(c.clicked_at,reminderActionLabel(c.button_key,c.button_name,stage,false,mode),'button'));
+ });
  relevant.forEach(t=>{
+  add(t.sent_at,'Sent','delivery');add(t.delivered_at,'Delivered','delivery');
+  add(channel==='email'?t.opened_at:t.read_at,channel==='email'?'Opened':'Read','delivery');
+  add(t.provider_clicked_at,'Provider Clicked','delivery');
   manualButtonEvents(t,channel,mode).filter(e=>e.type==='click').forEach(e=>{
-   const times=e.times?.length?e.times:[e.last||e.first];
-   times.filter(Boolean).forEach(at=>journey.push({at,label:e.label,kind:'button'}));
+   (e.times?.length?e.times:[e.last||e.first]).filter(Boolean).forEach(at=>add(at,reminderActionLabel(e.key,e.label,stage,false,mode),'button'));
+   if(e.completedAt)add(e.completedAt,reminderActionLabel(e.key,e.label,stage,true,mode),'completed');
   });
-  if(channel==='whatsapp'&&t.followup_choice){
+  if(stage==='4h'&&channel==='whatsapp'&&t.followup_choice){
    const f=t.followup_choice;
-   const history=Array.isArray(f.history)?f.history:[];
-   if(history.length){
-    history.forEach(h=>{
-     if(!h.occurred_at)return;
-     const choice=String(h.requested_choice||'').toLowerCase();
-     if(h.event_type==='initial')journey.push({at:h.occurred_at,label:choice==='yes'?'Yes · 2h Reminder':'No · 2h Reminder',kind:'choice'});
-     if(h.event_type==='requested')journey.push({at:h.occurred_at,label:choice==='no'?'No · Change Requested':'Yes · Change Requested',kind:'pending'});
-     if(h.event_type==='confirmed')journey.push({at:h.occurred_at,label:fourHourPreferenceLabel(h)||'Preference Confirmed',kind:choice==='no'?'off':'choice'});
-     if(h.event_type==='kept')journey.push({at:h.occurred_at,label:fourHourPreferenceLabel(h)||'Preference Kept',kind:'choice'});
-    });
-   }else if(f.choice_clicked_at&&['yes','no'].includes(String(f.choice||'').toLowerCase())){
-    journey.push({at:f.choice_clicked_at,label:f.choice==='yes'?'Yes · 2h Reminder':'No · 2h Reminder',kind:'choice'});
-   }
+   (Array.isArray(f.history)?f.history:[]).forEach(h=>{
+    const choice=String(h.requested_choice||'').toLowerCase();
+    const label=h.event_type==='initial'?(choice==='yes'?'Yes · 2h Reminder':'No · 2h Reminder'):h.event_type==='requested'?(choice==='no'?'No · Change Requested':'Yes · Change Requested'):fourHourPreferenceLabel(h);
+    add(h.occurred_at,label,h.event_type==='requested'?'pending':'choice');
+   });
+   if(!f.history?.length)add(f.choice_clicked_at,f.choice==='yes'?'Yes · 2h Reminder':f.choice==='no'?'No · 2h Reminder':null,'choice');
   }
  });
- const uniqueJourney=[...new Map(journey.map(e=>[`${e.at}|${e.label}|${e.kind}`,e])).values()];
- uniqueJourney.sort((a,b)=>new Date(a.at)-new Date(b.at));
- if(!uniqueJourney.length)return null;
- const followups=relevant.map(t=>t.followup_choice).filter(Boolean);
- const latestFollowup=followups.sort((a,b)=>new Date(b.choice_clicked_at||0)-new Date(a.choice_clicked_at||0))[0];
- const pending=Boolean(latestFollowup?.pending_change);
- const lastConfirmed=(Array.isArray(latestFollowup?.history)?latestFollowup.history:[]).filter(h=>h.event_type==='confirmed').sort((a,b)=>new Date(b.occurred_at)-new Date(a.occurred_at))[0];
- const finalChoice=lastConfirmed?.requested_choice||latestFollowup?.choice;
+ const unique=[...new Map(journey.map(e=>[`${e.at}|${e.label}|${e.kind}`,e])).values()].sort((a,b)=>new Date(a.at)-new Date(b.at));
+ if(!unique.length)return null;
  return <details className="sr-four-hour-journey" onClick={e=>e.stopPropagation()} onKeyDown={e=>e.stopPropagation()}>
-  <summary aria-label={'View 4h '+channel+' click history'}><TrackingIcon name="history" size={11}/>{uniqueJourney.length} events <TrackingIcon name="chevron" size={10}/></summary>
-  <div className="sr-four-hour-journey-panel"><b>4h Button Click Journey</b>
-   <ol>{uniqueJourney.map((item,i)=><li key={i} className={'sr-four-hour-event sr-four-hour-'+item.kind}><span>{item.label}</span><time>{compactTime(item.at)}</time></li>)}</ol>
-   {channel==='whatsapp'&&latestFollowup&&<div className="sr-four-hour-final">2h preference: <strong>{pending?'Change pending · current choice retained':finalChoice==='no'?'OFF · Confirmed':finalChoice==='yes'?'ON · Confirmed':'Awaiting confirmation'}</strong></div>}
-   <small>Recorded actions only · booking status is tracked separately</small>
+  <summary aria-label={'View '+stage+' '+channel+' event history'}><TrackingIcon name="history" size={11}/>{unique.length} events <TrackingIcon name="chevron" size={10}/></summary>
+  <div className="sr-four-hour-journey-panel"><b>{stage} Events History</b>
+   <ol>{unique.map((item,i)=><li key={i} className={'sr-four-hour-event sr-four-hour-'+item.kind}><span>{item.label}</span><time>{compactTime(item.at)}</time></li>)}</ol>
+   <small>Recorded events only · button clicks do not complete booking changes</small>
   </div>
  </details>;
 }
@@ -273,7 +286,7 @@ function BookingRowChannel({deliveries,channel,mode,clicks,tests,booking,setting
    if(read)events.push({label:channel==='email'?'Opened':'Read',at:read,tone:channel==='email'?'blue':'green',icon:'eye'});
    // Only show a button name when a verified click record was actually loaded.
    const recorded=Array.isArray(clicks?.[d.id])?clicks[d.id]:[];
-   recorded.forEach(c=>{if(c.clicked_at){const key=String(c.button_key||'').toLowerCase();const label=stage==='5min'&&['join_meeting','join'].includes(key)?'Join Online Meeting':String(c.button_name||c.button_key||'Button').slice(0,32);events.push({label,at:c.clicked_at,tone:channel==='email'?'blue':'green',icon:'click'});}});
+   recorded.forEach(c=>{if(c.clicked_at){const key=String(c.button_key||'').toLowerCase();const label=reminderActionLabel(key,c.button_name,stage,false,mode);events.push({label,at:c.clicked_at,tone:reminderActionTone(label,channel),icon:'click'});}});
    if(d.status==='failed'&&d.updated_at)events.push({label:'Failed',at:d.updated_at,tone:'red',icon:'info'});
   });
   // Scheduled delivery always takes precedence. A separate manual test is labelled
@@ -289,8 +302,8 @@ function BookingRowChannel({deliveries,channel,mode,clicks,tests,booking,setting
      const at=e.completedAt||e.confirmedAt||e.last;
      if(!at)return;
      const done=Boolean(e.completedAt||e.confirmedAt);
-     const label=e.key==='cancel'?(done?'Cancelled':'Clicked Cancel'):e.key==='reschedule'?(done?'Rescheduled':'Clicked Reschedule'):['join_meeting','join'].includes(e.key)&&stage==='5min'?'Join Online Meeting':e.key==='yes_attend'?(stage==='2h'?"Yes, I'll Be There":stage==='1h'?(String(booking?.mode||'').toLowerCase()==='online'?"Yes, I'm Ready":"Yes, I'm On My Way"):"Yes, I'll Attend"):e.label;
-     events.push({label,at,tone:e.key==='cancel'&&done?'red':e.key==='reschedule'?'amber':done?'green':tone,icon:e.key==='cancel'&&done?'close':done?'check':'click'});
+     const label=reminderActionLabel(e.key,e.label,stage,done,mode);
+     events.push({label,at,tone:reminderActionTone(label,channel),icon:e.key==='cancel'&&done?'close':done?'check':'click'});
     });
     if(!at&&['accepted','sent'].includes(String(t.status||'').toLowerCase()))events.push({label:String(t.status).toLowerCase()==='sent'?'Sent':'Awaiting Sent',at:t.completed_at||t.created_at,tone:'grey',icon:'clock'});
     if(!at&&String(t.status||'').toLowerCase()==='failed')events.push({label:'Test Failed',at:t.completed_at||t.created_at,tone:'red',icon:'info'});
@@ -303,7 +316,7 @@ function BookingRowChannel({deliveries,channel,mode,clicks,tests,booking,setting
    manual.filter(t=>t.stage==='4h').forEach(t=>{
     manualButtonEvents(t,channel,booking?.mode).filter(e=>e.type==='click').forEach(e=>{
      const times=e.times?.length?e.times:[e.last||e.first];
-     times.filter(Boolean).forEach(at=>events.push({label:e.label,at,tone:e.key==='cancel'?'red':e.key==='reschedule'?'amber':'green',icon:'click',actualClick:true}));
+     times.filter(Boolean).forEach(at=>events.push({label:reminderActionLabel(e.key,e.label,stage,false,mode),at,tone:reminderActionTone(reminderActionLabel(e.key,e.label,stage,false,mode),channel),icon:'click',actualClick:true}));
     });
     if(channel==='whatsapp'&&t.followup_choice){
      const f=t.followup_choice;
@@ -362,10 +375,10 @@ function BookingRowChannel({deliveries,channel,mode,clicks,tests,booking,setting
   // A newly sent manual test starts a new visible 4h delivery cycle. Earlier
   // clicks remain in the full audit journey, but cannot impersonate the new
   // test's response. Only a click occurring after this send belongs in its row.
-  if(stage==='4h'){
+  {
    const currentTest=newestManualForStage(stage);
    if(currentTest){
-    const currentClicks=manualButtonEvents(currentTest,channel,booking?.mode).filter(e=>e.type==='click').flatMap(e=>(e.times?.length?e.times:[e.last||e.first]).filter(Boolean).map(at=>({label:e.label,at,tone:e.key==='cancel'?'red':e.key==='reschedule'?'amber':'green',icon:'click'})));
+    const currentClicks=manualButtonEvents(currentTest,channel,booking?.mode).filter(e=>e.type==='click').flatMap(e=>(e.times?.length?e.times:[e.last||e.first]).filter(Boolean).map(at=>({label:reminderActionLabel(e.key,e.label,stage,false,mode),at,tone:reminderActionTone(reminderActionLabel(e.key,e.label,stage,false,mode),channel),icon:'click'})));
     if(channel==='whatsapp'&&currentTest.followup_choice){
      (currentTest.followup_choice.history||[]).forEach(h=>{
       const label=h.event_type==='initial'?(h.requested_choice==='yes'?'Yes · 2h Reminder':'No · 2h Reminder'):h.event_type==='requested'?(h.requested_choice==='no'?'No · Change Requested':'Yes · Change Requested'):fourHourPreferenceLabel(h);
@@ -391,7 +404,7 @@ function BookingRowChannel({deliveries,channel,mode,clicks,tests,booking,setting
    <span className="sr-mini-stage-name">{stage}</span>
    <span className={'sr-mini-status sr-mini-'+event.tone}><span className="sr-mini-status-icon"><TrackingIcon name={event.icon} size={10}/></span><span className="sr-mini-status-label">{event.label}</span></span>
    <time className="sr-mini-time">{compactTime(event.at)}</time>
-  {stage==='4h'&&<FourHourClickJourney tests={tests} channel={channel} mode={mode}/>}
+  <ReminderStageJourney tests={tests} deliveries={deliveries} clicks={clicks} channel={channel} mode={mode} stage={stage}/>
   </div>})}
   {channel==='whatsapp'&&<BookingRowManualSummary tests={tests||[]} channel={channel}/>}
  </div>;
