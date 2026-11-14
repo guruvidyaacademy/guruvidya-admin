@@ -1693,3 +1693,24 @@
 .sr-tracking-page .sr-appointment-info-collapsible[open]>summary svg:last-child{transform:rotate(180deg)}
 .sr-tracking-page .sr-appointment-info-collapsible>div{padding:12px 14px;border-top:1px solid #e5edf8}
 .sr-tracking-page .sr-appointment-info-collapsible>summary:focus-visible{outline:2px solid #297ef0;outline-offset:-3px}
+
+/* Booking-linked previous history: directly under its original booking row.
+   No changes to appointment cards, tracking data, or the detail controls. */
+.sr-tracking-page .sr-booking-history-row > td {
+  padding: 0 10px 10px !important;
+  background: #f0f6ff;
+  border-left: 1px solid #e0e9f8;
+  border-right: 1px solid #e0e9f8;
+  border-bottom: 1px solid #dce6f5;
+  border-radius: 0 0 12px 12px;
+}
+.sr-tracking-page .sr-booking-history-row .sr-previous-appointment-history {
+  margin: 0;
+  border-radius: 9px;
+  box-shadow: none;
+}
+.sr-tracking-page .sr-booking-history-row .sr-previous-appointment-history > summary {
+  cursor: pointer;
+  min-height: 38px;
+  padding: 9px 13px;
+}
