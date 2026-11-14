@@ -286,6 +286,28 @@ function BookingRowChannel({deliveries,channel,mode,clicks,tests,booking,setting
     if(!at&&String(t.status||'').toLowerCase()==='failed')events.push({label:'Test Failed',at:t.completed_at||t.created_at,tone:'red',icon:'info'});
    });
   }
+  // The collapsed 4h row is an audit of the latest actual action, not the
+  // current 2h reminder preference. Include clicks from EVERY manual send,
+  // even when scheduled delivery events are present.
+  if(stage==='4h'){
+   manual.filter(t=>t.stage==='4h').forEach(t=>{
+    manualButtonEvents(t,channel,booking?.mode).filter(e=>e.type==='click').forEach(e=>{
+     const times=e.times?.length?e.times:[e.last||e.first];
+     times.filter(Boolean).forEach(at=>events.push({label:e.label,at,tone:e.key==='cancel'?'red':e.key==='reschedule'?'amber':'green',icon:'click',actualClick:true}));
+    });
+    if(channel==='whatsapp'&&t.followup_choice){
+     const f=t.followup_choice;
+     const history=Array.isArray(f.history)?f.history:[];
+     history.forEach(h=>{
+      if(!h.occurred_at)return;
+      const choice=String(h.requested_choice||'').toLowerCase();
+      const label=h.event_type==='initial'?(choice==='yes'?'Yes · 2h Reminder':'No · 2h Reminder'):h.event_type==='requested'?(choice==='no'?'No · Change Requested':'Yes · Change Requested'):h.event_type==='confirmed'?(choice==='no'?'Yes, Turn Off':'Keep On'):null;
+      if(label)events.push({label,at:h.occurred_at,tone:h.event_type==='confirmed'&&choice==='no'?'red':h.event_type==='requested'?'amber':'green',icon:'click',actualClick:true});
+     });
+     if(!history.length&&f.choice_clicked_at&&['yes','no'].includes(String(f.choice||'').toLowerCase()))events.push({label:f.choice==='yes'?'Yes · 2h Reminder':'No · 2h Reminder',at:f.choice_clicked_at,tone:'green',icon:'click',actualClick:true});
+    }
+   });
+  }
   // A verified final 4h response takes precedence over the earlier delivery/read event.
   if(stage==='4h'){
    const finalClicks=manual.filter(t=>t.stage==='4h').flatMap(t=>manualButtonEvents(t,channel,booking?.mode).filter(e=>e.type==='click'&&(e.confirmedAt||e.completedAt)));
@@ -297,11 +319,6 @@ function BookingRowChannel({deliveries,channel,mode,clicks,tests,booking,setting
   // Preserve actual sent/delivered/read/click activity even if a preference changes later.
   const hasRealStageActivity=events.some(e=>!e.label.startsWith('Test')&&!e.locked);
   if(channel==='whatsapp'&&effectiveChoice==='no'){
-   if(stage==='4h'){
-    // The 4h attendance YES remains visible in the booking outcome/source line.
-    // This badge describes the subsequent 2h reminder preference only.
-    return {label:preferenceButton,at:effectiveAt,tone:'red',icon:'lock',locked:true};
-   }
    if(stage==='2h'&&!hasRealStageActivity){
     return {label:'Skipped · 4h NO',at:null,tone:'grey',icon:'lock'};
    }
@@ -331,7 +348,8 @@ function BookingRowChannel({deliveries,channel,mode,clicks,tests,booking,setting
   // mask a later verified button action from a repeat manual test. Show the
   // chronologically latest event in the stage row; booking completion remains
   // independently verified and is never inferred from opening a link.
-  const newestEvent=events[0];
+  const latestVerifiedClick=stage==='4h'?events.filter(e=>e.actualClick).sort((a,b)=>new Date(b.at)-new Date(a.at))[0]:null;
+  const newestEvent=latestVerifiedClick||events[0];
   return newestEvent||finalEvent||{label:'Not Sent',at:null,tone:'grey',icon:'clock'};
  };
  return <div className={'sr-mini-channel sr-mini-'+channel+' sr-designb-channel'}><div className="sr-designb-channel-title"><TrackingIcon name={channel==='whatsapp'?'whatsapp':'mail'} size={18}/><b>{channel==='whatsapp'?'WhatsApp':'Email'}</b></div>
