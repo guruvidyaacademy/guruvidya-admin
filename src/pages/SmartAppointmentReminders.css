@@ -1602,3 +1602,34 @@
 .sr-tracking-page .sr-previous-compact-date .sr-previous-old-date{font-size:11px;color:#7c8a9e;text-decoration:line-through;text-decoration-color:#b5bdc9;text-decoration-thickness:1px;overflow-wrap:anywhere}
 .sr-tracking-page .sr-previous-compact-date .sr-previous-new-date{font-size:12px;color:#15714d;overflow-wrap:anywhere}
 .sr-tracking-page .sr-previous-compact-confirmed{font-size:10px;font-weight:750;color:#b65e0c;background:#fff5e8;border:1px solid #f3d4aa;border-radius:6px;padding:4px 6px}
+
+/* Previous Appointment History — premium visual polish only (14 Nov).
+   Keep the original six-column layout, data, stage order and interactions. */
+.sr-tracking-page .sr-previous-appointment-history{border:1px solid #dce5f5;border-radius:13px;background:#fcfdff;box-shadow:0 5px 18px rgba(27,55,104,.045)}
+.sr-tracking-page .sr-previous-appointment-history>summary{min-height:42px;padding:12px 16px;background:linear-gradient(110deg,#f3f7ff,#eaf0ff);color:#203d70;border-bottom:1px solid #e2eafa;font-size:12px;letter-spacing:.05px}
+.sr-tracking-page .sr-previous-appointment-history>summary .sr-track-svg{color:#416ab0}
+.sr-tracking-page .sr-previous-appointment-list{gap:14px;padding:13px}
+.sr-tracking-page .sr-previous-appointment-item{border:1px solid #e0e8f5;border-radius:12px;padding:12px;background:linear-gradient(180deg,#fff 0%,#fcfdff 100%);box-shadow:0 3px 12px rgba(28,57,104,.045)}
+.sr-tracking-page .sr-previous-appointment-heading{justify-content:flex-start;gap:7px 11px;padding:1px 3px 10px;margin-bottom:6px;border-bottom:1px solid #eef2f8}
+.sr-tracking-page .sr-previous-appointment-heading .sr-previous-outcome{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;font-size:10.5px;line-height:1.25;white-space:normal}
+.sr-tracking-page .sr-previous-appointment-heading .sr-previous-reschedule{color:#a94f0a;background:#fff4e8;border:1px solid #f5d5b2}
+.sr-tracking-page .sr-previous-appointment-heading .sr-previous-cancel{color:#b42332;background:#fff0f1;border:1px solid #f3cdd0}
+.sr-tracking-page .sr-previous-appointment-heading time{font-size:10px;color:#647791;font-weight:600}
+.sr-tracking-page .sr-previous-table{border-collapse:separate;border-spacing:0}
+.sr-tracking-page .sr-previous-table thead th{background:#eef4ff;color:#31557e;font-size:10px;font-weight:750;border-top:1px solid #e0e9f8;border-bottom:1px solid #e0e9f8}
+.sr-tracking-page .sr-previous-table thead th:first-child{border-top-left-radius:8px;border-bottom-left-radius:8px}
+.sr-tracking-page .sr-previous-table thead th:last-child{border-top-right-radius:8px;border-bottom-right-radius:8px}
+.sr-tracking-page .sr-previous-table .sr-premium-booking-row>td{vertical-align:middle}
+.sr-tracking-page .sr-previous-compact-date{gap:5px;border-color:#e1e9f5;background:linear-gradient(160deg,#fafcff,#f3f7ff);border-radius:9px;box-shadow:0 2px 7px rgba(28,57,104,.035)}
+.sr-tracking-page .sr-previous-compact-date small{color:#70819b;font-size:9.5px;font-weight:600}
+.sr-tracking-page .sr-previous-compact-date .sr-previous-old-date{font-size:10.5px;color:#8592a6;text-decoration-color:#a6b2c2;text-decoration-thickness:1.3px}
+.sr-tracking-page .sr-previous-compact-date .sr-previous-old-date+small{display:flex;align-items:center;gap:5px;color:#587295}
+.sr-tracking-page .sr-previous-compact-date .sr-previous-old-date+small:before{content:'↓';font-size:14px;line-height:1;color:#6c86b2;font-weight:700}
+.sr-tracking-page .sr-previous-compact-date .sr-previous-new-date{font-size:11.5px;color:#14754d;font-weight:800}
+.sr-tracking-page .sr-previous-compact-confirmed{display:inline-flex;align-items:center;max-width:100%;line-height:1.3;border-radius:7px;padding:5px 7px;background:#fff2e3;border-color:#f4d4ad;color:#ad560d}
+.sr-tracking-page .sr-previous-appointment-foot{margin:10px 2px 6px;padding:8px 10px;background:#f6f9ff;border:1px solid #e8eef8;border-radius:8px;color:#5a6f8a;font-weight:600}
+.sr-tracking-page .sr-previous-events{border-top:0;padding-top:3px;margin-top:6px}
+.sr-tracking-page .sr-previous-events>summary{padding:5px 2px;color:#3562a2;font-size:10.5px}
+.sr-tracking-page .sr-previous-events>summary:hover{text-decoration:underline}
+.sr-tracking-page .sr-previous-event-list{background:#fff}
+@media(max-width:720px){.sr-tracking-page .sr-previous-appointment-item{padding:9px}.sr-tracking-page .sr-previous-appointment-list{padding:9px}.sr-tracking-page .sr-previous-appointment-foot{padding:7px;gap:5px}}
