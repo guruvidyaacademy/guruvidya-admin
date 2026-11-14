@@ -1540,3 +1540,23 @@
 .sr-tracking-page .sr-four-hour-off{border-color:#db6868}
 .sr-tracking-page .sr-four-hour-final{border-top:1px solid #e5eee9;margin-top:7px;padding-top:6px;font-size:9px}
 .sr-tracking-page .sr-four-hour-journey-panel small{display:block;margin-top:5px;color:#74838c;font-size:9px}
+
+/* Verified lifecycle outcomes; previous dates stay out of the current appointment row. */
+.sr-tracking-page .sr-mini-amber{background:#fff3e5;color:#a9540b;border:1px solid #f7d4a7}
+.sr-tracking-page .sr-mini-amber .sr-mini-status-icon{background:#d97706;color:#fff}
+.sr-previous-appointment-history{margin:10px 0;border:1px solid #e1e9f2;border-radius:10px;background:#fff;overflow:hidden}
+.sr-previous-appointment-history>summary{display:flex;align-items:center;gap:7px;cursor:pointer;padding:12px 14px;color:#314b6c;font-weight:750;font-size:12px;background:#f6f9fd}
+.sr-previous-appointment-history>summary::marker{content:''}
+.sr-previous-appointment-list{display:grid;gap:8px;padding:12px}
+.sr-previous-appointment-item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:7px 14px;border:1px solid #e5eaf2;border-radius:8px;padding:11px;font-size:12px}
+.sr-previous-appointment-item>div{display:flex;flex-direction:column;gap:3px}
+.sr-previous-appointment-item small{font-size:10px;color:#68788d}
+.sr-previous-appointment-item time{font-size:10px;color:#68788d}
+.sr-previous-outcome{font-size:11px;font-weight:750}
+.sr-previous-cancel{color:#b42332}.sr-previous-reschedule{color:#b65e0c}
+.sr-previous-appointment-history>small{display:block;padding:0 12px 12px;color:#68788d;font-size:10px}
+
+.sr-previous-source-stage{background:#fff8ed;border:1px solid #f6d9b1;padding:8px;border-radius:7px}
+.sr-previous-events{grid-column:1/-1;font-size:11px;color:#435775}
+.sr-previous-events summary{cursor:pointer;font-weight:650}
+.sr-previous-events p{margin:5px 0;padding:5px 8px;background:#f6f9fd;border-radius:5px}
