@@ -143,11 +143,12 @@ const lifecycleOldDate=e=>e?.details?.old_starts_at||e?.details?.previous_starts
 const lifecycleNewDate=e=>e?.details?.new_starts_at||null;
 const lastConfirmedReschedule=(history,id)=>lifecycleEvents(history,id).filter(e=>e.action==='reschedule'&&!(e.details?.smart_reminder_approval_pending===true||e.details?.smart_reminder_approval_pending==='true')).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at))[0];
 const afterCurrentRevision=(row,cutoff)=>!cutoff||new Date(row.created_at||0).getTime()>new Date(cutoff).getTime();
-function verifiedLifecycleOrigin(event,tests){
+function verifiedLifecycleOrigin(event,tests,deliveries=[]){
  const testId=event?.details?.smart_reminder_manual_test_id;
- if(!testId)return null;
- const test=(tests||[]).find(t=>String(t.id)===String(testId));
- return test?{channel:test.channel,stage:test.stage}:null;
+ if(testId){const test=(tests||[]).find(t=>String(t.id)===String(testId));if(test)return {channel:test.channel,stage:test.stage};}
+ const deliveryId=event?.details?.smart_reminder_delivery_id;
+ if(deliveryId){const delivery=(deliveries||[]).find(d=>String(d.id)===String(deliveryId));if(delivery)return {channel:delivery.channel,stage:delivery.stage};}
+ return null;
 }
 function PreviousAppointmentHistory({events,tests,deliveries,booking}){
  const changes=(events||[]).filter(e=>e.action==='reschedule'||e.action==='cancel');
@@ -155,7 +156,7 @@ function PreviousAppointmentHistory({events,tests,deliveries,booking}){
  return <details className="sr-previous-appointment-history" onClick={e=>e.stopPropagation()}>
   <summary><TrackingIcon name="history" size={16}/> Previous Appointment History ({changes.length}) <TrackingIcon name="chevron" size={13}/></summary>
   <div className="sr-previous-appointment-list">{changes.map((e,i)=>{
-   const origin=verifiedLifecycleOrigin(e,tests);
+   const origin=verifiedLifecycleOrigin(e,tests,deliveries);
    const approvalPending=e.details?.smart_reminder_approval_pending===true||e.details?.smart_reminder_approval_pending==='true';
    const end=new Date(e.created_at).getTime();
    const start=i?new Date(changes[i-1].created_at).getTime():0;
