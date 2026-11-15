@@ -148,6 +148,15 @@ function verifiedLifecycleOrigin(event,tests,deliveries=[]){
  if(testId){const test=(tests||[]).find(t=>String(t.id)===String(testId));if(test)return {channel:test.channel,stage:test.stage};}
  const deliveryId=event?.details?.smart_reminder_delivery_id;
  if(deliveryId){const delivery=(deliveries||[]).find(d=>String(d.id)===String(deliveryId));if(delivery)return {channel:delivery.channel,stage:delivery.stage};}
+ // Some confirmed WhatsApp lifecycle records predate the source-id metadata.
+ // Recover the origin only from a matching persisted button click close to the
+ // committed lifecycle timestamp. Never infer completion from the click alone.
+ const action=String(event?.action||'').toLowerCase();
+ if(!['cancel','reschedule'].includes(action))return null;
+ const committedAt=new Date(event?.created_at||0).getTime();
+ if(!Number.isFinite(committedAt)||!committedAt)return null;
+ const candidates=(tests||[]).flatMap(t=>manualButtonEvents(t,t.channel).filter(e=>e.type==='click'&&e.key===action).flatMap(e=>(e.times?.length?e.times:[e.last||e.first]).filter(Boolean).map(at=>({channel:t.channel,stage:t.stage,delta:committedAt-new Date(at).getTime()})))).filter(c=>Number.isFinite(c.delta)&&c.delta>=-30000&&c.delta<=20*60000).sort((a,b)=>a.delta-b.delta);
+ if(candidates.length&&(!candidates[1]||candidates[1].delta-candidates[0].delta>1000))return {channel:candidates[0].channel,stage:candidates[0].stage};
  return null;
 }
 function PreviousAppointmentHistory({events,tests,deliveries,booking,clicks={},settings}){
@@ -475,6 +484,10 @@ function BookingRowChannel({deliveries,channel,mode,clicks,tests,booking,setting
      });
     }
     const latestClick=currentClicks.sort((a,b)=>new Date(b.at)-new Date(a.at))[0];
+    // A committed booking lifecycle event outranks the originating click,
+    // including when the current manual test is still the newest test.
+    // Do not replace a newer independent test cycle with an older outcome.
+    if(confirmedOutcome&&new Date(confirmedOutcome.at).getTime()>=new Date(currentTest.created_at||0).getTime())return confirmedOutcome;
     if(latestClick)return latestClick;
     const tone=channel==='email'?'blue':'green';
     if(currentTest.provider_clicked_at)return {label:'Clicked',at:currentTest.provider_clicked_at,tone,icon:'click'};
