@@ -304,21 +304,44 @@ function reminderActionTone(label,channel){
  if(label.startsWith('Clicked Reschedule')||label.startsWith('Clicked Cancel')||label.startsWith('Clicked Join'))return 'blue';
  return channel==='email'?'blue':'green';
 }
+// Verified primary-button click order, scoped to one channel and reminder stage.
+// Follow-up preferences and completed outcomes are not new primary clicks.
+const primaryClickKey=key=>{
+ const k=String(key||'').toLowerCase();
+ return ['yes_attend','yes_attend_open','on_my_way','im_ready'].includes(k)?'yes':
+  ['join_meeting','join'].includes(k)?'join':
+  ['reschedule','cancel'].includes(k)?k:null;
+};
+function primaryClickSequence(events){
+ return events.filter(e=>e.at&&primaryClickKey(e.key))
+  .sort((a,b)=>new Date(a.at)-new Date(b.at)||String(a.key).localeCompare(String(b.key)))
+  .map((e,i)=>({...e,order:i+1}));
+}
+function sequenceNumbers(events,key){
+ const normalized=primaryClickKey(key);
+ return events.filter(e=>primaryClickKey(e.key)===normalized).map(e=>e.order);
+}
+function ClickSequenceBadges({numbers}){
+ if(!numbers?.length)return null;
+ return <span className="sr-click-sequence" title={'Primary click order: '+numbers.map(n=>'#'+n).join(', ')}>
+  {numbers.map(n=><span key={n} className="sr-click-sequence-number" aria-label={'Click order '+n}>{n}</span>)}
+ </span>;
+}
 function ReminderStageJourney({tests,deliveries,clicks,channel,mode,stage}){
  const relevant=(tests||[]).filter(t=>t.channel===channel&&t.stage===stage);
  const journey=[];
- const add=(at,label,kind='button')=>{if(at&&label)journey.push({at,label,kind})};
+ const add=(at,label,kind='button',key=null)=>{if(at&&label)journey.push({at,label,kind,key})};
  (deliveries||[]).filter(d=>d.channel===channel&&d.stage===stage).forEach(d=>{
   add(d.sent_at,'Sent','delivery');add(d.delivered_at,'Delivered','delivery');
   add(channel==='email'?d.opened_at:d.read_at,channel==='email'?'Opened':'Read','delivery');
-  (Array.isArray(clicks?.[d.id])?clicks[d.id]:[]).forEach(c=>add(c.clicked_at,reminderActionLabel(c.button_key,c.button_name,stage,false,mode),'button'));
+  (Array.isArray(clicks?.[d.id])?clicks[d.id]:[]).forEach(c=>add(c.clicked_at,reminderActionLabel(c.button_key,c.button_name,stage,false,mode),'button',c.button_key));
  });
  relevant.forEach(t=>{
   add(t.sent_at,'Sent','delivery');add(t.delivered_at,'Delivered','delivery');
   add(channel==='email'?t.opened_at:t.read_at,channel==='email'?'Opened':'Read','delivery');
   add(t.provider_clicked_at,'Provider Clicked','delivery');
   manualButtonEvents(t,channel,mode).filter(e=>e.type==='click').forEach(e=>{
-   (e.times?.length?e.times:[e.last||e.first]).filter(Boolean).forEach(at=>add(at,reminderActionLabel(e.key,e.label,stage,false,mode),'button'));
+   (e.times?.length?e.times:[e.last||e.first]).filter(Boolean).forEach(at=>add(at,reminderActionLabel(e.key,e.label,stage,false,mode),'button',e.key));
    if(e.completedAt)add(e.completedAt,reminderActionLabel(e.key,e.label,stage,true,mode),'completed');
   });
   if(stage==='4h'&&channel==='whatsapp'&&t.followup_choice){
@@ -332,11 +355,14 @@ function ReminderStageJourney({tests,deliveries,clicks,channel,mode,stage}){
   }
  });
  const unique=[...new Map(journey.map(e=>[`${e.at}|${e.label}|${e.kind}`,e])).values()].sort((a,b)=>new Date(a.at)-new Date(b.at));
+ const numbered=primaryClickSequence(unique.filter(e=>e.kind==='button'));
+ const orderAt=new Map(numbered.map(e=>[`${e.at}|${e.label}|${e.kind}`,e.order]));
+ const orderItems=numbered.map(e=>({order:e.order,label:e.label,at:e.at}));
  if(!unique.length)return null;
  return <details className="sr-four-hour-journey" onClick={e=>e.stopPropagation()} onKeyDown={e=>e.stopPropagation()}>
   <summary aria-label={'View '+stage+' '+channel+' event history'}><TrackingIcon name="history" size={11}/>{unique.length} events <TrackingIcon name="chevron" size={10}/></summary>
-  <div className="sr-four-hour-journey-panel"><b>{stage} Events History</b>
-   <ol>{unique.map((item,i)=><li key={i} className={'sr-four-hour-event sr-four-hour-'+item.kind}><span>{item.label}</span><time>{compactTime(item.at)}</time></li>)}</ol>
+  <div className="sr-four-hour-journey-panel"><b>{stage} Events History · {numbered.length} primary clicks</b>{orderItems.length>0&&<div className="sr-click-order-strip" aria-label="Primary button click order">{orderItems.map(e=><span key={e.order} title={e.label+' · '+fmt(e.at)}><i>{e.order}</i>{e.label}</span>)}</div>}
+   <ol>{unique.map((item,i)=><li key={i} className={'sr-four-hour-event sr-four-hour-'+item.kind}><span>{orderAt.has(`${item.at}|${item.label}|${item.kind}`)&&<b className="sr-click-order-inline">#{orderAt.get(`${item.at}|${item.label}|${item.kind}`)}</b>}{item.label}</span><time>{compactTime(item.at)}</time></li>)}</ol>
    <small>Recorded events only · button clicks do not complete booking changes</small>
   </div>
  </details>;
@@ -518,6 +544,7 @@ function ManualTrackingCard({test,channel,mode}){
  const iconNames=['check','send','check','info','ref'],accepted=['accepted','sent','delivered','read','opened'].includes(String(test?.status||'').toLowerCase());
  const entries=manualButtonEvents(test,channel,mode),clickEntries=entries.filter(e=>e.type==='click');
  const clicks=clickEntries.reduce((n,e)=>n+e.total,0);
+ const primarySequence=primaryClickSequence(clickEntries.flatMap(e=>(e.times||[]).map(at=>({at,key:e.key,label:e.label}))));
  const firstClick=clickEntries.map(e=>e.first).filter(Boolean).sort()[0];
  const lastClick=clickEntries.map(e=>e.last).filter(Boolean).sort().slice(-1)[0];
  const downstreamConfirmed=Boolean(test?.delivered_at||test?.read_at||test?.opened_at);
@@ -530,7 +557,7 @@ function ManualTrackingCard({test,channel,mode}){
   <div className="sr-manual-premium-events">{events.map((name,i)=>{const at=timestamps[i],observed=i===4?clicks>0:i===1?Boolean(at)||downstreamConfirmed:Boolean(at);const description=i===0?(observed?'Provider request accepted · not proof of delivery':'Awaiting provider acceptance'):i===1?(at?'Verified send timestamp':downstreamConfirmed?'Send established by delivery · exact time unverified':accepted?'Provider accepted · send time unverified':'Awaiting send confirmation'):observed?(i===4?`${clicks} recorded click${clicks===1?'':'s'}`:'Provider event recorded'):'Awaiting verified event';return <div className="sr-manual-premium-event" key={name}><span className={'sr-manual-premium-event-icon '+(observed?'verified':'')}><TrackingIcon name={iconNames[i]} size={17}/></span><div><b>{name}</b><small>{description}</small></div><time title={i===1&&!at&&downstreamConfirmed?'Delivery confirmed sending occurred no later than this time; exact sent timestamp is unavailable':undefined}>{i===1&&!at&&downstreamConfirmed?`By ${fmt(test?.delivered_at||test?.read_at||test?.opened_at)}`:fmt(at)}</time></div>})}</div>
   <details className="sr-manual-inline-clicks"><summary><TrackingIcon name="ref" size={16}/> Button-wise activity <span>{clicks} clicks{entries.some(e=>e.type==='preference')?' · follow-up recorded':''}</span></summary>
    {entries.length?entries.filter(e=>!wa||e.type!=='preference').map((e,i)=>{const completed=Boolean(e.completedAt),failed=Boolean(e.failedAt),pending=/not completed|opened|awaiting/i.test(e.outcome||'')&&!completed;const icon=e.key==='reschedule'?'calendar':e.key==='cancel'?'close':'check';return <div className={'sr-action-card sr-action-'+(wa?'wa':'email')} key={e.key+'-'+i}>
-    <div className="sr-action-top"><span className="sr-action-icon"><TrackingIcon name={icon} size={17}/></span><div className="sr-action-title"><strong>{e.label}</strong><small>{e.key==='reschedule'?'Schedule change':e.key==='cancel'?'Cancellation action':test?.stage==='1h'?'1h acknowledgement':test?.stage==='2h'?'2h attendance acknowledgement':wa?'4h attendance acknowledgement':'Attendance response'}</small></div><span className="sr-action-count">{e.total} click{e.total===1?'':'s'}</span></div>
+    <div className="sr-action-top"><span className="sr-action-icon"><TrackingIcon name={icon} size={17}/></span><div className="sr-action-title"><strong>{e.label}</strong><small>{e.key==='reschedule'?'Schedule change':e.key==='cancel'?'Cancellation action':test?.stage==='1h'?'1h acknowledgement':test?.stage==='2h'?'2h attendance acknowledgement':wa?'4h attendance acknowledgement':'Attendance response'}</small></div><ClickSequenceBadges numbers={sequenceNumbers(primarySequence,e.key)}/><span className="sr-action-count">{e.total} click{e.total===1?'':'s'}</span></div>
     <div className={'sr-action-status '+(failed?'failed':pending?'pending':'success')}><TrackingIcon name={failed?'close':pending?'info':'check'} size={15}/><span>{e.outcome}</span></div>
     {completed&&e.key==='reschedule'&&<div className="sr-action-schedule"><div><small>Previous Schedule</small><b>{fmt(e.previousStartsAt)}</b></div><div><small>New Schedule</small><b>{fmt(e.newStartsAt)}</b></div></div>}
     <div className="sr-action-meta"><TrackingIcon name="history" size={14}/><span>{completed?'Completed':failed?'Failed':e.confirmedAt?'Confirmed':'First click'}: <b>{fmt(e.completedAt||e.failedAt||e.confirmedAt||e.first)}</b></span></div>

@@ -1714,3 +1714,10 @@
   min-height: 38px;
   padding: 9px 13px;
 }
+
+.sr-tracking-page .sr-click-sequence{display:inline-flex;gap:4px;align-items:center;justify-content:flex-end;margin-left:auto;flex-wrap:wrap;max-width:125px}
+.sr-tracking-page .sr-click-sequence-number,.sr-tracking-page .sr-click-order-strip i{display:inline-flex;align-items:center;justify-content:center;width:21px;height:21px;border-radius:50%;background:#edf4ff;border:1px solid #c9daf5;color:#28538b;font-size:10px;font-weight:800;font-style:normal;flex-shrink:0}
+.sr-tracking-page .sr-click-order-strip{display:flex;gap:5px;flex-wrap:wrap;margin:4px 0 8px}
+.sr-tracking-page .sr-click-order-strip>span{display:inline-flex;align-items:center;gap:4px;padding:3px 6px 3px 3px;border-radius:16px;background:#f3f7fc;border:1px solid #e0e9f4;font-size:9px;color:#385873}
+.sr-tracking-page .sr-click-order-strip i{width:17px;height:17px;font-size:9px}
+.sr-tracking-page .sr-click-order-inline{display:inline-block;margin-right:5px;color:#28538b;font-size:10px}
