@@ -1748,3 +1748,12 @@
 .sr-tracking-page .sr-window-premium-empty p{font-size:10px;line-height:1.5;color:#71829a;margin:5px 0 0}
 .sr-tracking-page .sr-window-premium-note{display:flex;gap:8px;margin-top:11px;padding:10px;background:#fff9ed;border:1px solid #f3e4bd;border-radius:9px;color:#80612c;font-size:10px;line-height:1.5}
 @media(max-width:600px){.sr-tracking-page .sr-window-premium-metrics{grid-template-columns:1fr}}
+
+/* Approved vertical compact layout: Student above Parent in the existing 24h Window column */
+.sr-tracking-page .sr-window-compact{min-width:0;width:100%;max-width:205px;gap:5px}
+.sr-tracking-page .sr-window-compact-grid{display:flex;flex-direction:column;gap:6px;width:100%}
+.sr-tracking-page .sr-window-compact-card{box-sizing:border-box;width:100%;min-width:0;gap:3px;padding:8px 9px;border-radius:9px;box-shadow:0 2px 5px rgba(25,61,109,.04)}
+.sr-tracking-page .sr-window-compact-card strong{font-size:11px;line-height:1.35}
+.sr-tracking-page .sr-window-compact-card b{font-size:9px;line-height:1.3;white-space:normal}
+.sr-tracking-page .sr-window-compact-card small{font-size:10px;line-height:1.35;overflow-wrap:anywhere}
+.sr-tracking-page .sr-window-compact-note{font-size:9px;line-height:1.3}
