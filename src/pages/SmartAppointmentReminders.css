@@ -1792,3 +1792,25 @@
 .sr-tracking-page .sr-window-premium-attempts{display:flex;justify-content:space-between;padding:11px;border:1px solid #e2eaf5;border-radius:9px;color:#345374;font-size:11px}
 .sr-tracking-page .sr-window-premium-timeline-title{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:800;color:#153c77;margin:14px 0 9px}
 @media(max-width:600px){.sr-tracking-page .sr-window-premium-stats{grid-template-columns:1fr}}
+
+/* 16 Nov: Premium balanced tracking table. Keep 24h window fully readable.
+   CSS-only change: no tracking, reminder or booking logic modified. */
+.sr-tracking-page .sr-table-wrap{max-width:100%;overflow-x:auto;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
+.sr-tracking-page .sr-table:not(.sr-previous-table){width:100%;min-width:920px;table-layout:fixed}
+.sr-tracking-page .sr-table:not(.sr-previous-table) th:nth-child(1){width:12%!important}
+.sr-tracking-page .sr-table:not(.sr-previous-table) th:nth-child(2){width:10%!important}
+.sr-tracking-page .sr-table:not(.sr-previous-table) th:nth-child(3){width:19%!important}
+.sr-tracking-page .sr-table:not(.sr-previous-table) th:nth-child(4){width:22%!important}
+.sr-tracking-page .sr-table:not(.sr-previous-table) th:nth-child(5){width:15%!important}
+.sr-tracking-page .sr-table:not(.sr-previous-table) th:nth-child(6){width:22%!important}
+.sr-tracking-page .sr-table:not(.sr-previous-table) th,
+.sr-tracking-page .sr-table:not(.sr-previous-table) tbody tr.sr-premium-booking-row>td{box-sizing:border-box;min-width:0;padding-left:5px!important;padding-right:5px!important}
+.sr-tracking-page .sr-table:not(.sr-previous-table) tbody tr.sr-premium-booking-row>td:nth-child(3) .sr-premium-date-card{width:100%;max-width:100%;min-width:0;padding-left:5px!important;padding-right:5px!important}
+.sr-tracking-page .sr-table:not(.sr-previous-table) tbody tr.sr-premium-booking-row>td:nth-child(4) .sr-designb-channel,
+.sr-tracking-page .sr-table:not(.sr-previous-table) tbody tr.sr-premium-booking-row>td:nth-child(5) .sr-designb-channel{width:100%;min-width:0;padding-left:5px!important;padding-right:5px!important}
+.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-live{width:100%;min-width:0;max-width:none}
+.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-live-card{width:100%;min-width:0;padding:9px 10px}
+.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-live-timer{font-size:16px;white-space:nowrap}
+.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-live-expiry{display:block;overflow-wrap:anywhere;white-space:normal;line-height:1.4}
+.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-live-top{flex-wrap:wrap;row-gap:3px}
+@media(max-width:1100px){.sr-tracking-page .sr-table:not(.sr-previous-table){min-width:920px}}
