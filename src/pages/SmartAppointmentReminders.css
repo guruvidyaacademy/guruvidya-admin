@@ -1878,3 +1878,28 @@
  .sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-pill-state b{font-size:8px!important}
  .sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-live-card{padding:6px 4px!important}
 }
+
+/* Approved Expires / Attempts premium status styling. */
+.sr-tracking-page .sr-window-premium-facts{display:flex;flex-direction:column;gap:5px;margin-top:7px;min-width:0}
+.sr-tracking-page .sr-window-premium-fact{display:flex;align-items:center;gap:4px;flex-wrap:wrap;min-width:0;font-size:9px;line-height:1.35}
+.sr-tracking-page .sr-window-premium-fact>svg{flex:0 0 auto;color:#12804b}
+.sr-tracking-page .sr-window-fact-label{color:#153d83;font-weight:800;white-space:nowrap}
+.sr-tracking-page .sr-window-fact-value{color:#087a3d;background:#d9f8e5;border-radius:6px;padding:2px 4px;font-weight:800;overflow-wrap:anywhere}
+.sr-tracking-page .sr-window-attempt-count{color:#1557b4;background:#dcecff;border-radius:6px;padding:2px 7px;font-weight:800;white-space:nowrap;font-variant-numeric:tabular-nums}
+.sr-tracking-page .sr-window-live-expiring .sr-window-premium-expiry>svg{color:#d47b00}
+.sr-tracking-page .sr-window-live-expiring .sr-window-fact-value{color:#b52d17;background:#ffebcc}
+.sr-tracking-page .sr-window-live-expiring .sr-window-premium-attempts>svg{color:#2563eb}
+.sr-tracking-page .sr-window-live-closed .sr-window-premium-expiry>svg{color:#c52235}
+.sr-tracking-page .sr-window-live-closed .sr-window-fact-value{color:#a8182b;background:#ffe1e7}
+.sr-tracking-page .sr-window-live-closed .sr-window-premium-attempts>svg{color:#a22bd1}
+.sr-tracking-page .sr-window-live-closed .sr-window-attempt-count{color:#a8182b;background:#ffdce4}
+.sr-tracking-page .sr-window-live-unknown .sr-window-premium-expiry>svg,.sr-tracking-page .sr-window-fact-empty{color:#586a81}
+.sr-tracking-page .sr-window-live-unknown .sr-window-premium-attempts>svg{color:#193e78}
+.sr-tracking-page .sr-window-live-extended{background:linear-gradient(155deg,#f7fcff,#e7f3ff)!important;border-color:#a9d2ff!important}
+.sr-tracking-page .sr-window-live-extended .sr-window-premium-pill{background:linear-gradient(180deg,#159ee9,#0954c1)!important}
+.sr-tracking-page .sr-window-live-extended .sr-window-pill-icon{color:#1268c9}
+.sr-tracking-page .sr-window-live-extended .sr-window-premium-expiry>svg{color:#138348}
+.sr-tracking-page .sr-window-live-extended .sr-window-fact-label{color:#08693e}
+.sr-tracking-page .sr-window-live-extended .sr-window-fact-value{color:#087a3d;background:#d9f8e5}
+.sr-tracking-page .sr-table:not(.sr-previous-table) tbody tr.sr-premium-booking-row>td:nth-child(6) .sr-window-live{height:100%;display:flex;flex-direction:column}
+.sr-tracking-page .sr-table:not(.sr-previous-table) tbody tr.sr-premium-booking-row>td:nth-child(6) .sr-window-live-card{flex:1 1 0;justify-content:center}

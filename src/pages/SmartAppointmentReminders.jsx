@@ -562,11 +562,15 @@ function liveWindow(record,now){
    progress:Math.max(0,Math.min(100,left/86400000*100))};
 }
 function WindowStatusCard({recipient,record,now}){
- const st=liveWindow(record,now),attempts=record?.attempts;
+ const base=liveWindow(record,now),attempts=record?.attempts;
  const count=attempts===null||attempts===undefined?'—':Math.min(2,Math.max(0,Number(attempts)||0));
+ // EXTENDED is shown only when the backend explicitly supplies a verified renewal marker.
+ const renewed=base.kind==='open' && Boolean(record?.verified_extension_at || record?.verified_renewal_at);
+ const st=renewed?{...base,kind:'extended',label:'EXTENDED'}:base;
  const title=recipient==='student'?'Student':'Parent / Guardian';
  const icon=recipient==='student'?'student':'users';
- const stateIcon=st.kind==='open'?'check':st.kind==='expiring'?'info':st.kind==='closed'?'cancel':'clock';
+ const stateIcon=st.kind==='open'?'check':st.kind==='expiring'?'info':st.kind==='closed'?'cancel':st.kind==='extended'?'history':'clock';
+ const expiryText=st.kind==='unknown'?'No incoming reply yet':st.kind==='closed'?'Expired:':st.kind==='extended'?'New Expiry:':'Expires:';
  return <div className={'sr-window-live-card sr-window-live-'+st.kind}>
   <div className="sr-window-live-top"><strong><span className="sr-window-live-avatar"><TrackingIcon name={icon} size={15}/></span>{title}</strong></div>
   <div className="sr-window-premium-pill" title={st.label+(st.clock!=='—'?' · '+st.clock:'')}>
@@ -574,7 +578,17 @@ function WindowStatusCard({recipient,record,now}){
    {st.kind!=='unknown'&&<><span className="sr-window-pill-divider"/><span className="sr-window-pill-clock"><TrackingIcon name="clock" size={13}/><b>{st.clock}</b></span></>}
    <TrackingIcon name="chevron" size={14} className="sr-window-pill-arrow"/>
   </div>
-  <div className="sr-window-live-meta"><span>{st.kind==='unknown'?'No verified reply':(st.kind==='closed'?'Expired: ':'Expires: ')+st.expiry+' IST'}</span><span>Attempts: <b>{count} / 2</b></span></div>
+  <div className="sr-window-premium-facts">
+   <div className="sr-window-premium-fact sr-window-premium-expiry">
+    <TrackingIcon name="calendar" size={13}/>
+    {st.kind==='unknown'?<span className="sr-window-fact-empty">No incoming reply yet</span>:<><span className="sr-window-fact-label">{expiryText}</span><strong className="sr-window-fact-value">{st.expiry} IST</strong></>}
+   </div>
+   <div className="sr-window-premium-fact sr-window-premium-attempts">
+    <TrackingIcon name="layers" size={13}/>
+    <span className="sr-window-fact-label">Attempts:</span>
+    <strong className="sr-window-attempt-count">{count} / 2</strong>
+   </div>
+  </div>
  </div>;
 }
 function BookingRowWindow({booking,windowRecords}){const now=useWindowNow();return <div className="sr-window-compact sr-window-live"><div className="sr-window-premium-column-title"><TrackingIcon name="clock" size={14}/>24h Window</div>{['student','parent'].map(recipient=><WindowStatusCard key={recipient} recipient={recipient} record={windowRecords?.[String(booking?.id)+':'+recipient]} now={now}/>)}</div>}
