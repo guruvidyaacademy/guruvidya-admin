@@ -563,14 +563,21 @@ function liveWindow(record,now){
 }
 function WindowStatusCard({recipient,record,now}){
  const st=liveWindow(record,now),attempts=record?.attempts;
+ const count=attempts===null||attempts===undefined?'—':Math.min(2,Math.max(0,Number(attempts)||0));
+ const title=recipient==='student'?'Student':'Parent / Guardian';
+ const icon=recipient==='student'?'student':'users';
+ const stateIcon=st.kind==='open'?'check':st.kind==='expiring'?'info':st.kind==='closed'?'cancel':'clock';
  return <div className={'sr-window-live-card sr-window-live-'+st.kind}>
-  <div className="sr-window-live-top"><strong><span className="sr-window-live-avatar">{recipient==='student'?'S':'P'}</span>{recipient==='student'?'Student':'Parent'}</strong><span className="sr-window-live-status">{st.label}</span></div>
-  <div className="sr-window-live-bottom"><div><small>{st.kind==='closed'?'Window expired':'Time remaining'}</small><b className="sr-window-live-timer">{st.clock}</b></div><div className="sr-window-live-attempt"><small>Attempts</small><b>{attempts===null||attempts===undefined?'—':Math.min(2,Math.max(0,Number(attempts)||0))} / 2</b></div></div>
-  <div className="sr-window-live-track"><span style={{width:st.progress+'%'}}/></div>
-  <small className="sr-window-live-expiry">{st.kind==='unknown'?'Expiry: Not verified':(st.kind==='closed'?'Expired: ':'Expires: ')+st.expiry+' IST'}</small>
+  <div className="sr-window-live-top"><strong><span className="sr-window-live-avatar"><TrackingIcon name={icon} size={15}/></span>{title}</strong></div>
+  <div className="sr-window-premium-pill" title={st.label+(st.clock!=='—'?' · '+st.clock:'')}>
+   <span className="sr-window-pill-state"><span className="sr-window-pill-icon"><TrackingIcon name={stateIcon} size={13}/></span><b>{st.label}</b></span>
+   {st.kind!=='unknown'&&<><span className="sr-window-pill-divider"/><span className="sr-window-pill-clock"><TrackingIcon name="clock" size={13}/><b>{st.clock}</b></span></>}
+   <TrackingIcon name="chevron" size={14} className="sr-window-pill-arrow"/>
+  </div>
+  <div className="sr-window-live-meta"><span>{st.kind==='unknown'?'No verified reply':(st.kind==='closed'?'Expired: ':'Expires: ')+st.expiry+' IST'}</span><span>Attempts: <b>{count} / 2</b></span></div>
  </div>;
 }
-function BookingRowWindow({booking,windowRecords}){const now=useWindowNow();return <div className="sr-window-compact sr-window-live">{['student','parent'].map(recipient=><WindowStatusCard key={recipient} recipient={recipient} record={windowRecords?.[String(booking?.id)+':'+recipient]} now={now}/>)}</div>}
+function BookingRowWindow({booking,windowRecords}){const now=useWindowNow();return <div className="sr-window-compact sr-window-live"><div className="sr-window-premium-column-title"><TrackingIcon name="clock" size={14}/>24h Window</div>{['student','parent'].map(recipient=><WindowStatusCard key={recipient} recipient={recipient} record={windowRecords?.[String(booking?.id)+':'+recipient]} now={now}/>)}</div>}
 
 function ManualTrackingCard({test,channel,mode}){
  const wa=channel==='whatsapp',events=['Provider Accepted','Sent','Delivered',wa?'Read':'Opened','Clicked'];
