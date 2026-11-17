@@ -35,6 +35,9 @@ const TRACK_PATHS={
  chevronup:<path d="m6 15 6-6 6 6"/>,
  bell:<><path d="M18 8a6 6 0 0 0-12 0c0 7-3 8-3 9h18c0-1-3-2-3-9M10 21h4"/></>
 };
+// Status glyphs: approved warning triangle and clean cross (no inner ring).
+TRACK_PATHS.alert=<><path d="M10.3 4.3 2.5 18a2 2 0 0 0 1.7 3h15.6a2 2 0 0 0 1.7-3L13.7 4.3a2 2 0 0 0-3.4 0Z"/><path d="M12 9v5M12 17.5h.01"/></>;
+TRACK_PATHS.cross=<path d="M6 6l12 12M18 6 6 18"/>;
 // Layered-stack glyph matches the approved 24h Window Attempts reference.
 TRACK_PATHS.layers=<><path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 12 9 5 9-5"/><path d="m3 16 9 5 9-5"/></>;
 function TrackingIcon({name,size=20,className=''}){return <svg className={'sr-track-svg '+className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{TRACK_PATHS[name]||TRACK_PATHS.info}</svg>}
@@ -571,7 +574,7 @@ function WindowStatusCard({recipient,record,now}){
  const st=renewed?{...base,kind:'extended',label:'EXTENDED'}:base;
  const title=recipient==='student'?'Student':'Parent / Guardian';
  const icon=recipient==='student'?'student':'users';
- const stateIcon=st.kind==='open'?'check':st.kind==='expiring'?'info':st.kind==='closed'?'cancel':st.kind==='extended'?'history':'clock';
+ const stateIcon=st.kind==='open'?'check':st.kind==='expiring'?'alert':st.kind==='closed'?'cross':st.kind==='extended'?'refresh':'clock';
  const expiryText=st.kind==='unknown'?'No incoming reply yet':st.kind==='closed'?'Expired:':st.kind==='extended'?'New Expiry:':'Expires:';
  return <div className={'sr-window-live-card sr-window-live-'+st.kind}>
   <div className="sr-window-live-top"><strong><span className="sr-window-live-avatar"><TrackingIcon name={icon} size={15}/></span>{title}</strong></div>
