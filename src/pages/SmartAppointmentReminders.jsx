@@ -591,7 +591,7 @@ function WindowStatusCard({recipient,record,now}){
   </div>
  </div>;
 }
-function BookingRowWindow({booking,windowRecords}){const now=useWindowNow();return <div className="sr-window-compact sr-window-live"><div className="sr-window-premium-column-title"><TrackingIcon name="clock" size={14}/>24h Window</div>{['student','parent'].map((recipient,index)=><React.Fragment key={recipient}>{index>0&&<div className="sr-window-recipient-divider" aria-hidden="true"/>}<WindowStatusCard recipient={recipient} record={windowRecords?.[String(booking?.id)+':'+recipient]} now={now}/></React.Fragment>)}</div>}
+function BookingRowWindow({booking,windowRecords}){const now=useWindowNow();return <div className="sr-window-compact sr-window-live"><div className="sr-window-premium-column-title"><TrackingIcon name="clock" size={14}/>24h Window</div>{['student','parent'].map((recipient,index)=><React.Fragment key={recipient}>{index>0&&<div className="sr-window-recipient-divider" aria-hidden="true"/>}<div className="sr-window-recipient-section"><WindowStatusCard recipient={recipient} record={windowRecords?.[String(booking?.id)+':'+recipient]} now={now}/></div></React.Fragment>)}</div>}
 
 function ManualTrackingCard({test,channel,mode}){
  const wa=channel==='whatsapp',events=['Provider Accepted','Sent','Delivered',wa?'Read':'Opened','Clicked'];

@@ -1943,3 +1943,49 @@
  .sr-tracking-page .sr-window-recipient-section .sr-window-live-card{padding:4px 3px!important;}
  .sr-tracking-page .sr-window-recipient-section .sr-window-fact-value{font-size:7.5px!important;letter-spacing:-.3px!important;}
 }
+
+/* 17 Nov final reference alignment: the 24h panel occupies exactly the booking row's
+   content height, rather than increasing the row height itself. Scoped to current rows. */
+.sr-tracking-page .sr-table:not(.sr-previous-table) tbody tr.sr-premium-booking-row > td:nth-child(6){
+ position:relative!important;vertical-align:top!important;
+}
+.sr-tracking-page .sr-table:not(.sr-previous-table) tbody tr.sr-premium-booking-row > td:nth-child(6) > .sr-window-live{
+ position:absolute!important;top:5px!important;right:4px!important;bottom:5px!important;left:4px!important;
+ width:auto!important;height:auto!important;max-width:none!important;min-width:0!important;
+ display:flex!important;flex-direction:column!important;overflow:hidden!important;
+}
+.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section{
+ flex:1 1 0!important;min-height:0!important;display:flex!important;flex-direction:column!important;
+}
+.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-live-card{
+ flex:1 1 0!important;min-height:0!important;overflow:hidden!important;
+ padding:3px 6px!important;gap:0!important;justify-content:center!important;
+}
+.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-divider{
+ flex:0 0 1px!important;margin:0 7px!important;background:#bfd6e9!important;
+}
+.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-live-top{
+ margin:0 0 3px!important;min-height:0!important;
+}
+.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-premium-facts{
+ gap:3px!important;margin-top:4px!important;
+}
+.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-premium-fact{
+ display:flex!important;align-items:center!important;flex-wrap:nowrap!important;
+ gap:4px!important;min-height:13px!important;background:transparent!important;
+ border:0!important;padding:0!important;margin:0!important;
+}
+.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-premium-attempts > svg{
+ color:#278c68!important;width:12px!important;height:12px!important;flex-shrink:0!important;
+}
+.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-premium-attempts .sr-window-attempt-count{
+ color:#1456a5!important;background:#e1edff!important;border-radius:5px!important;
+ padding:1px 6px!important;margin-left:3px!important;font-weight:800!important;
+}
+.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-premium-expiry .sr-window-fact-value{
+ background:transparent!important;padding:0!important;white-space:nowrap!important;
+}
+@media(max-width:1100px){
+ .sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-live-card{padding:2px 4px!important;}
+ .sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-premium-fact{gap:2px!important;}
+}
