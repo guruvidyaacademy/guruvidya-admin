@@ -581,7 +581,7 @@ function WindowStatusCard({recipient,record,now}){
   <div className="sr-window-premium-facts">
    <div className="sr-window-premium-fact sr-window-premium-expiry">
     <TrackingIcon name="calendar" size={13}/>
-    {st.kind==='unknown'?<span className="sr-window-fact-empty">No incoming reply yet</span>:<><span className="sr-window-fact-label">{expiryText}</span><strong className="sr-window-fact-value">{st.expiry} IST</strong></>}
+    {st.kind==='unknown'?<span className="sr-window-fact-empty">No incoming reply yet</span>:<><span className="sr-window-fact-label">{expiryText}</span><strong className="sr-window-fact-value">{st.expiry}</strong></>}
    </div>
    <div className="sr-window-premium-fact sr-window-premium-attempts">
     <TrackingIcon name="layers" size={13}/>
@@ -591,7 +591,7 @@ function WindowStatusCard({recipient,record,now}){
   </div>
  </div>;
 }
-function BookingRowWindow({booking,windowRecords}){const now=useWindowNow();return <div className="sr-window-compact sr-window-live"><div className="sr-window-premium-column-title"><TrackingIcon name="clock" size={14}/>24h Window</div>{['student','parent'].map(recipient=><WindowStatusCard key={recipient} recipient={recipient} record={windowRecords?.[String(booking?.id)+':'+recipient]} now={now}/>)}</div>}
+function BookingRowWindow({booking,windowRecords}){const now=useWindowNow();return <div className="sr-window-compact sr-window-live"><div className="sr-window-premium-column-title"><TrackingIcon name="clock" size={14}/>24h Window</div>{['student','parent'].map((recipient,index)=><React.Fragment key={recipient}>{index>0&&<div className="sr-window-recipient-divider" aria-hidden="true"/>}<WindowStatusCard recipient={recipient} record={windowRecords?.[String(booking?.id)+':'+recipient]} now={now}/></React.Fragment>)}</div>}
 
 function ManualTrackingCard({test,channel,mode}){
  const wa=channel==='whatsapp',events=['Provider Accepted','Sent','Delivered',wa?'Read':'Opened','Clicked'];
