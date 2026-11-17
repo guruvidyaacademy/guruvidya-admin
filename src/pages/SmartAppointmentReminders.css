@@ -1989,3 +1989,38 @@
  .sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-live-card{padding:2px 4px!important;}
  .sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-premium-fact{gap:2px!important;}
 }
+
+/* 17 Nov premium reference refinement: match the adjacent tracking-card height
+   without allowing the 24h panel to stretch to the full table-row height. */
+.sr-tracking-page .sr-table:not(.sr-previous-table) tbody tr.sr-premium-booking-row > td:nth-child(6) > .sr-window-live{
+ bottom:auto!important;height:205px!important;max-height:205px!important;
+ gap:0!important;justify-content:space-between!important;
+}
+.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-premium-column-title{
+ padding:5px 7px!important;min-height:21px!important;
+}
+.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section{
+ flex:1 1 0!important;min-height:0!important;
+}
+.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-live-card{
+ padding:5px 6px!important;justify-content:center!important;
+}
+.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-live-top{
+ margin-bottom:5px!important;
+}
+.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-premium-facts{
+ gap:5px!important;margin-top:6px!important;
+}
+.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-premium-fact{
+ gap:4px!important;min-height:13px!important;
+}
+.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-premium-attempts > svg{
+ color:#3e6f94!important;width:13px!important;height:13px!important;
+}
+.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-divider{
+ margin:0 7px!important;
+}
+@media(max-width:1100px){
+ .sr-tracking-page .sr-table:not(.sr-previous-table) tbody tr.sr-premium-booking-row > td:nth-child(6) > .sr-window-live{height:195px!important;max-height:195px!important;}
+ .sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-live-card{padding:3px 4px!important;}
+}
