@@ -35,6 +35,8 @@ const TRACK_PATHS={
  chevronup:<path d="m6 15 6-6 6 6"/>,
  bell:<><path d="M18 8a6 6 0 0 0-12 0c0 7-3 8-3 9h18c0-1-3-2-3-9M10 21h4"/></>
 };
+// Layered-stack glyph matches the approved 24h Window Attempts reference.
+TRACK_PATHS.layers=<><path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 12 9 5 9-5"/><path d="m3 16 9 5 9-5"/></>;
 function TrackingIcon({name,size=20,className=''}){return <svg className={'sr-track-svg '+className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{TRACK_PATHS[name]||TRACK_PATHS.info}</svg>}
 
 const OVERVIEW_PATHS={
