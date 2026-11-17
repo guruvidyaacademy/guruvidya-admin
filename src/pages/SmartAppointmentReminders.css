@@ -2222,3 +2222,9 @@
 /* Approved status artwork only: EXTENDED is white arrows without a backing disc.
    Other pill dimensions, spacing, colours and OPEN appearance remain untouched. */
 .sr-tracking-page .sr-window-live-extended .sr-window-pill-icon{background:transparent!important;}
+
+/* 17 Nov: EXPIRING approved artwork is a white warning triangle, not a white disc.
+   Override the older shared status-icon background without changing icon sizing or layout. */
+.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-live-expiring .sr-window-pill-icon{
+ background:transparent!important;
+}
