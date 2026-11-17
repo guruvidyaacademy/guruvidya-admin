@@ -2154,3 +2154,20 @@
  .sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-live-top{margin-bottom:7px!important;}
  .sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-premium-facts{margin-top:7px!important;gap:5px!important;}
 }
+
+/* 17 Nov minor alignment correction: reduce ONLY the spare area below
+   Student/Parent attempts, equally; keep typography, status and facts gaps. */
+.sr-tracking-page .sr-table:not(.sr-previous-table) tbody tr.sr-premium-booking-row > td:nth-child(6) > .sr-window-live{
+ top:8px!important;bottom:8px!important;
+}
+.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-live-card{
+ padding-bottom:3px!important;
+}
+@media(max-width:1100px){
+ .sr-tracking-page .sr-table:not(.sr-previous-table) tbody tr.sr-premium-booking-row > td:nth-child(6) > .sr-window-live{
+  top:8px!important;bottom:8px!important;
+ }
+ .sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-live-card{
+  padding-bottom:1px!important;
+ }
+}
