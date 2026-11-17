@@ -2176,3 +2176,9 @@
 .sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-premium-expiry .sr-window-fact-label,
 .sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-premium-attempts .sr-window-fact-label{color:#1F2937!important;}
 .sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-premium-expiry .sr-window-fact-value{color:#166534!important;font-weight:600!important;}
+
+/* 17 Nov approved: OPEN icon ONLY — white disc with a single dark-green tick.
+   No layout, typography, timing, or other status changes. */
+.sr-tracking-page .sr-window-live-open .sr-window-pill-icon{background:#fff!important;color:#166534!important;border-radius:50%!important;}
+.sr-tracking-page .sr-window-live-open .sr-window-pill-icon svg{color:#166534!important;stroke:#166534!important;}
+.sr-tracking-page .sr-window-live-open .sr-window-pill-icon svg circle{display:none!important;}
