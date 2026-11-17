@@ -2218,3 +2218,7 @@
 .sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-live-unknown .sr-window-attempt-count{
  color:var(--sr-window-accent)!important;
 }
+
+/* Approved status artwork only: EXTENDED is white arrows without a backing disc.
+   Other pill dimensions, spacing, colours and OPEN appearance remain untouched. */
+.sr-tracking-page .sr-window-live-extended .sr-window-pill-icon{background:transparent!important;}

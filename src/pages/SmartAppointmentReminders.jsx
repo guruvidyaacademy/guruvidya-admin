@@ -40,6 +40,15 @@ TRACK_PATHS.alert=<><path d="M10.3 4.3 2.5 18a2 2 0 0 0 1.7 3h15.6a2 2 0 0 0 1.7
 TRACK_PATHS.cross=<path d="M6 6l12 12M18 6 6 18"/>;
 // Layered-stack glyph matches the approved 24h Window Attempts reference.
 TRACK_PATHS.layers=<><path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 12 9 5 9-5"/><path d="m3 16 9 5 9-5"/></>;
+// Approved 24h status-button artwork. Isolated from the shared TrackingIcon set.
+function WindowStatusButtonIcon({kind}){
+ const base={width:13,height:13,viewBox:'0 0 24 24','aria-hidden':true,fill:'none'};
+ if(kind==='expiring')return <svg {...base}><path d="M12 2.5 22 20H2Z" fill="#fff" stroke="#fff" strokeWidth="1.7" strokeLinejoin="round"/><path d="M12 8v6" stroke="#a85b00" strokeWidth="2.5" strokeLinecap="round"/><circle cx="12" cy="17.5" r="1.25" fill="#a85b00"/></svg>;
+ if(kind==='extended')return <svg {...base}><path d="M20.5 9A8.5 8.5 0 0 0 5.3 6.5L3 9M3 4.5V9h4.5M3.5 15a8.5 8.5 0 0 0 15.2 2.5L21 15m0 4.5V15h-4.5" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"/></svg>;
+ if(kind==='closed')return <svg {...base}><circle cx="12" cy="12" r="10" fill="#fff"/><path d="m8.4 8.4 7.2 7.2m0-7.2-7.2 7.2" stroke="#b42336" strokeWidth="2.8" strokeLinecap="round"/></svg>;
+ if(kind==='unknown')return <svg {...base}><circle cx="12" cy="12" r="9.2" fill="none" stroke="#fff" strokeWidth="2.2"/><path d="M12 6.7v5.8l3.9 2.5" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>;
+ return <TrackingIcon name="check" size={13}/>;
+}
 function TrackingIcon({name,size=20,className=''}){return <svg className={'sr-track-svg '+className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{TRACK_PATHS[name]||TRACK_PATHS.info}</svg>}
 
 const OVERVIEW_PATHS={
@@ -574,12 +583,11 @@ function WindowStatusCard({recipient,record,now}){
  const st=renewed?{...base,kind:'extended',label:'EXTENDED'}:base;
  const title=recipient==='student'?'Student':'Parent / Guardian';
  const icon=recipient==='student'?'student':'users';
- const stateIcon=st.kind==='open'?'check':st.kind==='expiring'?'alert':st.kind==='closed'?'cross':st.kind==='extended'?'refresh':'clock';
  const expiryText=st.kind==='unknown'?'No incoming reply yet':st.kind==='closed'?'Expired:':st.kind==='extended'?'New Expiry:':'Expires:';
  return <div className={'sr-window-live-card sr-window-live-'+st.kind}>
   <div className="sr-window-live-top"><strong><span className="sr-window-live-avatar"><TrackingIcon name={icon} size={15}/></span>{title}</strong></div>
   <div className="sr-window-premium-pill" title={st.label+(st.clock!=='—'?' · '+st.clock:'')}>
-   <span className="sr-window-pill-state"><span className="sr-window-pill-icon"><TrackingIcon name={stateIcon} size={13}/></span><b>{st.label}</b></span>
+   <span className="sr-window-pill-state"><span className="sr-window-pill-icon"><WindowStatusButtonIcon kind={st.kind}/></span><b>{st.label}</b></span>
    {st.kind!=='unknown'&&<><span className="sr-window-pill-divider"/><span className="sr-window-pill-clock"><TrackingIcon name="clock" size={13}/><b>{st.clock}</b></span></>}
    <TrackingIcon name="chevron" size={14} className="sr-window-pill-arrow"/>
   </div>
