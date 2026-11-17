@@ -2119,3 +2119,38 @@
  .sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-fact-label,
  .sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-fact-value{font-size:9px!important;}
 }
+
+/* 17 Nov final: match the full height of adjacent date/WhatsApp/email cells.
+   Absolute inset uses the actual booking-row height, never a fixed pixel height. */
+.sr-tracking-page .sr-table:not(.sr-previous-table) tbody tr.sr-premium-booking-row > td:nth-child(6) > .sr-window-live{
+ top:5px!important;bottom:5px!important;left:4px!important;right:4px!important;
+ height:auto!important;max-height:none!important;min-height:0!important;
+ justify-content:flex-start!important;
+}
+.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section{
+ flex:1 1 0!important;min-height:0!important;
+}
+.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-live-card{
+ justify-content:flex-start!important;flex:1 1 auto!important;
+ padding:9px 7px 6px!important;overflow:hidden!important;
+}
+.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-live-top{
+ margin-bottom:9px!important;
+}
+.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-premium-facts{
+ margin-top:9px!important;gap:7px!important;
+}
+.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-premium-fact{
+ min-height:15px!important;line-height:1.25!important;
+}
+.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-divider{
+ margin:0 9px!important;flex:0 0 1px!important;
+}
+@media(max-width:1100px){
+ .sr-tracking-page .sr-table:not(.sr-previous-table) tbody tr.sr-premium-booking-row > td:nth-child(6) > .sr-window-live{
+  height:auto!important;max-height:none!important;top:5px!important;bottom:5px!important;
+ }
+ .sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-live-card{padding:7px 5px 4px!important;}
+ .sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-live-top{margin-bottom:7px!important;}
+ .sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-premium-facts{margin-top:7px!important;gap:5px!important;}
+}
