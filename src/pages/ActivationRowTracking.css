@@ -1,0 +1,12 @@
+
+/* Compact 24h activation tracking, scoped to existing recipient cards. */
+.sr-activation-row-summary{margin-top:7px;padding-top:6px;border-top:1px solid rgba(40,75,115,.10);display:flex;flex-direction:column;gap:5px;min-width:0}
+.sr-activation-row-line{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.sr-activation-row-label{font-size:10px;font-weight:600;color:#56677e;white-space:nowrap}
+.sr-activation-row-days{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.sr-activation-day{display:inline-flex;align-items:center;gap:3px;border-radius:6px;padding:2px 5px;font-size:10px;font-weight:700;background:#eef2f6;color:#8a96a5;line-height:1.4;white-space:nowrap}
+.sr-activation-day-sent{background:#e9f1ff;color:#2563eb}
+.sr-activation-day-delivered,.sr-activation-day-read,.sr-activation-day-clicked{background:#e6f7ed;color:#15803d}
+.sr-activation-day-failed{background:#feecec;color:#b91c1c}
+.sr-activation-last{display:flex;align-items:baseline;gap:4px;flex-wrap:wrap;min-width:0}
+.sr-activation-last strong{font-size:10px;font-weight:600;color:#334155;overflow-wrap:anywhere}
