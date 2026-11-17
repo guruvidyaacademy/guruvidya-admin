@@ -45,9 +45,9 @@ function WindowStatusButtonIcon({kind}){
  const base={width:13,height:13,viewBox:'0 0 24 24','aria-hidden':true,fill:'none'};
  if(kind==='expiring')return <svg {...base}><path d="M12 2.5 22 20H2Z" fill="#fff" stroke="#fff" strokeWidth="1.7" strokeLinejoin="round"/><path d="M12 8v6" stroke="#a85b00" strokeWidth="2.5" strokeLinecap="round"/><circle cx="12" cy="17.5" r="1.25" fill="#a85b00"/></svg>;
  if(kind==='extended')return <svg {...base}><path d="M20.5 9A8.5 8.5 0 0 0 5.3 6.5L3 9M3 4.5V9h4.5M3.5 15a8.5 8.5 0 0 0 15.2 2.5L21 15m0 4.5V15h-4.5" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"/></svg>;
- if(kind==='closed')return <svg {...base}><circle cx="12" cy="12" r="10" fill="#fff"/><path d="m8.4 8.4 7.2 7.2m0-7.2-7.2 7.2" stroke="#b42336" strokeWidth="2.8" strokeLinecap="round"/></svg>;
+ if(kind==='closed')return <svg {...base}><circle cx="12" cy="12" r="9.5" fill="#a92638" stroke="#fff" strokeWidth="1.7"/><path d="m8.4 8.4 7.2 7.2m0-7.2-7.2 7.2" stroke="#fff" strokeWidth="2.7" strokeLinecap="round"/></svg>;
  if(kind==='unknown')return <svg {...base}><circle cx="12" cy="12" r="9.2" fill="none" stroke="#fff" strokeWidth="2.2"/><path d="M12 6.7v5.8l3.9 2.5" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>;
- return <TrackingIcon name="check" size={13}/>;
+ return <svg {...base}><circle cx="12" cy="12" r="9.5" stroke="#fff" strokeWidth="2"/><path d="m7.5 12.2 3.1 3.1 6-6.4" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>;
 }
 function TrackingIcon({name,size=20,className=''}){return <svg className={'sr-track-svg '+className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{TRACK_PATHS[name]||TRACK_PATHS.info}</svg>}
 

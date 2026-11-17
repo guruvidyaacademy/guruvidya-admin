@@ -2238,3 +2238,12 @@
 .sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-live-unknown .sr-window-pill-icon svg path{
  stroke:#fff!important;
 }
+
+/* Final icon-only adjustment: OPEN minimal white outline/tick; CLOSED red disc/white X. */
+.sr-tracking-page .sr-window-live-open .sr-window-pill-icon,
+.sr-tracking-page .sr-window-live-closed .sr-window-pill-icon,
+.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-live-closed .sr-window-pill-icon{background:transparent!important;color:#fff!important;}
+.sr-tracking-page .sr-window-live-open .sr-window-pill-icon svg,
+.sr-tracking-page .sr-window-live-closed .sr-window-pill-icon svg,
+.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-live-closed .sr-window-pill-icon svg{color:#fff!important;stroke:#fff!important;}
+.sr-tracking-page .sr-window-live-open .sr-window-pill-icon svg circle{display:inline!important;}
