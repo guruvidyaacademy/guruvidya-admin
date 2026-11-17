@@ -2247,3 +2247,12 @@
 .sr-tracking-page .sr-window-live-closed .sr-window-pill-icon svg,
 .sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-live-closed .sr-window-pill-icon svg{color:#fff!important;stroke:#fff!important;}
 .sr-tracking-page .sr-window-live-open .sr-window-pill-icon svg circle{display:inline!important;}
+
+/* Scoped manual preview; existing status cards unchanged */
+.sr-activation-manual{margin-top:14px;border:1px solid #d9e5f1;border-radius:12px;overflow:hidden;background:#fff}
+.sr-activation-open{width:100%;padding:12px 14px;background:#f2f7fd;color:#173c67;border:0;text-align:left;font-weight:700;cursor:pointer}
+.sr-activation-body{padding:14px;display:grid;gap:12px;font-size:13px}
+.sr-activation-stages{display:flex;gap:7px}.sr-activation-stages button{padding:9px 13px;border:1px solid #cbd5e1;background:white;border-radius:8px;color:#183b61}.sr-activation-stages button.selected{background:#183b61;color:white}
+.sr-activation-graphic{width:100%;max-width:420px;max-height:480px;object-fit:contain;margin:auto;border-radius:9px}
+.sr-activation-result{padding:12px;border-radius:8px;display:grid;gap:4px}.sr-activation-result small{font-size:11px}.sr-activation-result.eligible{background:#eaf7ef;color:#17603b}.sr-activation-result.blocked{background:#fff0ee;color:#a82e2e}
+.sr-activation-body>button:disabled{background:#e2e8f0;color:#64748b;padding:11px;border:0;border-radius:8px;cursor:not-allowed}
