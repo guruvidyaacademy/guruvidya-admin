@@ -2228,3 +2228,13 @@
 .sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-live-expiring .sr-window-pill-icon{
  background:transparent!important;
 }
+
+/* 17 Nov: NOT VERIFIED artwork only — white outlined clock, no white disc.
+   Keep the existing status pill size, position, and all other styles unchanged. */
+.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-live-unknown .sr-window-pill-icon{
+ background:transparent!important;
+}
+.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-live-unknown .sr-window-pill-icon svg circle,
+.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-live-unknown .sr-window-pill-icon svg path{
+ stroke:#fff!important;
+}
