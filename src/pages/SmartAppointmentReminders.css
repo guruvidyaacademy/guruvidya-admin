@@ -1990,51 +1990,9 @@
  .sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-premium-fact{gap:2px!important;}
 }
 
-/* FINAL APPROVED 17 NOV: 24h Window visual polish only.
-   The window panel is anchored to the same booking-row edges as the other
-   tracking columns; no separate scrolling or changes to status calculations. */
-.sr-tracking-page .sr-table:not(.sr-previous-table) tbody tr.sr-premium-booking-row > td:nth-child(6) > .sr-window-live{
-  top:5px!important;bottom:5px!important;align-self:stretch!important;
-  box-shadow:0 3px 10px rgba(20,72,128,.09)!important;
-}
-.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-live-top strong{
-  font-size:10px!important;line-height:1.35!important;
-}
-.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-live-avatar{
-  width:19px!important;height:19px!important;
-}
-.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-live-avatar svg{
-  width:15px!important;height:15px!important;
-}
-.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-premium-facts{
-  gap:5px!important;margin-top:6px!important;
-}
-.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-premium-fact{
-  min-height:15px!important;
-}
-.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-fact-label{
-  font-size:9px!important;
-}
-.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-fact-value{
-  font-size:9px!important;letter-spacing:-.16px!important;
-}
-.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-attempt-count{
-  font-size:9px!important;
-}
-/* Green date and both green icons for active/renewed windows. Keep the
-   warning/red/neutral palettes for expiring, closed and unverified states. */
-.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-live-open .sr-window-premium-expiry .sr-window-fact-value,
-.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-live-extended .sr-window-premium-expiry .sr-window-fact-value{
-  color:#087c3d!important;
-}
-.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-live-open .sr-window-premium-expiry > svg,
-.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-live-extended .sr-window-premium-expiry > svg,
-.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-live-open .sr-window-premium-attempts > svg,
-.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-live-extended .sr-window-premium-attempts > svg{
-  color:#118346!important;
-}
-@media(max-width:1100px){
-  .sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-fact-value{font-size:8px!important;letter-spacing:-.25px!important;}
-  .sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-fact-label{font-size:8px!important;}
-  .sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-premium-facts{gap:3px!important;margin-top:4px!important;}
+/* 17 Nov: visually align the 24h Window panel with the adjacent Date & Time,
+   WhatsApp and Email cards. This does not alter tracking or timer behavior. */
+.sr-tracking-page .sr-table:not(.sr-previous-table) tbody tr.sr-premium-booking-row > td:nth-child(6) > .sr-window-live {
+  top:10px!important;
+  bottom:10px!important;
 }
