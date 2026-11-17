@@ -2171,3 +2171,8 @@
   padding-bottom:1px!important;
  }
 }
+
+/* 17 Nov final approval: text colours only; preserve all layout and functionality. */
+.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-premium-expiry .sr-window-fact-label,
+.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-premium-attempts .sr-window-fact-label{color:#1F2937!important;}
+.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-premium-expiry .sr-window-fact-value{color:#166534!important;font-weight:600!important;}
