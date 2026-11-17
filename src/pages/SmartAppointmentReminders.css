@@ -2182,3 +2182,39 @@
 .sr-tracking-page .sr-window-live-open .sr-window-pill-icon{background:#fff!important;color:#166534!important;border-radius:50%!important;}
 .sr-tracking-page .sr-window-live-open .sr-window-pill-icon svg{color:#166534!important;stroke:#166534!important;}
 .sr-tracking-page .sr-window-live-open .sr-window-pill-icon svg circle{display:none!important;}
+
+/* 17 Nov: approved non-OPEN status colour consistency ONLY.
+   Preserve OPEN, layout, sizes, table alignment and tracking behaviour. */
+.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-live-expiring{--sr-window-accent:#a85b00;}
+.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-live-extended{--sr-window-accent:#155bb0;}
+.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-live-closed{--sr-window-accent:#b42336;}
+.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-live-unknown{--sr-window-accent:#596b80;}
+.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-live-expiring .sr-window-pill-icon,
+.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-live-extended .sr-window-pill-icon,
+.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-live-closed .sr-window-pill-icon,
+.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-live-unknown .sr-window-pill-icon{
+ background:#fff!important;color:var(--sr-window-accent)!important;border-radius:50%!important;
+}
+.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-live-expiring .sr-window-pill-icon svg,
+.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-live-extended .sr-window-pill-icon svg,
+.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-live-closed .sr-window-pill-icon svg,
+.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-live-unknown .sr-window-pill-icon svg{
+ color:var(--sr-window-accent)!important;stroke:var(--sr-window-accent)!important;
+}
+.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-live-expiring .sr-window-premium-fact>svg,
+.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-live-extended .sr-window-premium-fact>svg,
+.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-live-closed .sr-window-premium-fact>svg,
+.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-live-unknown .sr-window-premium-fact>svg{
+ color:var(--sr-window-accent)!important;
+}
+.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-live-expiring .sr-window-premium-expiry .sr-window-fact-value,
+.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-live-extended .sr-window-premium-expiry .sr-window-fact-value,
+.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-live-closed .sr-window-premium-expiry .sr-window-fact-value{
+ color:var(--sr-window-accent)!important;
+}
+.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-live-expiring .sr-window-attempt-count,
+.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-live-extended .sr-window-attempt-count,
+.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-live-closed .sr-window-attempt-count,
+.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-live-unknown .sr-window-attempt-count{
+ color:var(--sr-window-accent)!important;
+}
