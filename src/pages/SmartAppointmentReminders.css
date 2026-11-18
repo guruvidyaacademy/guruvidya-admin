@@ -2666,3 +2666,14 @@
 .sr-tracking-page .sr-window-premium-v2 .sr-window-status-timeline>.sr-window-status-metric:nth-child(2)>b{color:#6030c3}
 .sr-tracking-page .sr-window-premium-v2 .sr-window-status-timeline>.sr-window-status-metric>small{font-size:10px;color:#50668b;line-height:1.35;font-weight:600}
 @media(max-width:650px){.sr-tracking-page .sr-window-premium-v2 .sr-window-status-timeline{grid-template-columns:repeat(2,minmax(0,1fr));padding:14px 5px}.sr-tracking-page .sr-window-premium-v2 .sr-window-status-timeline:before{top:35px}.sr-tracking-page .sr-window-premium-v2 .sr-window-status-timeline:after{top:31px}.sr-tracking-page .sr-window-premium-v2 .sr-window-status-timeline>.sr-window-status-metric{padding:0 5px!important}.sr-tracking-page .sr-window-premium-v2 .sr-window-status-timeline>.sr-window-status-metric>b{font-size:16px}.sr-tracking-page .sr-window-premium-v2 .sr-window-status-label{font-size:10px}}
+
+/* 24h Window Management heading: WhatsApp green icon only.
+   Override the generic blue icon rule without affecting timer/calendar icons. */
+.sr-tracking-page .sr-window-premium-v2 .sr-window-premium-head .sr-window-v2-icon.sr-window-v2-whatsapp {
+  background: #e2f7ed;
+  color: #139b62;
+}
+.sr-tracking-page .sr-window-premium-v2 .sr-window-premium-head .sr-window-v2-icon.sr-window-v2-whatsapp svg {
+  color: #139b62;
+  stroke: currentColor;
+}
