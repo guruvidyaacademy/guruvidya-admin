@@ -619,7 +619,7 @@ function ActivationRowSummary({booking,recipient,manualTests}){
   return {day:d,event};
  });
  return <div className="sr-activation-row-summary">
-  <div className="sr-activation-row-line"><span className="sr-activation-row-label">Activation:</span><span className="sr-activation-row-days">{perDay.map(({day,event})=><span key={day} className={'sr-activation-day sr-activation-day-'+(event?.type||'none')} title={'Day '+day+' · '+(event?.label||'Not sent')+(event?.time?' · '+fmt(event.time)+' IST':'')} aria-label={'Day '+day+': '+(event?.label||'Not sent')}><b>D{day}</b><ActivationStatusIcon type={event?.type}/></span>)}</span></div>
+  <div className="sr-activation-row-line"><span className="sr-activation-row-label" style={{display:"inline-flex",alignItems:"center",gap:4}}><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#16A34A" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{flexShrink:0}}><path d="m13 2-9 12h7l-1 8 10-12h-7l0-8Z"/></svg>Activation:</span><span className="sr-activation-row-days">{perDay.map(({day,event})=><span key={day} className={'sr-activation-day sr-activation-day-'+(event?.type||'none')} title={'Day '+day+' · '+(event?.label||'Not sent')+(event?.time?' · '+fmt(event.time)+' IST':'')} aria-label={'Day '+day+': '+(event?.label||'Not sent')}><b>D{day}</b><ActivationStatusIcon type={event?.type}/></span>)}</span></div>
  </div>;
 }
 
