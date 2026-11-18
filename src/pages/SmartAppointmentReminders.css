@@ -2600,3 +2600,7 @@
 .sr-tracking-page .sr-window-premium-v2 .sr-window-v2-event-icon.is-verified:after{content:"";position:absolute;display:block;width:2px;height:calc(100% + 27px);min-height:52px;top:calc(100% + 5px);left:50%;transform:translateX(-50%);background:#91d9b0;border-radius:2px;z-index:-1;pointer-events:none}
 .sr-tracking-page .sr-window-premium-v2 .sr-window-v2-event-content>strong{font-size:12px;font-weight:850;color:#18355a}
 .sr-tracking-page .sr-window-premium-v2 .sr-window-v2-event-date b{font-weight:800;color:#203f67}
+
+/* Final approved icons: solid green verified tick without concentric rings. */
+.sr-tracking-page .sr-window-premium-v2 .sr-window-v2-event-icon.is-verified{background:#16a34a!important;border:0!important;box-shadow:none!important;color:#fff!important;width:30px;height:30px;flex-basis:30px}
+.sr-tracking-page .sr-window-premium-v2 .sr-window-v2-event-icon.is-verified .sr-track-svg{stroke:#fff;stroke-width:2.8}
