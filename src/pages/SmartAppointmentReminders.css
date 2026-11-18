@@ -2330,3 +2330,35 @@
   flex:0 0 auto!important;
   line-height:normal!important;
 }
+
+/* Activation manual-test delivery tracking — isolated from existing reminder UI */
+.sr-activation-tracking{margin-top:12px;border:1px solid #dce7f3;border-radius:11px;overflow:hidden;background:#fff}
+.sr-activation-tracking-toggle{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;border:0;background:#f3f8fe;color:#244565;padding:12px 14px;text-align:left;cursor:pointer;font-size:12px;font-weight:700}
+.sr-activation-tracking-toggle>span:first-child{display:inline-flex;align-items:center;gap:8px}
+.sr-activation-tracking-toggle-right{font-size:11px;color:#60758b;font-weight:600}
+.sr-activation-tracking-body{padding:13px 14px}
+.sr-activation-tracking-context,.sr-activation-tracking-meta,.sr-activation-tracking-footnote{display:block;color:#64748b;font-size:11px;margin:0 0 12px}
+.sr-activation-tracking-days{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:14px}
+.sr-activation-tracking-day{border:1px solid #dce7f3;background:#f8fbff;border-radius:9px;padding:10px 5px;display:flex;flex-direction:column;align-items:center;gap:5px;color:#36526b;cursor:pointer;font-size:11px}
+.sr-activation-tracking-day.active{background:#edf6ff;border-color:#5b9bdb;box-shadow:inset 0 0 0 1px #5b9bdb}
+.sr-activation-tracking-day>span{display:inline-flex;align-items:center;gap:4px;color:#64748b;font-size:10px}
+.sr-activation-tracking-test-head{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12px;margin:0 0 7px;color:#29465e}
+.sr-activation-tracking-state{display:inline-flex;align-items:center;gap:5px;color:#64748b;font-size:11px}
+.sr-activation-tracking-state.clicked,.sr-activation-tracking-state.read,.sr-activation-tracking-state.delivered{color:#15803d}
+.sr-activation-tracking-state.failed{color:#b91c1c}
+.sr-activation-tracking-events{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:12px 0}
+.sr-activation-tracking-event{display:flex;align-items:flex-start;gap:8px;border:1px solid #e5edf5;border-radius:9px;padding:10px 9px;color:#16814d;background:#fbfefd;min-width:0}
+.sr-activation-tracking-event.pending{color:#9aa7b4;background:#fafbfc}
+.sr-activation-tracking-event>div{display:flex;flex-direction:column;gap:3px;min-width:0}
+.sr-activation-tracking-event b{font-size:11px;color:#30465a}
+.sr-activation-tracking-event small{font-size:10px;color:#64748b}
+.sr-activation-tracking-reply{display:flex;align-items:center;gap:9px;background:#f2faf5;border:1px solid #d8ecdf;border-radius:9px;padding:10px;color:#16814d}
+.sr-activation-tracking-reply>div{display:flex;flex-direction:column;gap:3px}
+.sr-activation-tracking-reply b{font-size:11px;color:#28533b}
+.sr-activation-tracking-reply small{font-size:10px;color:#607b68}
+.sr-activation-tracking-note,.sr-activation-tracking-footnote{font-size:10px;line-height:1.5;color:#64748b;margin:10px 0 0}
+.sr-activation-tracking-failure{font-size:11px;color:#b91c1c;overflow-wrap:anywhere}
+.sr-activation-tracking-empty{font-size:12px;color:#64748b;padding:12px 0}
+.sr-activation-tracking-history-button{border:0;background:none;color:#1d6cb5;padding:12px 0 4px;font-size:11px;cursor:pointer}
+.sr-activation-tracking-history>div{display:flex;justify-content:space-between;gap:8px;padding:7px 0;border-bottom:1px solid #edf1f5;font-size:10px;color:#50657a}
+@media(max-width:520px){.sr-activation-tracking-events{grid-template-columns:1fr}}

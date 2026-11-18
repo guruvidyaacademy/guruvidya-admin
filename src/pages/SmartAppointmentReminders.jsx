@@ -79,6 +79,41 @@ function ActivationManualPreview({recipient,booking,windowStatus,onSend,manualTe
  const eligible=['open','expiring','extended'].includes(windowStatus.kind);
  return <div className="sr-activation-manual"><button type="button" className="sr-activation-open" onClick={()=>setOpened(v=>!v)}>24h Window Activation — Manual Test {opened?'▴':'▾'}</button>{opened&&<div className="sr-activation-body"><strong>Day 3 / Day 2 / Day 1 · Manual Test · Automation OFF</strong><p>Booking: <b>{booking?.booking_ref||booking?.id}</b> · Recipient: <b>{recipient==='student'?'Student':'Parent / Guardian'}</b></p><div className="sr-activation-stages">{['3','2','1'].map(v=><button type="button" key={v} className={day===v?'selected':''} onClick={()=>setDay(v)}>Day {v}</button>)}</div><div className="sr-activation-result eligible" aria-label="WhatsApp message contents"><b>Day {day} WhatsApp Activation Test</b><small>Approved dynamic graphic + appointment date/time caption + Keep Reminder Active button will be sent together.</small></div><div className={'sr-activation-result '+(eligible?'eligible':'blocked')}><b>{eligible?'Ready for WhatsApp manual test':'SKIP — 24h Window not open'}</b><small>Current window: {windowStatus.label}. Live sending requires backend validation of the incoming timestamp and consent.</small></div><button type="button" disabled={!eligible||busy} onClick={async()=>{if(!window.confirm(`Send a REAL Day ${day} WhatsApp activation graphic to ${recipient} for booking ${booking.booking_ref}? This contacts the actual recipient immediately. Automation stays OFF.`))return;setBusy(true);setFeedback('');try{const result=await onSend(booking,recipient,'day'+day);setFeedback(result?.message||'Provider accepted test. Delivery/read not yet confirmed.')}catch(e){setFeedback('Test failed: '+e.message)}finally{setBusy(false)}}}>{busy?'Sending…':eligible?'REAL Send WhatsApp Test':'Send Blocked — Window Closed'}</button>{feedback&&<div role="status" aria-live="polite">{feedback}</div>}{latest&&<div className="sr-activation-result"><b>Manual Test: {latest.status}</b><small>{latest.detail||'Provider response'} · {fmt(latest.completed_at||latest.created_at)} IST</small></div>}<small>Actual window and verified consent are rechecked by backend. Manual test is audited separately. Existing 4h Utility Template fallback unchanged. Automation OFF.</small></div>}</div>;
 }
+function ActivationDeliveryTracking({recipient,booking,manualTests,windowRecord}){
+ const [opened,setOpened]=useState(false),[selectedDay,setSelectedDay]=useState('3'),[showHistory,setShowHistory]=useState(false);
+ const tests=(manualTests||[]).filter(t=>String(t.booking_id)===String(booking?.id)&&String(t.recipient_type).toLowerCase()===recipient&&t.channel==='whatsapp'&&['day3','day2','day1'].includes(t.stage));
+ const dayTests=tests.filter(t=>t.stage==='day'+selectedDay).sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0));
+ const current=dayTests[0];
+ const clickedAt=current?.provider_clicked_at||(Array.isArray(current?.manual_clicks)?current.manual_clicks.find(c=>c.button_key==='keep_reminder_active')?.clicked_at:null);
+ const accepted=['accepted','sent','delivered','read','clicked','success','completed'].includes(String(current?.status||'').toLowerCase());
+ const failed=['failed','error','rejected'].includes(String(current?.status||'').toLowerCase());
+ const events=[
+  {label:'Provider Accepted',time:accepted?(current?.completed_at||current?.created_at):null,icon:'check'},
+  {label:'Sent',time:current?.sent_at||null,icon:'send'},
+  {label:'Delivered',time:current?.delivered_at||null,icon:'delivered'},
+  {label:'Read',time:current?.read_at||null,icon:'eye'},
+  {label:'Button Clicked',time:clickedAt||null,icon:'click'}
+ ];
+ const lastInbound=windowRecord?.last_inbound_at;
+ const latest=activationEvent(current);
+ return <section className="sr-activation-tracking">
+  <button type="button" className="sr-activation-tracking-toggle" aria-expanded={opened} onClick={()=>setOpened(v=>!v)}><span><TrackingIcon name="history" size={17}/> Activation — Delivery &amp; Tracking</span><span className="sr-activation-tracking-toggle-right">Manual Test · {opened?'▴':'▾'}</span></button>
+  {opened&&<div className="sr-activation-tracking-body">
+   <p className="sr-activation-tracking-context">{recipient==='student'?'Student':'Parent / Guardian'} · WhatsApp · Verified manual-test events (IST)</p>
+   <div className="sr-activation-tracking-days">{['3','2','1'].map(d=>{const test=tests.filter(t=>t.stage==='day'+d).sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0))[0];const event=activationEvent(test);return <button type="button" key={d} className={'sr-activation-tracking-day '+(selectedDay===d?'active':'')} onClick={()=>{setSelectedDay(d);setShowHistory(false)}}><b>Day {d}</b><span><ActivationStatusIcon type={event?.type}/>{event?.label||'Not Sent'}</span></button>})}</div>
+   <div className="sr-activation-tracking-test-head"><strong>Day {selectedDay} — WhatsApp Activation</strong><span className={'sr-activation-tracking-state '+(failed?'failed':latest?.type||'none')}><ActivationStatusIcon type={latest?.type}/>{latest?.label||'Not Sent'}</span></div>
+   {current?<>
+    <small className="sr-activation-tracking-meta">Latest manual test · {fmt(current.created_at)} IST · Test #{current.id}</small>
+    <div className="sr-activation-tracking-events">{events.map(e=><div key={e.label} className={'sr-activation-tracking-event '+(e.time?'verified':'pending')}><TrackingIcon name={e.icon} size={16}/><div><b>{e.label}</b><small>{e.time?fmt(e.time)+' IST':'Not verified'}</small></div></div>)}</div>
+    {failed&&<p className="sr-activation-tracking-failure">Test failed: {String(current.detail||'Provider error').slice(0,240)}</p>}
+    <div className="sr-activation-tracking-reply"><TrackingIcon name="whatsapp" size={16}/><div><b>Keep Reminder Active</b><small>{clickedAt?'Verified button response · '+fmt(clickedAt)+' IST':'No verified button click for this test'}</small></div></div>
+    {lastInbound&&<p className="sr-activation-tracking-note">Latest verified incoming WhatsApp reply: {fmt(lastInbound)} IST. This window activity is shown separately; it is not attributed to this test unless linked by a verified event.</p>}
+    {dayTests.length>1&&<><button type="button" className="sr-activation-tracking-history-button" onClick={()=>setShowHistory(v=>!v)}>{showHistory?'Hide':'View'} previous tests ({dayTests.length-1}) {showHistory?'▴':'▾'}</button>{showHistory&&<div className="sr-activation-tracking-history">{dayTests.slice(1).map(t=>{const e=activationEvent(t);return <div key={t.id}><span>Test #{t.id} · {e?.label||t.status||'Unknown'}</span><time>{fmt(e?.time||t.created_at)} IST</time></div>})}</div>}</>}
+   </>:<p className="sr-activation-tracking-empty">No Day {selectedDay} WhatsApp activation manual test recorded.</p>}
+   <small className="sr-activation-tracking-footnote">Provider acceptance does not confirm delivery. Unverified milestones remain pending. Activation automation stays OFF; existing reminders are unchanged.</small>
+  </div>}
+ </section>;
+}
 function WindowPanel({recipient,booking,windowRecords,onActivationSend,manualTests}){
  const now=useWindowNow(),rec=windowRecords?.[String(booking?.id)+':'+recipient],st=liveWindow(rec,now);
  return <div className="sr-panel sr-window sr-window-designed sr-window-premium">
@@ -88,7 +123,7 @@ function WindowPanel({recipient,booking,windowRecords,onActivationSend,manualTes
  <div className="sr-window-premium-attempts"><span><TrackingIcon name="clock" size={15}/> Extension Attempts Used</span><b>{rec?.attempts===null||rec?.attempts===undefined?'—':Math.min(2,Math.max(0,Number(rec.attempts)||0))} / 2</b></div>
  <div className="sr-window-premium-timeline-title"><TrackingIcon name="history" size={16}/> Window Activity Timeline</div>
  <div className="sr-window-premium-empty"><strong>{rec?.last_inbound_at?'Last verified incoming reply: '+fmt(rec.last_inbound_at):'No verified incoming reply available'}</strong><p>Detailed extension delivery and click history will appear once its verified event feed is connected. No activity is invented.</p></div>
- <div className="sr-window-premium-note">An incoming WhatsApp message refreshes the real 24-hour window. Automatic extension sending remains on HOLD.</div><ActivationManualPreview recipient={recipient} booking={booking} windowStatus={st} onSend={onActivationSend} manualTests={manualTests}/>
+ <div className="sr-window-premium-note">An incoming WhatsApp message refreshes the real 24-hour window. Automatic extension sending remains on HOLD.</div><ActivationManualPreview recipient={recipient} booking={booking} windowStatus={st} onSend={onActivationSend} manualTests={manualTests}/><ActivationDeliveryTracking recipient={recipient} booking={booking} manualTests={manualTests} windowRecord={rec}/>
  </div>;
 }
 
