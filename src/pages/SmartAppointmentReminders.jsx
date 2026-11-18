@@ -611,15 +611,15 @@ function ActivationStatusIcon({type}){
  if(!paths[type])return <span aria-hidden="true">—</span>;
  return <svg className="sr-activation-status-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{paths[type]}</svg>;
 }
-function ActivationRowSummary({booking,recipient,manualTests}){
+function ActivationRowSummary({booking,recipient,manualTests,windowKind}){
  const tests=(manualTests||[]).filter(t=>String(t.booking_id)===String(booking?.id)&&String(t.recipient_type).toLowerCase()===recipient&&t.channel==='whatsapp'&&ACTIVATION_DAYS.some(d=>t.stage==='day'+d));
  const perDay=ACTIVATION_DAYS.map(d=>{
   const rows=tests.filter(t=>t.stage==='day'+d).sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0));
   const test=rows[0],event=activationEvent(test);
   return {day:d,event};
  });
- return <div className="sr-activation-row-summary">
-  <div className="sr-activation-row-line"><span className="sr-activation-row-label" style={{display:"inline-flex",alignItems:"center",gap:4}}><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#16A34A" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{flexShrink:0}}><path d="m13 2-9 12h7l-1 8 10-12h-7l0-8Z"/></svg>Activation:</span><span className="sr-activation-row-days">{perDay.map(({day,event})=><span key={day} className={'sr-activation-day sr-activation-day-'+(event?.type||'none')} title={'Day '+day+' · '+(event?.label||'Not sent')+(event?.time?' · '+fmt(event.time)+' IST':'')} aria-label={'Day '+day+': '+(event?.label||'Not sent')}><b>D{day}</b><ActivationStatusIcon type={event?.type}/></span>)}</span></div>
+ return <div className={"sr-activation-row-summary sr-activation-window-"+(windowKind||"unknown")}>
+  <div className="sr-activation-row-line"><span className="sr-activation-row-label"><svg className="sr-activation-lightning" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m13 2-9 12h7l-1 8 10-12h-7l0-8Z"/></svg>Activation:</span><span className="sr-activation-row-days">{perDay.map(({day,event})=><span key={day} className={'sr-activation-day sr-activation-day-'+(event?.type||'none')} title={'Day '+day+' · '+(event?.label||'Not sent')+(event?.time?' · '+fmt(event.time)+' IST':'')} aria-label={'Day '+day+': '+(event?.label||'Not sent')}><b>D{day}</b><ActivationStatusIcon type={event?.type}/></span>)}</span></div>
  </div>;
 }
 
@@ -650,7 +650,7 @@ function WindowStatusCard({recipient,record,now,booking,manualTests}){
     <strong className="sr-window-attempt-count">{count} / 2</strong>
    </div>
   </div>
-  <ActivationRowSummary booking={booking} recipient={recipient} manualTests={manualTests}/>
+  <ActivationRowSummary booking={booking} recipient={recipient} manualTests={manualTests} windowKind={st.kind}/>
  </div>;
 }
 function BookingRowWindow({booking,windowRecords,manualTests}){const now=useWindowNow();return <div className="sr-window-compact sr-window-live"><div className="sr-window-premium-column-title"><TrackingIcon name="clock" size={14}/>24h Window</div>{['student','parent'].map((recipient,index)=><React.Fragment key={recipient}>{index>0&&<div className="sr-window-recipient-divider" aria-hidden="true"/>}<div className="sr-window-recipient-section"><WindowStatusCard recipient={recipient} record={windowRecords?.[String(booking?.id)+':'+recipient]} now={now} booking={booking} manualTests={manualTests}/></div></React.Fragment>)}</div>}

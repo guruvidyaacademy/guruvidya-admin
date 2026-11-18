@@ -8,3 +8,14 @@
 .sr-activation-day-delivered .sr-activation-status-icon,.sr-activation-day-read .sr-activation-status-icon,.sr-activation-day-clicked .sr-activation-status-icon{color:#16a34a}
 .sr-activation-day-failed .sr-activation-status-icon{color:#dc2626}
 .sr-activation-status-icon{display:inline-block;flex:none;vertical-align:middle}
+
+/* Align D3 with the Activation label text (not the lightning icon). */
+.sr-activation-row-line{display:flex;flex-direction:column;align-items:flex-start;gap:2px;flex-wrap:nowrap}
+.sr-activation-row-label{display:inline-flex;align-items:center;gap:4px;line-height:1.3}
+.sr-activation-lightning{display:block;flex-shrink:0;color:#16a34a}
+.sr-activation-row-days{margin-left:16px}
+/* Lightning follows the window status; day event colours remain independent. */
+.sr-activation-window-closed .sr-activation-lightning{color:#dc2626}
+.sr-activation-window-expiring .sr-activation-lightning{color:#d97706}
+.sr-activation-window-unknown .sr-activation-lightning{color:#94a3b8}
+.sr-activation-window-open .sr-activation-lightning,.sr-activation-window-extended .sr-activation-lightning{color:#16a34a}
