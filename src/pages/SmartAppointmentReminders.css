@@ -2489,3 +2489,24 @@
 .sr-settings-page .sr-settings-lower > .sr-settings-bottom-card:nth-child(2) > .sr-activation-settings {
   margin-bottom: 20px;
 }
+
+/* Premium 24h window settings only; existing logic and other screens untouched */
+.sr-settings-page .sr-window-settings-premium>.sr-bottom-heading{background:#f3f8ff;border:1px solid #e0eafb;border-radius:12px;padding:12px 14px!important;margin-bottom:0!important}
+.sr-settings-page .sr-window-settings-premium>.sr-bottom-heading .sr-bottom-icon{background:#dfebff;color:#1555b7;border-radius:10px}
+.sr-settings-page .sr-window-settings-premium .sr-activation-settings{margin:0;border:1px solid #e0eafb;background:#fff;border-radius:12px;padding:9px;box-shadow:0 3px 12px rgba(30,74,137,.045)}
+.sr-settings-page .sr-window-settings-premium .sr-activation-settings-master{background:#f2f7ff;border:1px solid #e0eafb;border-radius:10px;padding:12px;margin-bottom:8px}
+.sr-settings-page .sr-window-settings-premium .sr-activation-settings-day{background:#f7faff;border:1px solid #e8effa;border-radius:9px;padding:11px 12px;margin-top:7px}
+.sr-settings-page .sr-window-settings-premium .sr-activation-settings-day+.sr-activation-settings-day{border-top:1px solid #e8effa}
+.sr-settings-page .sr-window-settings-premium .sr-activation-settings-note{margin-top:9px;border:1px solid #e5edf9;border-radius:9px;background:#f5f9ff}
+.sr-settings-page .sr-window-settings-premium .sr-window-extension-controls{background:#fff;border:1px solid #e0eafb;border-radius:12px;padding:9px;box-shadow:0 3px 12px rgba(30,74,137,.045)}
+.sr-settings-page .sr-window-settings-premium .sr-window-extension-controls h4{display:flex;align-items:center;gap:10px;background:#f2f7ff;border:1px solid #e0eafb;border-radius:10px;padding:12px;margin:0 0 9px;font-size:13px}
+.sr-settings-page .sr-window-settings-premium .sr-extension-header-icon{width:35px;height:35px;border-radius:9px;background:#dfebff;color:#1555b7;display:inline-flex;align-items:center;justify-content:center;flex:none}
+.sr-settings-page .sr-window-settings-premium .sr-window-extension-controls .sr-extension-field{display:grid;grid-template-columns:30px minmax(0,1fr) minmax(130px,1.12fr) 15px;gap:8px;align-items:center;background:#f7faff;border:1px solid #e8effa;border-radius:9px;padding:12px 9px;margin:8px 0}
+.sr-settings-page .sr-window-settings-premium .sr-extension-field-icon{display:inline-flex;align-items:center;justify-content:center;width:29px;height:29px;border-radius:8px;color:#1555b7;background:#e4efff}
+.sr-settings-page .sr-window-settings-premium .sr-extension-field label{font-weight:750;color:#183765}
+.sr-settings-page .sr-window-settings-premium .sr-extension-field select{border:1px solid #cdddf3;background:#fff;border-radius:8px;padding:9px 23px 9px 10px;font-weight:650;color:#183765;-webkit-text-fill-color:#183765;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%231555b7' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 7px center}
+.sr-settings-page .sr-window-settings-premium .sr-utility-fallback-control{background:#f7faff;border:1px solid #e8effa;border-radius:9px;margin:8px 0;padding:12px 10px}
+.sr-settings-page .sr-window-settings-premium .sr-utility-fallback-help{padding:0 5px;margin:10px 0;color:#62748e}
+.sr-settings-page .sr-window-settings-premium>.sr-window-how-it-works{background:#eaf3ff;border:1px solid #cfe1fa;border-radius:10px;padding:12px 14px;align-items:flex-start;color:#214574}
+.sr-settings-page .sr-window-settings-premium>.sr-window-how-it-works b{color:#123b7d;font-size:12px}
+@media(max-width:850px){.sr-settings-page .sr-window-settings-premium .sr-window-extension-controls .sr-extension-field{grid-template-columns:30px minmax(0,1fr) 15px}.sr-settings-page .sr-window-settings-premium .sr-extension-field select{grid-column:2;grid-row:2}.sr-settings-page .sr-window-settings-premium .sr-extension-field .sr-help{grid-column:3;grid-row:2}}
