@@ -2277,3 +2277,18 @@
 .sr-tracking-page .sr-window-expiry-inside-pill .sr-window-pill-expiry-line span{
  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;
 }
+
+/* 18 Nov root-cause fix: the premium-row selector above was more specific and
+   overrode the earlier pill padding even though both used !important.
+   Match that selector so the existing two-line pill gets actual 8px top/bottom. */
+.sr-tracking-page .sr-table:not(.sr-previous-table) .sr-window-recipient-section .sr-window-premium-pill.sr-window-expiry-inside-pill{
+ padding-top:8px!important;
+ padding-bottom:8px!important;
+ padding-left:5px!important;
+ padding-right:5px!important;
+ height:auto!important;
+ max-height:none!important;
+ min-height:0!important;
+ box-sizing:border-box!important;
+ gap:3px!important;
+}
