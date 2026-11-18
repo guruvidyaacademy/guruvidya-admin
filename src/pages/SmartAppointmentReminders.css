@@ -2446,3 +2446,9 @@
 .sr-activation-settings-note{display:flex;gap:9px;align-items:flex-start;background:#f7f9fc;border-top:1px solid #e6ecf5;padding:11px 14px;font-size:10px;line-height:1.6;color:#52637c}
 .sr-activation-settings-note svg{flex-shrink:0;color:#4e83c6;margin-top:1px}
 @media(max-width:600px){.sr-activation-settings-master,.sr-activation-settings-day{gap:8px;padding:11px 9px}.sr-activation-settings-copy b{font-size:11px}}
+
+/* CLOSED-window 4h Utility fallback: independent, configuration-only control */
+.sr-settings-page .sr-utility-fallback-control{display:flex;align-items:center;gap:11px;padding:13px 14px;margin:15px 0 0;border:1px solid #cfe7db;border-radius:11px;background:#f4fcf7}
+.sr-settings-page .sr-utility-fallback-control .sr-switch{flex-shrink:0}
+.sr-settings-page .sr-utility-fallback-help{font-size:10px;line-height:1.55;color:#52657d;margin:7px 2px 12px}
+@media(max-width:600px){.sr-settings-page .sr-utility-fallback-control{gap:7px;padding:11px 8px}.sr-settings-page .sr-utility-fallback-control .sr-activation-settings-copy b{font-size:11px}}
