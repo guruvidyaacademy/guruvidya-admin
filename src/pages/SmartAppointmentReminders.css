@@ -2260,9 +2260,9 @@
 /* 18 Nov: move existing expiry into the original status pill without changing its width, shape, icons, colours or countdown. */
 .sr-tracking-page .sr-window-premium-pill.sr-window-expiry-inside-pill{
  display:flex!important;flex-direction:column!important;align-items:stretch!important;
- justify-content:center!important;gap:2px!important;width:100%!important;
+ justify-content:center!important;gap:3px!important;width:100%!important;
  border-radius:30px!important;box-sizing:border-box!important;
- padding:5px 5px!important;min-height:0!important;
+ padding:7px 5px!important;min-height:0!important;
 }
 .sr-tracking-page .sr-window-expiry-inside-pill .sr-window-pill-primary-line{
  display:flex;align-items:center;justify-content:space-between;gap:3px;min-width:0;width:100%;
