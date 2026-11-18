@@ -2452,3 +2452,28 @@
 .sr-settings-page .sr-utility-fallback-control .sr-switch{flex-shrink:0}
 .sr-settings-page .sr-utility-fallback-help{font-size:10px;line-height:1.55;color:#52657d;margin:7px 2px 12px}
 @media(max-width:600px){.sr-settings-page .sr-utility-fallback-control{gap:7px;padding:11px 8px}.sr-settings-page .sr-utility-fallback-control .sr-activation-settings-copy b{font-size:11px}}
+
+/* Premium settings layout: two balanced cards above a full-width 24h window panel.
+   Pure presentation change; existing settings, save handlers and backend remain intact. */
+.sr-settings-page .sr-settings-lower{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;align-items:start}
+.sr-settings-page .sr-settings-lower>.sr-settings-bottom-card:nth-child(1){grid-column:1;grid-row:1}
+.sr-settings-page .sr-settings-lower>.sr-settings-bottom-card:nth-child(3){grid-column:2;grid-row:1}
+.sr-settings-page .sr-settings-lower>.sr-settings-bottom-card:nth-child(2){grid-column:1/-1;grid-row:2;display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,.92fr);column-gap:26px;row-gap:12px;align-items:start}
+.sr-settings-page .sr-settings-lower>.sr-settings-bottom-card:nth-child(2)>.sr-bottom-heading{grid-column:1/-1;margin-bottom:2px;padding-bottom:12px;border-bottom:1px solid #e6eef8}
+.sr-settings-page .sr-settings-lower>.sr-settings-bottom-card:nth-child(2)>.sr-activation-settings{grid-column:1;grid-row:2;min-width:0}
+.sr-settings-page .sr-window-extension-controls{grid-column:2;grid-row:2;min-width:0;border:1px solid #e2ebf7;background:#fbfdff;border-radius:10px;padding:14px}
+.sr-settings-page .sr-window-extension-controls h4{margin:0 0 14px;color:#102d63;font-size:13px;font-weight:800}
+.sr-settings-page .sr-window-extension-controls .sr-bottom-field{grid-template-columns:minmax(0,1fr) minmax(135px,1.15fr) 17px}
+.sr-settings-page .sr-settings-lower>.sr-settings-bottom-card:nth-child(2)>.sr-bottom-note{grid-column:1/-1;grid-row:3;margin-top:0}
+.sr-settings-page .sr-settings-lower>.sr-settings-bottom-card{min-height:0}
+@media(max-width:760px){
+ .sr-settings-page .sr-settings-lower{grid-template-columns:minmax(0,1fr)}
+ .sr-settings-page .sr-settings-lower>.sr-settings-bottom-card:nth-child(1),
+ .sr-settings-page .sr-settings-lower>.sr-settings-bottom-card:nth-child(3),
+ .sr-settings-page .sr-settings-lower>.sr-settings-bottom-card:nth-child(2){grid-column:1;grid-row:auto}
+ .sr-settings-page .sr-settings-lower>.sr-settings-bottom-card:nth-child(2){grid-template-columns:minmax(0,1fr)}
+ .sr-settings-page .sr-settings-lower>.sr-settings-bottom-card:nth-child(2)>.sr-bottom-heading,
+ .sr-settings-page .sr-settings-lower>.sr-settings-bottom-card:nth-child(2)>.sr-activation-settings,
+ .sr-settings-page .sr-settings-lower>.sr-settings-bottom-card:nth-child(2)>.sr-window-extension-controls,
+ .sr-settings-page .sr-settings-lower>.sr-settings-bottom-card:nth-child(2)>.sr-bottom-note{grid-column:1;grid-row:auto}
+}

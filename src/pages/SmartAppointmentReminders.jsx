@@ -823,9 +823,12 @@ export default function SmartAppointmentReminders({base,token,view='overview'}){
     })}
     <div className="sr-activation-settings-note"><TrackingIcon name="info" size={16}/><span>Settings are saved using <b>Save Settings</b> above. Master OFF preserves individual Day preferences. <b>Automatic scheduling remains on HOLD</b> until a separate approved scheduler is installed. Existing manual tests, 24h window verification and 4h Utility Template are unchanged.</span></div>
   </div>
+  <div className="sr-window-extension-controls" aria-label="Window extension and fallback controls">
+    <h4>Window Extension &amp; Fallback</h4>
   <div className="sr-bottom-field"><label>Window Extension Attempts</label><select disabled value="2" aria-label="Window extension attempts"><option value="2">2 attempts (Day 1 &amp; Day 2)</option></select><span className="sr-help" title="Fixed policy; dispatch is on hold">?</span></div>
   <div className="sr-bottom-field"><label>Send reminder before expiry</label><select disabled value="2" aria-label="Send before expiry"><option value="2">2 hours before expiry</option></select><span className="sr-help" title="No automatic window extension sending is active">?</span></div>
   <div className="sr-utility-fallback-control"><span className="sr-activation-settings-day-icon active"><TrackingIcon name="whatsapp" size={19}/></span><span className="sr-activation-settings-copy"><b>4h Utility Template Fallback</b><small>For CLOSED WhatsApp windows only · Uses existing approved 4h template</small></span><span className={'sr-activation-settings-tag '+(settings.closed_window_4h_utility_enabled!==false?'on':'off')}>{settings.closed_window_4h_utility_enabled!==false?'ON':'OFF'}</span><label className="sr-switch sr-switch-whatsapp"><input type="checkbox" aria-label="4h closed window Utility Template fallback" checked={settings.closed_window_4h_utility_enabled!==false} onChange={e=>setSettings(v=>({...v,closed_window_4h_utility_enabled:e.target.checked}))}/><span/></label></div><p className="sr-utility-fallback-help">This setting is saved for future scheduled dispatch. Master Automation is OFF; no automatic sends are enabled. The existing 4h manual test and 4h reminder stage controls are unchanged.</p>
+  </div>
   <div className="sr-bottom-note"><TrackingIcon name="info" size={19}/><span>Extension attempts are sent only if a valid 24h window is open based on recipient's inbound reply (Student / Parent separately). Sending remains on HOLD.</span></div>
  </div>
  <div className="sr-panel sr-settings-bottom-card">
