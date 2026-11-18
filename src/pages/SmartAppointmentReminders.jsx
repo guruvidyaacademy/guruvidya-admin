@@ -600,6 +600,17 @@ function activationEvent(test){
  if(sentTime)return {type:'sent',time:sentTime,label:'Sent'};
  return null;
 }
+function ActivationStatusIcon({type}){
+ const paths={
+  sent:<path d="M5 12.5l4.5 4.5L19 7"/>,
+  delivered:<><path d="M2.5 12.5 7 17l8-9"/><path d="m9 12.5 4.5 4.5L22 7"/></>,
+  read:<><path d="M2 12s3.6-6 10-6 10 6 10 6-3.6 6-10 6S2 12 2 12Z"/><circle cx="12" cy="12" r="2.5"/></>,
+  clicked:<><path d="m5 3 12 9-6 1-2.5 6L5 3Z"/><path d="m13 15 4 6"/></>,
+  failed:<><circle cx="12" cy="12" r="9"/><path d="m9 9 6 6m0-6-6 6"/></>,
+ };
+ if(!paths[type])return <span aria-hidden="true">—</span>;
+ return <svg className="sr-activation-status-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{paths[type]}</svg>;
+}
 function ActivationRowSummary({booking,recipient,manualTests}){
  const tests=(manualTests||[]).filter(t=>String(t.booking_id)===String(booking?.id)&&String(t.recipient_type).toLowerCase()===recipient&&t.channel==='whatsapp'&&ACTIVATION_DAYS.some(d=>t.stage==='day'+d));
  const perDay=ACTIVATION_DAYS.map(d=>{
@@ -607,11 +618,8 @@ function ActivationRowSummary({booking,recipient,manualTests}){
   const test=rows[0],event=activationEvent(test);
   return {day:d,event};
  });
- const latest=perDay.filter(x=>x.event?.time).sort((a,b)=>new Date(b.event.time)-new Date(a.event.time))[0];
- const icons={sent:'✓',delivered:'✓✓',read:'◉',clicked:'↖',failed:'×'};
  return <div className="sr-activation-row-summary">
-  <div className="sr-activation-row-line"><span className="sr-activation-row-label">Activation:</span><span className="sr-activation-row-days">{perDay.map(({day,event})=><span key={day} className={'sr-activation-day sr-activation-day-'+(event?.type||'none')} title={'Day '+day+' · '+(event?.label||'No activity')+(event?.time?' · '+fmt(event.time)+' IST':'')} aria-label={'Day '+day+': '+(event?.label||'No activity')}><b>D{day}</b><span aria-hidden="true">{event?icons[event.type]:'—'}</span></span>)}</span></div>
-  <div className="sr-activation-last"><span className="sr-activation-row-label">Last Activity:</span><strong title={latest?.event?.time?fmt(latest.event.time)+' IST':''}>{latest?'D'+latest.day+' · '+latest.event.label+' · '+fmt(latest.event.time)+' IST':'No activation activity'}</strong></div>
+  <div className="sr-activation-row-line"><span className="sr-activation-row-label">Activation:</span><span className="sr-activation-row-days">{perDay.map(({day,event})=><span key={day} className={'sr-activation-day sr-activation-day-'+(event?.type||'none')} title={'Day '+day+' · '+(event?.label||'Not sent')+(event?.time?' · '+fmt(event.time)+' IST':'')} aria-label={'Day '+day+': '+(event?.label||'Not sent')}><b>D{day}</b><ActivationStatusIcon type={event?.type}/></span>)}</span></div>
  </div>;
 }
 
@@ -626,16 +634,16 @@ function WindowStatusCard({recipient,record,now,booking,manualTests}){
  const expiryText=st.kind==='unknown'?'No incoming reply yet':st.kind==='closed'?'Expired:':st.kind==='extended'?'New Expiry:':'Expires:';
  return <div className={'sr-window-live-card sr-window-live-'+st.kind}>
   <div className="sr-window-live-top"><strong><span className="sr-window-live-avatar"><TrackingIcon name={icon} size={15}/></span>{title}</strong></div>
-  <div className="sr-window-premium-pill sr-window-expiry-inside-pill" title={st.label+(st.clock!=='—'?' · '+st.clock:'')+(st.kind!=='unknown'?' · '+expiryText+' '+st.expiry:'')}>
-   <div className="sr-window-pill-primary-line">
-    <span className="sr-window-pill-state"><span className="sr-window-pill-icon"><WindowStatusButtonIcon kind={st.kind}/></span><b>{st.label}</b></span>
-    {st.kind!=='unknown'&&<><span className="sr-window-pill-divider"/><span className="sr-window-pill-clock"><TrackingIcon name="clock" size={13}/><b>{st.clock}</b></span></>}
-    <TrackingIcon name="chevron" size={14} className="sr-window-pill-arrow"/>
-   </div>
-   {st.kind!=='unknown'&&<div className="sr-window-pill-expiry-line"><TrackingIcon name="calendar" size={11}/><span>{expiryText} {st.expiry}</span></div>}
+  <div className="sr-window-premium-pill" title={st.label+(st.clock!=='—'?' · '+st.clock:'')}>
+   <span className="sr-window-pill-state"><span className="sr-window-pill-icon"><WindowStatusButtonIcon kind={st.kind}/></span><b>{st.label}</b></span>
+   {st.kind!=='unknown'&&<><span className="sr-window-pill-divider"/><span className="sr-window-pill-clock"><TrackingIcon name="clock" size={13}/><b>{st.clock}</b></span></>}
+   <TrackingIcon name="chevron" size={14} className="sr-window-pill-arrow"/>
   </div>
   <div className="sr-window-premium-facts">
-   {st.kind==='unknown'&&<div className="sr-window-premium-fact sr-window-premium-expiry"><TrackingIcon name="calendar" size={13}/><span className="sr-window-fact-empty">No incoming reply yet</span></div>}
+   <div className="sr-window-premium-fact sr-window-premium-expiry">
+    <TrackingIcon name="calendar" size={13}/>
+    {st.kind==='unknown'?<span className="sr-window-fact-empty">No incoming reply yet</span>:<><span className="sr-window-fact-label">{expiryText}</span><strong className="sr-window-fact-value">{st.expiry}</strong></>}
+   </div>
    <div className="sr-window-premium-fact sr-window-premium-attempts">
     <TrackingIcon name="layers" size={13}/>
     <span className="sr-window-fact-label">Attempts:</span>
