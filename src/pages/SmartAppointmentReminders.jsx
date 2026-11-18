@@ -82,34 +82,41 @@ function ActivationManualPreview({recipient,booking,windowStatus,onSend,manualTe
 function ActivationDeliveryTracking({recipient,booking,manualTests,windowRecord}){
  const [opened,setOpened]=useState(false),[selectedDay,setSelectedDay]=useState('3'),[showHistory,setShowHistory]=useState(false);
  const tests=(manualTests||[]).filter(t=>String(t.booking_id)===String(booking?.id)&&String(t.recipient_type).toLowerCase()===recipient&&t.channel==='whatsapp'&&['day3','day2','day1'].includes(t.stage));
- const dayTests=tests.filter(t=>t.stage==='day'+selectedDay).sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0));
- const current=dayTests[0];
+ const byDay=d=>tests.filter(t=>t.stage==='day'+d).sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0));
+ const dayTests=byDay(selectedDay),current=dayTests[0];
  const clickedAt=current?.provider_clicked_at||(Array.isArray(current?.manual_clicks)?current.manual_clicks.find(c=>c.button_key==='keep_reminder_active')?.clicked_at:null);
  const accepted=['accepted','sent','delivered','read','clicked','success','completed'].includes(String(current?.status||'').toLowerCase());
  const failed=['failed','error','rejected'].includes(String(current?.status||'').toLowerCase());
+ const latest=activationEvent(current);
  const events=[
-  {label:'Provider Accepted',time:accepted?(current?.completed_at||current?.created_at):null,icon:'check'},
-  {label:'Sent',time:current?.sent_at||null,icon:'send'},
-  {label:'Delivered',time:current?.delivered_at||null,icon:'delivered'},
-  {label:'Read',time:current?.read_at||null,icon:'eye'},
-  {label:'Button Clicked',time:clickedAt||null,icon:'click'}
+  {label:'Provider Accepted',time:accepted?(current?.completed_at||current?.created_at):null,icon:'check',kind:'accepted'},
+  {label:'Sent',time:current?.sent_at||null,icon:'send',kind:'sent'},
+  {label:'Delivered',time:current?.delivered_at||null,icon:'delivered',kind:'delivered'},
+  {label:'Read',time:current?.read_at||null,icon:'eye',kind:'read'},
+  {label:'Button Clicked',time:clickedAt||null,icon:'click',kind:'clicked'},
+  {label:'Keep Active',time:clickedAt||null,icon:'refresh',kind:'active'}
  ];
  const lastInbound=windowRecord?.last_inbound_at;
- const latest=activationEvent(current);
- return <section className="sr-activation-tracking">
-  <button type="button" className="sr-activation-tracking-toggle" aria-expanded={opened} onClick={()=>setOpened(v=>!v)}><span><TrackingIcon name="history" size={17}/> Activation — Delivery &amp; Tracking</span><span className="sr-activation-tracking-toggle-right">Manual Test · {opened?'▴':'▾'}</span></button>
+ return <section className="sr-activation-tracking sr-activation-timeline-premium">
+  <div className="sr-at-top">
+   <button type="button" className="sr-at-heading" aria-expanded={opened} onClick={()=>setOpened(v=>!v)}>
+    <span className="sr-at-heading-icon"><TrackingIcon name="layers" size={20}/></span>
+    <span className="sr-at-heading-copy"><strong>Activation — Delivery &amp; Tracking</strong><small>WhatsApp · {recipient==='student'?'Student':'Parent / Guardian'} · Verified events (IST)</small></span>
+    <TrackingIcon name={opened?'chevronup':'chevron'} size={16}/>
+   </button>
+   <span className="sr-at-manual"><TrackingIcon name="info" size={14}/> Manual Test</span>
+  </div>
   {opened&&<div className="sr-activation-tracking-body">
-   <p className="sr-activation-tracking-context">{recipient==='student'?'Student':'Parent / Guardian'} · WhatsApp · Verified manual-test events (IST)</p>
-   <div className="sr-activation-tracking-days">{['3','2','1'].map(d=>{const test=tests.filter(t=>t.stage==='day'+d).sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0))[0];const event=activationEvent(test);return <button type="button" key={d} className={'sr-activation-tracking-day '+(selectedDay===d?'active':'')} onClick={()=>{setSelectedDay(d);setShowHistory(false)}}><b>Day {d}</b><span><ActivationStatusIcon type={event?.type}/>{event?.label||'Not Sent'}</span></button>})}</div>
-   <div className="sr-activation-tracking-test-head"><strong>Day {selectedDay} — WhatsApp Activation</strong><span className={'sr-activation-tracking-state '+(failed?'failed':latest?.type||'none')}><ActivationStatusIcon type={latest?.type}/>{latest?.label||'Not Sent'}</span></div>
+   <div className="sr-activation-tracking-days">{['3','2','1'].map(d=>{const event=activationEvent(byDay(d)[0]);return <button type="button" key={d} aria-pressed={selectedDay===d} className={'sr-activation-tracking-day '+(selectedDay===d?'active':'')+' status-'+(event?.type||'none')} onClick={()=>{setSelectedDay(d);setShowHistory(false)}}><b>Day {d}</b><span><ActivationStatusIcon type={event?.type}/>{event?.label||'Not Sent'}</span></button>})}</div>
+   <div className="sr-at-selected-heading"><div className="sr-at-selected-name"><TrackingIcon name="whatsapp" size={22}/><div><strong>Day {selectedDay} — WhatsApp Activation</strong><small>{current?'Latest manual test · '+fmt(current.created_at)+' IST · Test #'+current.id:'No manual test recorded'}</small></div></div><span className={'sr-activation-tracking-state '+(failed?'failed':latest?.type||'none')}><ActivationStatusIcon type={latest?.type}/>{latest?.label||'Not Sent'}</span></div>
    {current?<>
-    <small className="sr-activation-tracking-meta">Latest manual test · {fmt(current.created_at)} IST · Test #{current.id}</small>
-    <div className="sr-activation-tracking-events">{events.map(e=><div key={e.label} className={'sr-activation-tracking-event '+(e.time?'verified':'pending')}><TrackingIcon name={e.icon} size={16}/><div><b>{e.label}</b><small>{e.time?fmt(e.time)+' IST':'Not verified'}</small></div></div>)}</div>
+    <div className="sr-at-timeline" aria-label="Activation verified event timeline">{events.map((e,i)=><div key={e.label} className={'sr-at-step '+(e.time?'verified':'pending')+' kind-'+e.kind}><div className="sr-at-step-circle"><TrackingIcon name={e.icon} size={19}/></div><b>{e.label}</b><small>{e.time?fmt(e.time,{year:undefined,month:undefined,day:undefined})+' IST':'Not verified'}</small></div>)}</div>
     {failed&&<p className="sr-activation-tracking-failure">Test failed: {String(current.detail||'Provider error').slice(0,240)}</p>}
-    <div className="sr-activation-tracking-reply"><TrackingIcon name="whatsapp" size={16}/><div><b>Keep Reminder Active</b><small>{clickedAt?'Verified button response · '+fmt(clickedAt)+' IST':'No verified button click for this test'}</small></div></div>
+    <div className={'sr-activation-tracking-reply '+(clickedAt?'verified':'pending')}><span className="sr-at-reply-icon"><TrackingIcon name={clickedAt?'check':'clock'} size={19}/></span><div><b>Keep Reminder Active</b><small>{clickedAt?'Verified button response · '+fmt(clickedAt)+' IST':'No verified button click for this test'}</small></div><span className="sr-at-reply-badge"><TrackingIcon name={clickedAt?'check':'clock'} size={13}/>{clickedAt?'Verified Reply':'Pending'}</span></div>
     {lastInbound&&<p className="sr-activation-tracking-note">Latest verified incoming WhatsApp reply: {fmt(lastInbound)} IST. This window activity is shown separately; it is not attributed to this test unless linked by a verified event.</p>}
-    {dayTests.length>1&&<><button type="button" className="sr-activation-tracking-history-button" onClick={()=>setShowHistory(v=>!v)}>{showHistory?'Hide':'View'} previous tests ({dayTests.length-1}) {showHistory?'▴':'▾'}</button>{showHistory&&<div className="sr-activation-tracking-history">{dayTests.slice(1).map(t=>{const e=activationEvent(t);return <div key={t.id}><span>Test #{t.id} · {e?.label||t.status||'Unknown'}</span><time>{fmt(e?.time||t.created_at)} IST</time></div>})}</div>}</>}
    </>:<p className="sr-activation-tracking-empty">No Day {selectedDay} WhatsApp activation manual test recorded.</p>}
+   <div className="sr-at-history-section"><div className="sr-at-history-label"><TrackingIcon name="clock" size={18}/><strong>Previous Tests</strong></div><button type="button" className="sr-activation-tracking-history-button" aria-expanded={showHistory} onClick={()=>setShowHistory(v=>!v)}>{showHistory?'Hide History':'View History'} <TrackingIcon name={showHistory?'chevronup':'chevron'} size={15}/>{dayTests.length>1&&<span>({dayTests.length-1})</span>}</button></div>
+   {showHistory&&<div className="sr-activation-tracking-history">{dayTests.length>1?dayTests.slice(1).map(t=>{const e=activationEvent(t);return <div key={t.id}><span>Test #{t.id} · {e?.label||t.status||'Unknown'}</span><time>{fmt(e?.time||t.created_at)} IST</time></div>}):<p>No previous tests for Day {selectedDay}.</p>}</div>}
    <small className="sr-activation-tracking-footnote">Provider acceptance does not confirm delivery. Unverified milestones remain pending. Activation automation stays OFF; existing reminders are unchanged.</small>
   </div>}
  </section>;
