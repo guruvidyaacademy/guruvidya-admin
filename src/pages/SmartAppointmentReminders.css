@@ -2677,3 +2677,10 @@
   color: #139b62;
   stroke: currentColor;
 }
+
+/* Delivery & Tracking: booking details belong to the shared overview, above the table. */
+.sr-tracking-page .sr-common-appointment-details{margin:12px 0 14px;position:relative;z-index:1}
+.sr-tracking-page .sr-common-appointment-details .sr-appointment-info{margin:0}
+/* Tab content is exclusively rendered for the active tab; keep each panel full width. */
+.sr-tracking-page .sr-detail-grid>.sr-detail-window,
+.sr-tracking-page .sr-detail-grid>.sr-reminder-detail{grid-column:1/-1;min-width:0;width:100%}
