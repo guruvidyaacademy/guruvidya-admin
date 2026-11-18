@@ -626,16 +626,16 @@ function WindowStatusCard({recipient,record,now,booking,manualTests}){
  const expiryText=st.kind==='unknown'?'No incoming reply yet':st.kind==='closed'?'Expired:':st.kind==='extended'?'New Expiry:':'Expires:';
  return <div className={'sr-window-live-card sr-window-live-'+st.kind}>
   <div className="sr-window-live-top"><strong><span className="sr-window-live-avatar"><TrackingIcon name={icon} size={15}/></span>{title}</strong></div>
-  <div className="sr-window-premium-pill" title={st.label+(st.clock!=='—'?' · '+st.clock:'')}>
-   <span className="sr-window-pill-state"><span className="sr-window-pill-icon"><WindowStatusButtonIcon kind={st.kind}/></span><b>{st.label}</b></span>
-   {st.kind!=='unknown'&&<><span className="sr-window-pill-divider"/><span className="sr-window-pill-clock"><TrackingIcon name="clock" size={13}/><b>{st.clock}</b></span></>}
-   <TrackingIcon name="chevron" size={14} className="sr-window-pill-arrow"/>
+  <div className="sr-window-premium-pill sr-window-expiry-inside-pill" title={st.label+(st.clock!=='—'?' · '+st.clock:'')+(st.kind!=='unknown'?' · '+expiryText+' '+st.expiry:'')}>
+   <div className="sr-window-pill-primary-line">
+    <span className="sr-window-pill-state"><span className="sr-window-pill-icon"><WindowStatusButtonIcon kind={st.kind}/></span><b>{st.label}</b></span>
+    {st.kind!=='unknown'&&<><span className="sr-window-pill-divider"/><span className="sr-window-pill-clock"><TrackingIcon name="clock" size={13}/><b>{st.clock}</b></span></>}
+    <TrackingIcon name="chevron" size={14} className="sr-window-pill-arrow"/>
+   </div>
+   {st.kind!=='unknown'&&<div className="sr-window-pill-expiry-line"><TrackingIcon name="calendar" size={11}/><span>{expiryText} {st.expiry}</span></div>}
   </div>
   <div className="sr-window-premium-facts">
-   <div className="sr-window-premium-fact sr-window-premium-expiry">
-    <TrackingIcon name="calendar" size={13}/>
-    {st.kind==='unknown'?<span className="sr-window-fact-empty">No incoming reply yet</span>:<><span className="sr-window-fact-label">{expiryText}</span><strong className="sr-window-fact-value">{st.expiry}</strong></>}
-   </div>
+   {st.kind==='unknown'&&<div className="sr-window-premium-fact sr-window-premium-expiry"><TrackingIcon name="calendar" size={13}/><span className="sr-window-fact-empty">No incoming reply yet</span></div>}
    <div className="sr-window-premium-fact sr-window-premium-attempts">
     <TrackingIcon name="layers" size={13}/>
     <span className="sr-window-fact-label">Attempts:</span>
