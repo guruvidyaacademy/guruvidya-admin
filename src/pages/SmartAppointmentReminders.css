@@ -2477,3 +2477,15 @@
  .sr-settings-page .sr-settings-lower>.sr-settings-bottom-card:nth-child(2)>.sr-window-extension-controls,
  .sr-settings-page .sr-settings-lower>.sr-settings-bottom-card:nth-child(2)>.sr-bottom-note{grid-column:1;grid-row:auto}
 }
+
+/* Final premium alignment: activation and extension cards share one top baseline.
+   Scoped to the full-width 24h management row; no behavior changes. */
+.sr-settings-page .sr-settings-lower > .sr-settings-bottom-card:nth-child(2) > .sr-activation-settings,
+.sr-settings-page .sr-settings-lower > .sr-settings-bottom-card:nth-child(2) > .sr-window-extension-controls {
+  margin-top: 0;
+  align-self: start;
+  box-sizing: border-box;
+}
+.sr-settings-page .sr-settings-lower > .sr-settings-bottom-card:nth-child(2) > .sr-activation-settings {
+  margin-bottom: 20px;
+}
